@@ -1,0 +1,703 @@
+
+@{
+    ViewData["Title"] = "Reports & Analytics";
+
+    int totalLibraries = ViewBag.TotalLibraries ?? 0;
+    int totalBookTitles = ViewBag.TotalBookTitles ?? 0;
+    int totalCopies = ViewBag.TotalCopies ?? 0;
+
+    int availableCopies = ViewBag.AvailableCopies ?? 0;
+    int issuedCopies = ViewBag.IssuedCopies ?? 0;
+    int maintenanceCopies = ViewBag.MaintenanceCopies ?? 0;
+
+    int totalLoans = ViewBag.TotalLoans ?? 0;
+    int activeLoans = ViewBag.ActiveLoans ?? 0;
+    int returnedLoans = ViewBag.ReturnedLoans ?? 0;
+    int overdueLoans = ViewBag.OverdueLoans ?? 0;
+
+    var libraryStatistics = ViewBag.LibraryStatistics;
+    var recentLoans = ViewBag.RecentLoans;
+}
+
+<style>
+    .reports-page {
+        background: #f4f7f3;
+        min-height: 100vh;
+        padding: 35px 0 55px;
+    }
+
+    .reports-header {
+        background: linear-gradient(135deg, #123d2c, #20583e);
+        color: #fff;
+        border-radius: 18px;
+        padding: 30px;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 25px rgba(18, 61, 44, .12);
+    }
+
+    .reports-header h1 {
+        font-size: 27px;
+        font-weight: 750;
+        margin-bottom: 8px;
+    }
+
+    .reports-header p {
+        color: #d7e7dc;
+        margin: 0;
+    }
+
+    .reports-back {
+        display: inline-block;
+        color: #f2d58b;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .reports-back:hover {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .section-heading {
+        color: #183e2e;
+        font-size: 19px;
+        font-weight: 750;
+        margin-bottom: 17px;
+    }
+
+    .report-card {
+        background: #fff;
+        border: 1px solid #e5ebe5;
+        border-radius: 15px;
+        padding: 21px;
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(20, 50, 30, .035);
+    }
+
+    .report-label {
+        color: #77837a;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .report-value {
+        color: #183e2e;
+        font-size: 29px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .report-note {
+        color: #929b94;
+        font-size: 12px;
+        margin-top: 8px;
+    }
+
+    .report-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eaf3ec;
+        color: #20583e;
+        margin-bottom: 16px;
+    }
+
+    .report-icon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .report-icon.gold {
+        background: #fbf3df;
+        color: #9a7628;
+    }
+
+    .report-icon.blue {
+        background: #eaf1f8;
+        color: #37658e;
+    }
+
+    .report-icon.red {
+        background: #fbeceb;
+        color: #b34c45;
+    }
+
+    .report-section {
+        background: #fff;
+        border: 1px solid #e5ebe5;
+        border-radius: 15px;
+        padding: 23px;
+        margin-top: 27px;
+        box-shadow: 0 4px 15px rgba(20, 50, 30, .035);
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 650px;
+    }
+
+    .report-table th {
+        background: #f3f7f3;
+        color: #526458;
+        font-size: 12px;
+        font-weight: 750;
+        padding: 14px 13px;
+        white-space: nowrap;
+        border-bottom: 1px solid #e5ebe5;
+    }
+
+    .report-table td {
+        color: #394a3e;
+        font-size: 13px;
+        padding: 14px 13px;
+        border-bottom: 1px solid #edf0ed;
+        vertical-align: middle;
+    }
+
+    .report-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .report-table tbody tr:hover {
+        background: #fafcf9;
+    }
+
+    .status-badge {
+        display: inline-block;
+        border-radius: 20px;
+        padding: 5px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-available {
+        background: #e7f5eb;
+        color: #287447;
+    }
+
+    .status-issued {
+        background: #eaf1fa;
+        color: #37658e;
+    }
+
+    .status-maintenance {
+        background: #fff3dc;
+        color: #98702a;
+    }
+
+    .status-overdue {
+        background: #fbe9e8;
+        color: #ad423d;
+    }
+
+    .status-returned {
+        background: #e7f5eb;
+        color: #287447;
+    }
+
+    .status-active {
+        background: #eaf1fa;
+        color: #37658e;
+    }
+
+    .empty-report {
+        text-align: center;
+        color: #89938b;
+        padding: 30px 15px !important;
+    }
+
+    .progress-track {
+        height: 8px;
+        background: #edf1ed;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 12px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        background: #2e7650;
+    }
+
+    .progress-fill.gold {
+        background: #c59a43;
+    }
+
+    .progress-fill.blue {
+        background: #5883ad;
+    }
+
+    .progress-fill.red {
+        background: #c66b62;
+    }
+
+    .summary-item {
+        margin-bottom: 22px;
+    }
+
+    .summary-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .summary-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #536257;
+        font-size: 13px;
+        font-weight: 650;
+    }
+
+    .summary-count {
+        color: #183e2e;
+        font-weight: 800;
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    @@media (max-width: 767px) {
+        .reports-header {
+            padding: 23px;
+        }
+
+        .reports-header h1 {
+            font-size: 23px;
+        }
+
+        .report-section {
+            padding: 17px;
+        }
+
+        .report-value {
+            font-size: 25px;
+        }
+    }
+</style>
+
+<div class="reports-page">
+    <div class="container">
+
+        <!-- HEADER -->
+
+        <div class="reports-header">
+
+            <a asp-controller="Admin"
+               asp-action="Index"
+               class="reports-back">
+                ← Back to Admin Dashboard
+            </a>
+
+            <h1>Reports & Analytics</h1>
+
+            <p>
+                Monitor university library statistics, book availability
+                and borrowing activity.
+            </p>
+
+        </div>
+
+        <!-- OVERALL STATISTICS -->
+
+        <h2 class="section-heading">Overall Library Statistics</h2>
+
+        <div class="row">
+
+            <div class="col-md-4 col-sm-6 mb-3">
+                <div class="report-card">
+                    <div class="report-icon">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <path d="M3 21h18M5 21V7l7-4 7 4v14" />
+                            <path d="M9 21v-6h6v6M9 9h.01M15 9h.01" />
+                        </svg>
+                    </div>
+
+                    <div class="report-label">Total Libraries</div>
+                    <div class="report-value">@totalLibraries</div>
+                    <div class="report-note">Registered university libraries</div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 mb-3">
+                <div class="report-card">
+                    <div class="report-icon gold">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                        </svg>
+                    </div>
+
+                    <div class="report-label">Book Titles</div>
+                    <div class="report-value">@totalBookTitles</div>
+                    <div class="report-note">Unique books in the catalogue</div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 mb-3">
+                <div class="report-card">
+                    <div class="report-icon blue">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                            <path d="M8 7h8M8 11h8" />
+                        </svg>
+                    </div>
+
+                    <div class="report-label">Physical Book Copies</div>
+                    <div class="report-value">@totalCopies</div>
+                    <div class="report-note">Total registered physical copies</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOOK AVAILABILITY -->
+
+        <h2 class="section-heading mt-4">Book Availability</h2>
+
+        <div class="row">
+
+            <div class="col-md-4 col-sm-6 mb-3">
+                <div class="report-card">
+                    <div class="report-icon">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <path d="m5 12 4 4L19 6" />
+                            <circle cx="12" cy="12" r="10" />
+                        </svg>
+                    </div>
+
+                    <div class="report-label">Available Copies</div>
+                    <div class="report-value">@availableCopies</div>
+                    <span class="status-badge status-available">Available</span>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 mb-3">
+                <div class="report-card">
+                    <div class="report-icon blue">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16v16H4z" />
+                            <path d="M8 8h8M8 12h8M8 16h5" />
+                        </svg>
+                    </div>
+
+                    <div class="report-label">Issued Copies</div>
+                    <div class="report-value">@issuedCopies</div>
+                    <span class="status-badge status-issued">Issued</span>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 mb-3">
+                <div class="report-card">
+                    <div class="report-icon gold">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2">
+                            <path d="M12 9v4m0 4h.01" />
+                            <path d="M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+                        </svg>
+                    </div>
+
+                    <div class="report-label">Maintenance Copies</div>
+                    <div class="report-value">@maintenanceCopies</div>
+                    <span class="status-badge status-maintenance">Maintenance</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BORROWING SUMMARY -->
+
+        <h2 class="section-heading mt-4">Borrowing Summary</h2>
+
+        <div class="row">
+
+            <div class="col-lg-7 mb-3">
+                <div class="report-card">
+
+                    <div class="report-label">Loan Records Overview</div>
+
+                    <div class="report-value mb-4">@totalLoans</div>
+
+                    @{
+                        double activePercentage = totalLoans > 0
+                            ? (activeLoans * 100.0 / totalLoans)
+                            : 0;
+
+                        double returnedPercentage = totalLoans > 0
+                            ? (returnedLoans * 100.0 / totalLoans)
+                            : 0;
+
+                        double overduePercentage = activeLoans > 0
+                            ? (overdueLoans * 100.0 / activeLoans)
+                            : 0;
+                    }
+
+                    <div class="summary-item">
+                        <div class="summary-top">
+                            <span>Active Loans</span>
+                            <span class="summary-count">@activeLoans</span>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill"
+                                 style="width:@activePercentage%"></div>
+                        </div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-top">
+                            <span>Returned Loans</span>
+                            <span class="summary-count">@returnedLoans</span>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill blue"
+                                 style="width:@returnedPercentage%"></div>
+                        </div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-top">
+                            <span>Overdue Loans</span>
+                            <span class="summary-count">@overdueLoans</span>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-fill red"
+                                 style="width:@overduePercentage%"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-5 mb-3">
+                <div class="report-card">
+
+                    <div class="report-label">Loan Status Overview</div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <div class="report-label">Active Loans</div>
+                            <div class="report-value">@activeLoans</div>
+                        </div>
+
+                        <span class="status-badge status-active">Active</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <div class="report-label">Returned Loans</div>
+                            <div class="report-value">@returnedLoans</div>
+                        </div>
+
+                        <span class="status-badge status-returned">Returned</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="report-label">Overdue Loans</div>
+                            <div class="report-value">@overdueLoans</div>
+                        </div>
+
+                        <span class="status-badge status-overdue">Overdue</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- LIBRARY COMPARISON -->
+
+        <div class="report-section">
+
+            <h2 class="section-heading">Library-wise Statistics</h2>
+
+            <p class="text-muted small mb-4">
+                Compare book collections and availability across university libraries.
+            </p>
+
+            <div class="table-responsive">
+
+                <table class="report-table">
+
+                    <thead>
+                        <tr>
+                            <th>Library</th>
+                            <th>Location</th>
+                            <th>Book Titles</th>
+                            <th>Total Copies</th>
+                            <th>Available</th>
+                            <th>Issued</th>
+                            <th>Maintenance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (libraryStatistics != null)
+                        {
+                            foreach (var library in libraryStatistics)
+                            {
+                                <tr>
+                                    <td><strong>@library.LibraryName</strong></td>
+                                    <td>@(library.Location ?? "Not specified")</td>
+                                    <td>@library.TotalBookTitles</td>
+                                    <td>@library.TotalCopies</td>
+                                    <td>
+                                        <span class="status-badge status-available">
+                                            @library.AvailableCopies
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-issued">
+                                            @library.IssuedCopies
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-maintenance">
+                                            @library.MaintenanceCopies
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                        @if (libraryStatistics == null || !((System.Collections.IEnumerable)libraryStatistics).GetEnumerator().MoveNext())
+                        {
+                            <tr>
+                                <td colspan="7" class="empty-report">
+                                    No library records are available.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- RECENT BORROWING ACTIVITY -->
+
+        <div class="report-section">
+
+            <h2 class="section-heading">Recent Borrowing Activity</h2>
+
+            <p class="text-muted small mb-4">
+                Latest 10 borrowing records across all university libraries.
+            </p>
+
+            <div class="table-responsive">
+
+                <table class="report-table">
+
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Book</th>
+                            <th>Library</th>
+                            <th>Copy Code</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (recentLoans != null)
+                        {
+                            foreach (var loan in recentLoans)
+                            {
+                                bool isOverdue =
+                                    loan.ReturnDate == null &&
+                                    loan.DueDate < DateTime.UtcNow.AddHours(5).Date;
+
+                                string loanStatus = loan.ReturnDate != null
+                                    ? "Returned"
+                                    : (isOverdue ? "Overdue" : "Active");
+
+                                <tr>
+                                    <td>
+                                        <strong>@loan.StudentProfile.Name</strong>
+                                        <div class="text-muted small">
+                                            @loan.StudentProfile.Email
+                                        </div>
+                                    </td>
+
+                                    <td>@loan.BookCopy.Book.Title</td>
+
+                                    <td>@loan.BookCopy.Library.Name</td>
+
+                                    <td>@loan.BookCopy.CopyCode</td>
+
+                                    <td>@loan.IssueDate.ToString("dd MMM yyyy")</td>
+
+                                    <td>@loan.DueDate.ToString("dd MMM yyyy")</td>
+
+                                    <td>
+                                        @if (loanStatus == "Returned")
+                                        {
+                                            <span class="status-badge status-returned">
+                                                Returned
+                                            </span>
+                                        }
+                                        else if (loanStatus == "Overdue")
+                                        {
+                                            <span class="status-badge status-overdue">
+                                                Overdue
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge status-active">
+                                                Active
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                        @if (recentLoans == null || !((System.Collections.IEnumerable)recentLoans).GetEnumerator().MoveNext())
+                        {
+                            <tr>
+                                <td colspan="7" class="empty-report">
+                                    No borrowing activity is available yet.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="text-center text-muted small mt-4">
+            University Library Management System · Reports & Analytics
+        </div>
+
+    </div>
+</div>

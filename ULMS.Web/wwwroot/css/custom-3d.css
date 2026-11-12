@@ -1,0 +1,1152 @@
+
+/* =========================================
+   ULMS - GLOBAL DESIGN
+========================================= */
+
+:root {
+    --primary: #173f35;
+    --primary-dark: #102d26;
+    --accent: #c49a58;
+    --text: #27352f;
+    --muted: #718078;
+    --light: #f5f7f4;
+    --white: #ffffff;
+    --border: #e5ebe6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    color: var(--text);
+    background: var(--white);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+}
+
+.section-label {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+}
+
+
+/* =========================================
+   NAVBAR
+========================================= */
+
+.ulms-header {
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 3px 20px rgba(0, 0, 0, 0.045);
+}
+
+.ulms-header .navbar {
+    min-height: 84px;
+    padding: 12px 0;
+}
+
+.ulms-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: var(--primary) !important;
+    font-size: 27px;
+    font-weight: 850;
+    letter-spacing: 1px;
+    margin-right: 0;
+}
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.ulms-header .navbar-collapse {
+    align-items: center;
+}
+
+.ulms-main-nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ulms-header .nav-link {
+    position: relative;
+    color: #40534a;
+    font-size: 15px;
+    font-weight: 650;
+    padding: 12px 5px !important;
+    transition: color 0.25s ease;
+}
+
+.ulms-header .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.25s ease;
+}
+
+.ulms-header .nav-link:hover {
+    color: var(--primary);
+}
+
+.ulms-header .nav-link:hover::after {
+    transform: scaleX(1);
+}
+
+.ulms-login-area {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.login-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-width: 112px;
+    padding: 12px 23px;
+    border-radius: 7px;
+    background: var(--primary);
+    color: var(--white);
+    font-weight: 700;
+    transition: all 0.25s ease;
+}
+
+.login-button:hover {
+    background: var(--primary-dark);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+.login-button span {
+    font-size: 18px;
+}
+
+.ulms-header .navbar-toggler {
+    border: 1px solid #dce5df;
+    padding: 8px 10px;
+    box-shadow: none;
+}
+
+.ulms-header .navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(23, 63, 53, 0.12);
+}
+
+
+/* =========================================
+   HOME WELCOME
+========================================= */
+
+.home-welcome {
+    padding: 76px 0 55px;
+    text-align: center;
+    background:
+        radial-gradient(circle at 10% 20%, #e9f0e8 0, transparent 32%),
+        linear-gradient(135deg, #ffffff, #f5f8f4);
+}
+
+.welcome-content {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.welcome-content h1 {
+    color: var(--primary-dark);
+    font-size: clamp(36px, 5vw, 62px);
+    font-weight: 850;
+    line-height: 1.15;
+    letter-spacing: -1.7px;
+    margin-bottom: 22px;
+}
+
+.welcome-content h1 span {
+    display: block;
+    color: var(--accent);
+}
+
+.welcome-content p {
+    max-width: 700px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.9;
+}
+
+
+/* =========================================
+   BOOTSTRAP CAROUSEL
+========================================= */
+
+.library-carousel-section {
+    padding: 35px 0 85px;
+    background: #f5f7f4;
+}
+
+.carousel-heading {
+    max-width: 720px;
+    margin: 0 auto 35px;
+    text-align: center;
+}
+
+.carousel-heading h2 {
+    color: var(--primary-dark);
+    font-size: clamp(30px, 4vw, 43px);
+    font-weight: 850;
+    margin-bottom: 13px;
+}
+
+.carousel-heading h2 span {
+    color: var(--accent);
+}
+
+.carousel-heading p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+#ulmsLibraryCarousel {
+    overflow: hidden;
+    border-radius: 17px;
+    background: #142d25;
+    box-shadow: 0 20px 50px rgba(16, 45, 38, 0.16);
+}
+
+#ulmsLibraryCarousel .carousel-item {
+    height: 530px;
+    position: relative;
+    background: #142d25;
+}
+
+#ulmsLibraryCarousel .carousel-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(8, 25, 20, 0.78) 0%,
+        rgba(8, 25, 20, 0.42) 48%,
+        rgba(8, 25, 20, 0.08) 100%
+    );
+    pointer-events: none;
+}
+
+#ulmsLibraryCarousel .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+#ulmsLibraryCarousel .carousel-caption {
+    z-index: 2;
+    left: 10%;
+    right: 10%;
+    bottom: 15%;
+    text-align: left;
+    max-width: 650px;
+}
+
+#ulmsLibraryCarousel .carousel-caption span {
+    display: inline-block;
+    color: #e7c58d;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    margin-bottom: 15px;
+}
+
+#ulmsLibraryCarousel .carousel-caption h3 {
+    color: white;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 850;
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+
+#ulmsLibraryCarousel .carousel-caption p {
+    max-width: 540px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+#ulmsLibraryCarousel .carousel-indicators {
+    z-index: 3;
+    margin-bottom: 22px;
+}
+
+#ulmsLibraryCarousel .carousel-indicators button {
+    width: 28px;
+    height: 4px;
+    border: 0;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+#ulmsLibraryCarousel .carousel-control-prev,
+#ulmsLibraryCarousel .carousel-control-next {
+    z-index: 3;
+    width: 8%;
+}
+
+#ulmsLibraryCarousel .carousel-control-prev-icon,
+#ulmsLibraryCarousel .carousel-control-next-icon {
+    width: 42px;
+    height: 42px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.35);
+    background-size: 45%;
+    border-radius: 50%;
+}
+
+
+/* =========================================
+   ABOUT ULMS
+========================================= */
+
+.about-ulms-section {
+    padding: 95px 0;
+    background: white;
+}
+
+.about-image-wrap {
+    position: relative;
+    height: 430px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(16, 45, 38, 0.13);
+}
+
+.about-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.about-image-wrap:hover img {
+    transform: scale(1.04);
+}
+
+.about-image-caption {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 18px 20px;
+    color: white;
+    background: rgba(16, 45, 38, 0.88);
+    border-radius: 9px;
+}
+
+.about-image-caption span {
+    color: #e7c58d;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.about-image-caption strong {
+    font-size: 18px;
+}
+
+.about-content h2 {
+    color: var(--primary-dark);
+    font-size: clamp(30px, 4vw, 43px);
+    font-weight: 850;
+    line-height: 1.2;
+    margin-bottom: 22px;
+}
+
+.about-content h2 span {
+    color: var(--accent);
+}
+
+.about-content > p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.95;
+    margin-bottom: 16px;
+}
+
+.about-highlight {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-top: 27px;
+    padding: 20px;
+    background: #f5f8f4;
+    border-left: 3px solid var(--accent);
+    border-radius: 7px;
+}
+
+.highlight-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e7eee7;
+    color: var(--primary);
+    font-size: 21px;
+}
+
+.about-highlight h4 {
+    color: var(--primary-dark);
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.about-highlight p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+
+/* =========================================
+   RESOURCES
+========================================= */
+
+.resources-section {
+    padding: 90px 0;
+    background: #f5f7f4;
+}
+
+.resources-heading {
+    max-width: 720px;
+    text-align: center;
+    margin: 0 auto 45px;
+}
+
+.resources-heading h2 {
+    color: var(--primary-dark);
+    font-size: clamp(29px, 4vw, 42px);
+    font-weight: 850;
+    margin-bottom: 15px;
+}
+
+.resources-heading h2 span {
+    color: var(--accent);
+}
+
+.resources-heading p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.resource-card {
+    height: 100%;
+    padding: 35px 28px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.resource-card:hover {
+    transform: translateY(-7px);
+    border-color: #d5dfd7;
+    box-shadow: 0 17px 38px rgba(16, 45, 38, 0.09);
+}
+
+.resource-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    margin-bottom: 24px;
+    border-radius: 11px;
+    color: var(--primary);
+    background: #eaf1eb;
+}
+
+.resource-icon svg {
+    width: 28px;
+    height: 28px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.resource-card h3 {
+    color: var(--primary-dark);
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.resource-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+    margin: 0;
+}
+
+
+/* =========================================
+   LEARNING SECTION
+========================================= */
+
+.learning-section {
+    padding: 95px 0;
+    background: white;
+}
+
+.learning-content h2 {
+    color: var(--primary-dark);
+    font-size: clamp(31px, 4vw, 44px);
+    font-weight: 850;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.learning-content h2 span {
+    display: block;
+    color: var(--accent);
+}
+
+.learning-content > p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.9;
+    margin-bottom: 25px;
+}
+
+.learning-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.learning-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: #43554b;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+.learning-list li span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    background: #e8f1e9;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.learning-image {
+    height: 390px;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 18px 45px rgba(16, 45, 38, 0.13);
+}
+
+.learning-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.learning-image:hover img {
+    transform: scale(1.04);
+}
+
+
+/* =========================================
+   SINGLE HOME CALL TO ACTION
+========================================= */
+
+.home-cta {
+    padding: 75px 20px;
+    text-align: center;
+    background:
+        linear-gradient(rgba(16, 45, 38, 0.95), rgba(16, 45, 38, 0.95)),
+        var(--primary-dark);
+}
+
+.cta-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.cta-content .section-label {
+    color: #e7c58d;
+}
+
+.cta-content h2 {
+    color: white;
+    font-size: clamp(29px, 4vw, 42px);
+    font-weight: 850;
+    margin-bottom: 15px;
+}
+
+.cta-content p {
+    color: #c9d6ce;
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 7px;
+    background: var(--accent);
+    color: #172d25;
+    font-size: 15px;
+    font-weight: 800;
+    transition: all 0.25s ease;
+}
+
+.cta-button:hover {
+    background: #d8b77e;
+    color: #172d25;
+    transform: translateY(-3px);
+}
+
+
+/* =========================================
+   BOOKS CATALOGUE
+========================================= */
+
+.books-page {
+    min-height: 70vh;
+    padding: 75px 0 90px;
+    background: #f7f9f6;
+}
+
+.books-heading {
+    max-width: 650px;
+    margin: 0 auto 35px;
+    text-align: center;
+}
+
+.books-heading h1 {
+    color: var(--primary-dark);
+    font-size: clamp(34px, 4vw, 48px);
+    font-weight: 850;
+    margin-bottom: 14px;
+}
+
+.books-heading h1 span {
+    color: var(--accent);
+}
+
+.books-heading p {
+    color: var(--muted);
+    line-height: 1.8;
+}
+
+.books-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 650px;
+    margin: 0 auto 55px;
+    padding: 5px 18px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    box-shadow: 0 7px 22px rgba(0, 0, 0, 0.035);
+}
+
+.search-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: #839188;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.books-search input {
+    width: 100%;
+    padding: 14px 0;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+.books-results-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.books-results-heading h2 {
+    color: var(--primary-dark);
+    font-size: 23px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.books-results-heading span {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.book-card {
+    height: 100%;
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    transition: all 0.3s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(20, 55, 42, 0.09);
+}
+
+.book-cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 235px;
+    padding: 15px;
+    background: #edf1ed;
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.book-information {
+    padding: 20px;
+}
+
+.book-information h3 {
+    color: var(--primary-dark);
+    font-size: 17px;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+    margin-bottom: 8px;
+}
+
+.book-author,
+.book-isbn {
+    color: var(--muted);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+    margin-bottom: 9px;
+}
+
+.book-availability {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 13px;
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.availability-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.availability-dot.available {
+    background: #27965c;
+}
+
+.availability-dot.unavailable {
+    background: #d45d55;
+}
+
+.empty-books {
+    padding: 55px 20px;
+    margin-top: 20px;
+    text-align: center;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.empty-books h3 {
+    color: var(--primary-dark);
+    font-weight: 750;
+}
+
+.empty-books p {
+    color: var(--muted);
+    margin: 8px 0 0;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.ulms-footer {
+    padding: 60px 0 0;
+    color: #dce5df;
+    background: #102b25;
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 50px;
+    padding-bottom: 42px;
+}
+
+.footer-brand-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    color: white;
+    font-size: 26px;
+    font-weight: 850;
+    letter-spacing: 1px;
+}
+
+.footer-brand-name img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.footer-brand p {
+    max-width: 350px;
+    color: #aebdb5;
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+.footer-links h5,
+.footer-social h5 {
+    color: white;
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 21px;
+}
+
+.footer-links a {
+    display: block;
+    width: fit-content;
+    color: #b8c7be;
+    font-size: 14px;
+    margin-bottom: 14px;
+    transition: all 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent);
+    padding-left: 4px;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    margin-bottom: 16px;
+    color: #c6d2ca;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.social-link:hover {
+    color: var(--accent);
+    transform: translateX(4px);
+}
+
+.social-link svg {
+    width: 23px;
+    height: 23px;
+}
+
+.footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.footer-bottom p {
+    color: #9eafa5;
+    font-size: 12px;
+    margin: 0;
+}
+
+
+/* =========================================
+   RESPONSIVE - TABLETS
+========================================= */
+
+@media (max-width: 991px) {
+
+    .ulms-header .navbar {
+        min-height: 72px;
+    }
+
+    .ulms-header .navbar-collapse {
+        padding: 15px 0 12px;
+    }
+
+    .ulms-main-nav {
+        align-items: stretch;
+        gap: 3px;
+        margin: 0;
+    }
+
+    .ulms-header .nav-link {
+        padding: 11px 5px !important;
+    }
+
+    .ulms-login-area {
+        justify-content: flex-start;
+        margin: 12px 0 5px;
+    }
+
+    .login-button {
+        min-width: 125px;
+    }
+
+    #ulmsLibraryCarousel .carousel-item {
+        height: 430px;
+    }
+
+    .footer-main {
+        gap: 30px;
+    }
+}
+
+
+/* =========================================
+   RESPONSIVE - MOBILE
+========================================= */
+
+@media (max-width: 767px) {
+
+    .home-welcome {
+        padding: 55px 0 40px;
+    }
+
+    .welcome-content h1 {
+        font-size: 39px;
+    }
+
+    .welcome-content p {
+        font-size: 15px;
+        padding: 0 8px;
+    }
+
+    .library-carousel-section {
+        padding: 25px 0 65px;
+    }
+
+    .carousel-heading {
+        margin-bottom: 25px;
+    }
+
+    #ulmsLibraryCarousel {
+        border-radius: 11px;
+    }
+
+    #ulmsLibraryCarousel .carousel-item {
+        height: 360px;
+    }
+
+    #ulmsLibraryCarousel .carousel-caption {
+        left: 12%;
+        right: 12%;
+        bottom: 13%;
+    }
+
+    #ulmsLibraryCarousel .carousel-caption h3 {
+        font-size: 27px;
+    }
+
+    #ulmsLibraryCarousel .carousel-caption p {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    #ulmsLibraryCarousel .carousel-caption span {
+        font-size: 10px;
+    }
+
+    #ulmsLibraryCarousel .carousel-control-prev,
+    #ulmsLibraryCarousel .carousel-control-next {
+        width: 10%;
+    }
+
+    .about-ulms-section,
+    .learning-section {
+        padding: 65px 0;
+    }
+
+    .about-image-wrap {
+        height: 330px;
+    }
+
+    .resources-section {
+        padding: 65px 0;
+    }
+
+    .resources-heading {
+        margin-bottom: 30px;
+    }
+
+    .resource-card {
+        padding: 28px 24px;
+    }
+
+    .learning-image {
+        height: 310px;
+    }
+
+    .home-cta {
+        padding: 60px 15px;
+    }
+
+    .footer-main {
+        grid-template-columns: 1fr 1fr;
+        gap: 35px 20px;
+    }
+
+    .footer-brand {
+        grid-column: 1 / -1;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+
+/* =========================================
+   RESPONSIVE - SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+    .ulms-brand {
+        font-size: 23px;
+    }
+
+    .brand-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .welcome-content h1 {
+        font-size: 34px;
+    }
+
+    #ulmsLibraryCarousel .carousel-item {
+        height: 310px;
+    }
+
+    #ulmsLibraryCarousel .carousel-caption {
+        bottom: 12%;
+    }
+
+    #ulmsLibraryCarousel .carousel-caption h3 {
+        font-size: 22px;
+    }
+
+    #ulmsLibraryCarousel .carousel-caption p {
+        font-size: 12px;
+    }
+
+    #ulmsLibraryCarousel .carousel-indicators {
+        margin-bottom: 10px;
+    }
+
+    .about-image-wrap {
+        height: 270px;
+    }
+
+    .learning-image {
+        height: 260px;
+    }
+
+    .books-page {
+        padding: 55px 0 65px;
+    }
+
+    .books-results-heading h2 {
+        font-size: 19px;
+    }
+
+    .footer-main {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-brand {
+        grid-column: auto;
+    }
+}

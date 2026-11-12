@@ -1,0 +1,502 @@
+
+@model IEnumerable<ULMS.Web.Entities.Loan>
+
+@{
+    ViewData["Title"] = "Borrowing & Returns";
+
+    string currentSearch = ViewBag.LoanSearch as string ?? "";
+    string currentStatus = ViewBag.LoanStatus as string ?? "All";
+}
+
+<style>
+    .loans-page {
+        background: #f4f7f5;
+        min-height: 100vh;
+        padding: 35px 0 55px;
+        color: #26352f;
+    }
+
+    .loans-header {
+        background: linear-gradient(135deg, #173d30, #285b45);
+        color: #fff;
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 22px rgba(20, 55, 40, .12);
+    }
+
+    .loans-header h1 {
+        font-size: 27px;
+        font-weight: 750;
+        margin-bottom: 7px;
+    }
+
+    .loans-header p {
+        color: #d7e7dd;
+        margin-bottom: 0;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 13px;
+        padding: 20px;
+        height: 100%;
+        border: 1px solid #e8eee9;
+        box-shadow: 0 4px 14px rgba(25, 55, 40, .045);
+    }
+
+    .stat-label {
+        color: #718078;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 9px;
+    }
+
+    .stat-number {
+        font-size: 29px;
+        font-weight: 750;
+        color: #214b39;
+        margin-bottom: 0;
+    }
+
+    .stat-card.overdue .stat-number {
+        color: #c44c42;
+    }
+
+    .stat-card.returned .stat-number {
+        color: #39845b;
+    }
+
+    .filter-card,
+    .table-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #e8eee9;
+        box-shadow: 0 4px 14px rgba(25, 55, 40, .045);
+    }
+
+    .filter-card {
+        padding: 20px;
+    }
+
+    .section-title {
+        color: #244b39;
+        font-size: 18px;
+        font-weight: 750;
+    }
+
+    .form-control {
+        border-color: #dce5df;
+        border-radius: 8px;
+        min-height: 42px;
+    }
+
+    .form-control:focus {
+        border-color: #b99543;
+        box-shadow: 0 0 0 3px rgba(185, 149, 67, .12);
+    }
+
+    .btn-filter {
+        background: #24513c;
+        color: #fff;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-weight: 600;
+    }
+
+    .btn-filter:hover {
+        background: #183b2b;
+        color: #fff;
+    }
+
+    .btn-reset {
+        background: #f1f4f2;
+        color: #40564a;
+        border-radius: 8px;
+        padding: 9px 18px;
+        font-weight: 600;
+    }
+
+    .table-card {
+        overflow: hidden;
+    }
+
+    .table-heading {
+        padding: 20px 22px;
+        border-bottom: 1px solid #edf0ed;
+    }
+
+    .loans-table {
+        margin-bottom: 0;
+        white-space: nowrap;
+    }
+
+    .loans-table thead th {
+        background: #f5f8f5;
+        color: #627269;
+        font-size: 11px;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: .45px;
+        padding: 15px 13px;
+        border-top: 0;
+        border-bottom: 1px solid #e7ede8;
+    }
+
+    .loans-table tbody td {
+        padding: 15px 13px;
+        vertical-align: middle;
+        border-color: #edf1ed;
+        font-size: 13px;
+        color: #46564c;
+    }
+
+    .primary-text {
+        color: #263f31;
+        font-weight: 700;
+    }
+
+    .secondary-text {
+        color: #87938b;
+        font-size: 11px;
+        margin-top: 4px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        border-radius: 20px;
+        padding: 6px 10px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .status-active {
+        background: #e8f4ec;
+        color: #287447;
+    }
+
+    .status-overdue {
+        background: #fff0ed;
+        color: #c34c40;
+    }
+
+    .status-returned {
+        background: #eaf0fa;
+        color: #42639b;
+    }
+
+    .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+        color: #849087;
+    }
+
+    .empty-state h5 {
+        color: #34513f;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .table-responsive {
+        border-radius: 0 0 14px 14px;
+    }
+
+    @@media (max-width: 767px) {
+        .loans-page {
+            padding-top: 20px;
+        }
+
+        .loans-header {
+            padding: 22px;
+        }
+
+        .loans-header h1 {
+            font-size: 23px;
+        }
+
+        .stat-number {
+            font-size: 25px;
+        }
+    }
+</style>
+
+<div class="loans-page">
+    <div class="container-fluid px-lg-4">
+
+        <!-- PAGE HEADER -->
+        <div class="loans-header">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                    <h1>Borrowing & Returns Management</h1>
+                    <p>Monitor borrowing activity and book return records across all libraries.</p>
+                </div>
+
+                <a href="@Url.Action("Index", "Admin")"
+                   class="btn btn-light mt-3 mt-md-0 font-weight-bold">
+                    &larr; Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- STATISTICS -->
+        <div class="row mb-4">
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-label">TOTAL LOANS</div>
+                    <h2 class="stat-number">
+                        @ViewBag.TotalLoans
+                    </h2>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="stat-card">
+                    <div class="stat-label">ACTIVE LOANS</div>
+                    <h2 class="stat-number">
+                        @ViewBag.ActiveLoans
+                    </h2>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="stat-card returned">
+                    <div class="stat-label">RETURNED BOOKS</div>
+                    <h2 class="stat-number">
+                        @ViewBag.ReturnedLoans
+                    </h2>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="stat-card overdue">
+                    <div class="stat-label">OVERDUE BOOKS</div>
+                    <h2 class="stat-number">
+                        @ViewBag.OverdueLoans
+                    </h2>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SEARCH AND FILTER -->
+        <div class="filter-card mb-4">
+
+            <h5 class="section-title mb-3">
+                Search & Filter Borrowing Records
+            </h5>
+
+            <form method="get" action="/Admin/Loans">
+                <div class="row align-items-end">
+
+                    <div class="col-lg-7 col-md-6 mb-3">
+                        <label class="font-weight-bold small">
+                            Search Records
+                        </label>
+
+                        <input type="text"
+                               name="search"
+                               value="@currentSearch"
+                               class="form-control"
+                               placeholder="Student name, email, book title, copy code or library..." />
+                    </div>
+
+                    <div class="col-lg-3 col-md-4 mb-3">
+                        <label class="font-weight-bold small">
+                            Loan Status
+                        </label>
+
+                        <select name="status" class="form-control">
+                            <option value="All"
+                                    selected="@(currentStatus == "All")">
+                                All Records
+                            </option>
+
+                            <option value="Active"
+                                    selected="@(currentStatus == "Active")">
+                                Active
+                            </option>
+
+                            <option value="Overdue"
+                                    selected="@(currentStatus == "Overdue")">
+                                Overdue
+                            </option>
+
+                            <option value="Returned"
+                                    selected="@(currentStatus == "Returned")">
+                                Returned
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 mb-3">
+                        <button type="submit"
+                                class="btn btn-filter btn-block mb-2">
+                            Search
+                        </button>
+
+                        <a href="/Admin/Loans"
+                           class="btn btn-reset btn-block">
+                            Reset
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <!-- LOANS TABLE -->
+        <div class="table-card">
+
+            <div class="table-heading d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                    <h5 class="section-title mb-1">
+                        Borrowing History
+                    </h5>
+
+                    <small class="text-muted">
+                        Showing @Model.Count() matching records
+                    </small>
+                </div>
+
+                <span class="text-muted small mt-2 mt-md-0">
+                    Latest transactions first
+                </span>
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table loans-table">
+
+                    <thead>
+                        <tr>
+                            <th>Loan ID</th>
+                            <th>Student</th>
+                            <th>Book Information</th>
+                            <th>Library</th>
+                            <th>Issued By</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.Any())
+                        {
+                            foreach (var loan in Model)
+                            {
+                                bool isReturned = loan.ReturnDate.HasValue;
+
+                                bool isOverdue =
+                                    !isReturned &&
+                                    loan.DueDate.Date <
+                                    DateTime.UtcNow.AddHours(5).Date;
+
+                                string statusText = isReturned
+                                    ? "Returned"
+                                    : isOverdue
+                                        ? "Overdue"
+                                        : "Active";
+
+                                string statusClass = isReturned
+                                    ? "status-returned"
+                                    : isOverdue
+                                        ? "status-overdue"
+                                        : "status-active";
+
+                                <tr>
+                                    <td>
+                                        <span class="primary-text">
+                                            #@loan.LoanId
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="primary-text">
+                                            @loan.StudentProfile?.Name
+                                        </div>
+
+                                        <div class="secondary-text">
+                                            @loan.StudentProfile?.Email
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="primary-text">
+                                            @loan.BookCopy?.Book?.Title
+                                        </div>
+
+                                        <div class="secondary-text">
+                                            Copy: @loan.BookCopy?.CopyCode
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @loan.BookCopy?.Library?.Name
+                                    </td>
+
+                                    <td>
+                                        <div class="primary-text">
+                                            @loan.IssuedByStaff?.UserAccount?.Name
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @loan.IssueDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @loan.DueDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @if (loan.ReturnDate.HasValue)
+                                        {
+                                            @loan.ReturnDate.Value.ToString("dd MMM yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not returned</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <span class="status-badge @statusClass">
+                                            @statusText
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9">
+                                    <div class="empty-state">
+                                        <h5>No Borrowing Records Found</h5>
+
+                                        <p class="mb-0">
+                                            No records match your current search or filter.
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                University Library Management System
+            </small>
+        </div>
+
+    </div>
+</div>

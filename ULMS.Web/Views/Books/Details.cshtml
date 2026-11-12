@@ -1,0 +1,446 @@
+
+@model ULMS.Web.Entities.Book
+
+@using System
+@using System.Collections.Generic
+@using System.Linq
+@using ULMS.Web.Entities
+
+@{
+    ViewData["Title"] = "Book Details";
+
+    var copies = ViewBag.BookCopies as List<BookCopy>
+        ?? new List<BookCopy>();
+
+    var totalCopies = copies.Count;
+    var availableCopies = copies.Count(copy => copy.Status == "Available");
+    var issuedCopies = copies.Count(copy => copy.Status == "Issued");
+    var maintenanceCopies = copies.Count(copy => copy.Status == "Maintenance");
+
+    var libraryGroups = copies
+        .GroupBy(copy => new
+        {
+            copy.LibraryId,
+            LibraryName = copy.Library != null
+                ? copy.Library.Name
+                : "Library"
+        })
+        .OrderBy(group => group.Key.LibraryName)
+        .ToList();
+}
+
+<style>
+    .book-details-page {
+        background: #f7f9fc;
+        min-height: 75vh;
+        padding: 55px 0 80px;
+    }
+
+    .details-back {
+        display: inline-block;
+        color: #2563eb;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        margin-bottom: 25px;
+    }
+
+    .details-back:hover {
+        color: #1d4ed8;
+        text-decoration: none;
+    }
+
+    .details-main {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 8px 28px rgba(15, 23, 42, .05);
+    }
+
+    .details-cover {
+        min-height: 340px;
+        background: #edf2fa;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 25px;
+    }
+
+    .details-cover img {
+        max-width: 100%;
+        max-height: 390px;
+        object-fit: contain;
+        border-radius: 5px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .16);
+    }
+
+    .cover-placeholder {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        text-align: center;
+    }
+
+    .cover-placeholder svg {
+        width: 65px;
+        height: 65px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.5;
+        margin-bottom: 12px;
+    }
+
+    .details-information {
+        padding: 12px 10px;
+    }
+
+    .details-label {
+        display: inline-block;
+        background: #eaf1ff;
+        color: #2563eb;
+        padding: 7px 14px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+    }
+
+    .details-information h1 {
+        color: #172554;
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.4;
+        margin-bottom: 10px;
+    }
+
+    .details-author {
+        color: #2563eb;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .details-isbn {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 20px;
+        word-break: break-word;
+    }
+
+    .details-description-title {
+        color: #172554;
+        font-size: 17px;
+        font-weight: 750;
+        margin-bottom: 9px;
+    }
+
+    .details-description {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.9;
+        white-space: pre-line;
+    }
+
+    .details-section-title {
+        color: #172554;
+        font-size: 22px;
+        font-weight: 800;
+        margin: 38px 0 20px;
+    }
+
+    .summary-box {
+        height: 100%;
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .summary-box span {
+        display: block;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 9px;
+    }
+
+    .summary-box strong {
+        color: #172554;
+        font-size: 27px;
+        font-weight: 800;
+    }
+
+    .library-card {
+        background: #fff;
+        border: 1px solid #e8edf5;
+        border-radius: 13px;
+        padding: 22px;
+        margin-bottom: 16px;
+    }
+
+    .library-card h3 {
+        color: #172554;
+        font-size: 17px;
+        font-weight: 750;
+        margin-bottom: 15px;
+    }
+
+    .library-table {
+        width: 100%;
+        margin: 0;
+    }
+
+    .library-table th {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 11px 8px;
+        border-bottom: 1px solid #e8edf5;
+    }
+
+    .library-table td {
+        color: #334155;
+        font-size: 13px;
+        padding: 13px 8px;
+        border-bottom: 1px solid #f0f2f6;
+    }
+
+    .library-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .available-text {
+        color: #15803d !important;
+        font-weight: 700;
+    }
+
+    .issued-text {
+        color: #b45309 !important;
+        font-weight: 700;
+    }
+
+    .maintenance-text {
+        color: #64748b !important;
+        font-weight: 700;
+    }
+
+    .no-copies {
+        background: #fff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 30px;
+        color: #64748b;
+        text-align: center;
+    }
+
+    @@media (max-width: 767px) {
+        .book-details-page {
+            padding: 35px 0 55px;
+        }
+
+        .details-main {
+            padding: 18px;
+        }
+
+        .details-cover {
+            min-height: 260px;
+            margin-bottom: 20px;
+        }
+
+        .details-information h1 {
+            font-size: 24px;
+        }
+
+        .library-card {
+            padding: 15px;
+        }
+
+        .library-table th,
+        .library-table td {
+            font-size: 11px;
+            padding: 10px 5px;
+        }
+    }
+</style>
+
+<section class="book-details-page">
+    <div class="container">
+
+        <a href="@Url.Action("Index", "Books")" class="details-back">
+            &larr; Back to Books Catalogue
+        </a>
+
+        <div class="details-main">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-5">
+
+                    <div class="details-cover">
+
+                        @if (!String.IsNullOrWhiteSpace(Model.CoverImagePath))
+                        {
+                            <img src="@Url.Content(Model.CoverImagePath)"
+                                 alt="@Model.Title"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+
+                            <div class="cover-placeholder">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22z"></path>
+                                    <path d="M4 5.5V22M8 7h8M8 11h8"></path>
+                                </svg>
+                                <span>Book cover unavailable</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="cover-placeholder" style="display:flex;">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22z"></path>
+                                    <path d="M4 5.5V22M8 7h8M8 11h8"></path>
+                                </svg>
+                                <span>Book cover not available</span>
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-7">
+
+                    <div class="details-information">
+
+                        <span class="details-label">BOOK INFORMATION</span>
+
+                        <h1>@Model.Title</h1>
+
+                        <p class="details-author">
+                            By @Model.Author
+                        </p>
+
+                        @if (!String.IsNullOrWhiteSpace(Model.ISBN))
+                        {
+                            <p class="details-isbn">
+                                <strong>ISBN:</strong> @Model.ISBN
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="details-isbn">
+                                <strong>ISBN:</strong> Not available
+                            </p>
+                        }
+
+                        <h2 class="details-description-title">
+                            About This Book
+                        </h2>
+
+                        <p class="details-description">
+                            @(String.IsNullOrWhiteSpace(Model.Description)
+                                ? "No description is available for this book."
+                                : Model.Description)
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <h2 class="details-section-title">
+            Book Copy Summary
+        </h2>
+
+        <div class="row">
+
+            <div class="col-6 col-lg-3 mb-3">
+                <div class="summary-box">
+                    <span>Total Copies</span>
+                    <strong>@totalCopies</strong>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3 mb-3">
+                <div class="summary-box">
+                    <span>Available Copies</span>
+                    <strong class="available-text">@availableCopies</strong>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3 mb-3">
+                <div class="summary-box">
+                    <span>Issued Copies</span>
+                    <strong class="issued-text">@issuedCopies</strong>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3 mb-3">
+                <div class="summary-box">
+                    <span>Maintenance</span>
+                    <strong class="maintenance-text">@maintenanceCopies</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <h2 class="details-section-title">
+            Library Availability
+        </h2>
+
+        @if (libraryGroups.Any())
+        {
+            foreach (var library in libraryGroups)
+            {
+                var libraryTotal = library.Count();
+                var libraryAvailable = library.Count(copy => copy.Status == "Available");
+                var libraryIssued = library.Count(copy => copy.Status == "Issued");
+                var libraryMaintenance = library.Count(copy => copy.Status == "Maintenance");
+
+                <div class="library-card">
+
+                    <h3>@library.Key.LibraryName</h3>
+
+                    <div class="table-responsive">
+                        <table class="library-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Total Copies</th>
+                                    <th>Available</th>
+                                    <th>Issued</th>
+                                    <th>Maintenance</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>@libraryTotal</td>
+                                    <td class="available-text">@libraryAvailable</td>
+                                    <td class="issued-text">@libraryIssued</td>
+                                    <td class="maintenance-text">@libraryMaintenance</td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-copies">
+                No physical copies of this book have been added to any library yet.
+            </div>
+        }
+
+    </div>
+</section>

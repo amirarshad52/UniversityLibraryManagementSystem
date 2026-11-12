@@ -1,0 +1,524 @@
+
+@model ULMS.Web.ViewModels.CreateStaffViewModel
+
+@{
+    ViewData["Title"] = "Staff Management";
+}
+
+<style>
+    .staff-page {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 35px 0 55px;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #26352f;
+    }
+
+    .staff-container {
+        max-width: 1250px;
+    }
+
+    .staff-heading {
+        margin-bottom: 25px;
+    }
+
+    .staff-eyebrow {
+        color: #a17b43;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 9px;
+    }
+
+    .staff-heading h1 {
+        color: #173f35;
+        font-size: 30px;
+        font-weight: 750;
+        margin-bottom: 8px;
+    }
+
+    .staff-heading p {
+        color: #78847d;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .staff-banner {
+        background: linear-gradient(115deg, #173f35, #102d26);
+        border-radius: 15px;
+        padding: 25px 30px;
+        color: white;
+        margin-bottom: 28px;
+        box-shadow: 0 10px 25px rgba(23, 63, 53, .12);
+    }
+
+    .staff-banner h3 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .staff-banner p {
+        color: #d4dfd9;
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .staff-card {
+        background: #fff;
+        border: 1px solid #edf0ec;
+        border-radius: 13px;
+        padding: 25px;
+        height: 100%;
+        box-shadow: 0 5px 18px rgba(28, 55, 44, .045);
+    }
+
+    .staff-card-heading {
+        display: flex;
+        align-items: center;
+        margin-bottom: 23px;
+    }
+
+    .staff-card-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 11px;
+        background: #edf4f0;
+        color: #173f35;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 13px;
+    }
+
+    .staff-card-icon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .staff-card-heading h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #173f35;
+        margin: 0 0 4px;
+    }
+
+    .staff-card-heading span {
+        font-size: 12px;
+        color: #89938d;
+    }
+
+    .staff-label {
+        color: #34483d;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .staff-input {
+        height: 45px;
+        border: 1px solid #e1e8e2;
+        border-radius: 7px;
+        font-size: 13px;
+        color: #26352f;
+        box-shadow: none !important;
+    }
+
+    .staff-input:focus {
+        border-color: #a17b43;
+        box-shadow: 0 0 0 3px rgba(161, 123, 67, .10) !important;
+    }
+
+    .staff-field {
+        margin-bottom: 19px;
+    }
+
+    .staff-help {
+        color: #929c95;
+        font-size: 11px;
+        margin-top: 7px;
+        line-height: 1.5;
+    }
+
+    .staff-submit {
+        background: #173f35;
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        padding: 12px 21px;
+        font-size: 13px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .staff-submit:hover {
+        background: #245c4b;
+        color: #fff;
+    }
+
+    .staff-table {
+        margin-bottom: 0;
+        font-size: 13px;
+    }
+
+    .staff-table thead th {
+        background: #f5f8f5;
+        color: #64736a;
+        border-top: none;
+        border-bottom: 1px solid #e9eee9;
+        padding: 14px 12px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        white-space: nowrap;
+    }
+
+    .staff-table tbody td {
+        padding: 15px 12px;
+        vertical-align: middle;
+        color: #526057;
+        border-top: 1px solid #edf0ec;
+    }
+
+    .staff-table tbody tr:hover {
+        background: #fbfcfa;
+    }
+
+    .staff-name {
+        color: #173f35;
+        font-weight: 700;
+    }
+
+    .staff-library {
+        color: #a17b43;
+        font-weight: 600;
+    }
+
+    .staff-empty {
+        text-align: center;
+        padding: 40px 15px;
+        color: #87918b;
+    }
+
+    .staff-empty svg {
+        width: 42px;
+        height: 42px;
+        color: #b7c3bb;
+        margin-bottom: 12px;
+    }
+
+    .staff-empty h4 {
+        color: #526057;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .staff-empty p {
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .staff-alert {
+        border-radius: 8px;
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .staff-back {
+        color: #173f35;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none !important;
+    }
+
+    .staff-back:hover {
+        color: #a17b43;
+    }
+
+    .validation-message {
+        color: #c0392b;
+        font-size: 11px;
+        display: block;
+        margin-top: 5px;
+    }
+
+    .staff-role-badge {
+        display: inline-block;
+        background: #edf4f0;
+        color: #245c4b;
+        border-radius: 20px;
+        padding: 5px 10px;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    @@media (max-width: 767px) {
+        .staff-page {
+            padding: 24px 0 40px;
+        }
+
+        .staff-heading h1 {
+            font-size: 25px;
+        }
+
+        .staff-card {
+            padding: 19px;
+        }
+
+        .staff-banner {
+            padding: 22px;
+        }
+    }
+</style>
+
+<div class="staff-page">
+    <div class="container-fluid staff-container">
+
+        <!-- Page Heading -->
+        <div class="staff-heading">
+            <div class="staff-eyebrow">
+                Administration Workspace
+            </div>
+
+            <h1>Staff Management</h1>
+
+            <p>
+                Create staff accounts and assign staff members to university libraries.
+            </p>
+
+            <div class="mt-3">
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="staff-back">
+                    &larr; Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Banner -->
+        <div class="staff-banner">
+            <h3>Manage Your Library Team</h3>
+
+            <p>
+                Register university library staff members and assign each
+                member to their respective library. Staff accounts will use
+                Google Sign-In when authentication is configured.
+            </p>
+        </div>
+
+        <!-- Notifications -->
+        @if (TempData["StaffSuccess"] != null)
+        {
+            <div class="alert alert-success staff-alert">
+                @TempData["StaffSuccess"]
+            </div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger staff-alert">
+                Please review the information entered below.
+                @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+            </div>
+        }
+
+        <div class="row">
+
+            <!-- Add Staff Form -->
+            <div class="col-lg-5 mb-4">
+                <div class="staff-card">
+
+                    <div class="staff-card-heading">
+                        <div class="staff-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M19 8v6M22 11h-6"/>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h3>Add New Staff</h3>
+                            <span>Create a staff account</span>
+                        </div>
+                    </div>
+
+                    @if (ViewBag.Libraries != null &&
+                         ((IEnumerable<SelectListItem>)ViewBag.Libraries).Any())
+                    {
+                        <form asp-controller="Admin"
+                              asp-action="AddStaff"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <div class="staff-field">
+                                <label asp-for="Name" class="staff-label"></label>
+
+                                <input asp-for="Name"
+                                       class="form-control staff-input"
+                                       placeholder="Enter staff full name"
+                                       autocomplete="name" />
+
+                                <span asp-validation-for="Name"
+                                      class="validation-message"></span>
+                            </div>
+
+                            <div class="staff-field">
+                                <label asp-for="Email" class="staff-label"></label>
+
+                                <input asp-for="Email"
+                                       type="email"
+                                       class="form-control staff-input"
+                                       placeholder="name@uol.edu.pk"
+                                       autocomplete="email" />
+
+                                <span asp-validation-for="Email"
+                                      class="validation-message"></span>
+
+                                <div class="staff-help">
+                                    Only UOL university email addresses are eligible.
+                                </div>
+                            </div>
+
+                            <div class="staff-field">
+                                <label asp-for="LibraryId"
+                                       class="staff-label"></label>
+
+                                <select asp-for="LibraryId"
+                                        asp-items="ViewBag.Libraries"
+                                        class="form-control staff-input">
+                                    <option value="">Select a library</option>
+                                </select>
+
+                                <span asp-validation-for="LibraryId"
+                                      class="validation-message"></span>
+                            </div>
+
+                            <div class="staff-field">
+                                <label class="staff-label">Account Role</label>
+
+                                <div>
+                                    <span class="staff-role-badge">Library Staff</span>
+                                </div>
+
+                                <div class="staff-help">
+                                    The system automatically assigns the Staff role.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn staff-submit btn-block">
+                                Create Staff Account
+                            </button>
+
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning staff-alert">
+                            No libraries are registered yet.
+                            Please add a library before creating staff accounts.
+                        </div>
+
+                        <a asp-controller="Admin"
+                           asp-action="Libraries"
+                           class="btn staff-submit btn-block">
+                            Manage Libraries
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+            <!-- Staff List -->
+            <div class="col-lg-7 mb-4">
+                <div class="staff-card">
+
+                    <div class="staff-card-heading">
+                        <div class="staff-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8">
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M2 21v-2a7 7 0 0 1 14 0v2"/>
+                                <path d="M19 8v6M22 11h-6"/>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <h3>Registered Staff</h3>
+                            <span>Staff members and library assignments</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="table staff-table">
+                            <thead>
+                                <tr>
+                                    <th>Staff Member</th>
+                                    <th>Email</th>
+                                    <th>Assigned Library</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @if (ViewBag.StaffMembers != null &&
+                                     ((IEnumerable<dynamic>)ViewBag.StaffMembers).Any())
+                                {
+                                    foreach (var staff in ViewBag.StaffMembers)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="staff-name">
+                                                    @staff[0]
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                @staff[1]
+                                            </td>
+
+                                            <td>
+                                                <span class="staff-library">
+                                                    @staff[2]
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3">
+                                            <div class="staff-empty">
+                                                <svg viewBox="0 0 24 24" fill="none"
+                                                     stroke="currentColor"
+                                                     stroke-width="1.5">
+                                                    <circle cx="9" cy="7" r="4"/>
+                                                    <path d="M2 21v-2a7 7 0 0 1 14 0v2"/>
+                                                    <path d="M19 8v6M22 11h-6"/>
+                                                </svg>
+
+                                                <h4>No Staff Members Yet</h4>
+
+                                                <p>
+                                                    Staff members will appear here
+                                                    after their accounts are created.
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

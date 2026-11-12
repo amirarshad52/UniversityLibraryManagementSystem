@@ -1,0 +1,727 @@
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    .admin-dashboard {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 35px 0 55px;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #26352f;
+    }
+
+    .admin-dashboard .dashboard-container {
+        max-width: 1350px;
+    }
+
+    .admin-heading { margin-bottom: 28px; }
+
+    .admin-eyebrow {
+        color: #a17b43;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 9px;
+    }
+
+    .admin-heading h1 {
+        color: #173f35;
+        font-size: 32px;
+        font-weight: 750;
+        margin-bottom: 8px;
+    }
+
+    .admin-heading p {
+        color: #77837c;
+        font-size: 15px;
+        margin: 0;
+    }
+
+    .admin-welcome {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(115deg, #173f35, #102d26);
+        border-radius: 17px;
+        padding: 35px 38px;
+        margin-bottom: 32px;
+        color: #fff;
+        box-shadow: 0 12px 30px rgba(23, 63, 53, 0.15);
+    }
+
+    .admin-welcome:after {
+        content: "";
+        position: absolute;
+        width: 270px;
+        height: 270px;
+        border: 1px solid rgba(196, 154, 88, 0.25);
+        border-radius: 50%;
+        right: -75px;
+        top: -125px;
+        box-shadow: 0 0 0 30px rgba(196, 154, 88, 0.04),
+                    0 0 0 60px rgba(196, 154, 88, 0.03);
+    }
+
+    .welcome-label {
+        color: #d9bd8c;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+
+    .admin-welcome h2 {
+        font-size: 27px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-account {
+        color: #d9bd8c;
+        font-size: 13px;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .admin-welcome p {
+        color: #d4dfd9;
+        font-size: 14px;
+        max-width: 600px;
+        line-height: 1.8;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-decoration {
+        position: absolute;
+        right: 45px;
+        bottom: 12px;
+        color: rgba(255,255,255,0.10);
+    }
+
+    .welcome-decoration svg {
+        width: 145px;
+        height: 145px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 17px;
+    }
+
+    .section-heading h3 {
+        color: #173f35;
+        font-size: 19px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .section-description {
+        color: #87918b;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .dashboard-stat {
+        background: #fff;
+        border: 1px solid #edf0ec;
+        border-radius: 13px;
+        padding: 21px;
+        height: 100%;
+        min-height: 145px;
+        box-shadow: 0 5px 18px rgba(28, 55, 44, 0.045);
+        transition: all 0.25s ease;
+    }
+
+    .dashboard-stat:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(28, 55, 44, 0.09);
+        border-color: #d8c39e;
+    }
+
+    .stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 19px;
+    }
+
+    .stat-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 11px;
+        background: #edf4f0;
+        color: #173f35;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .stat-icon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .stat-number {
+        font-size: 29px;
+        font-weight: 750;
+        color: #173f35;
+        line-height: 1;
+        margin-bottom: 9px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #78847d;
+    }
+
+    .stat-note {
+        color: #a0aaa3;
+        font-size: 11px;
+        margin-top: 6px;
+    }
+
+    .gold-icon {
+        background: #f8f2e8;
+        color: #a17b43;
+    }
+
+    .blue-icon {
+        background: #edf3f8;
+        color: #54738a;
+    }
+
+    .purple-icon {
+        background: #f2eff8;
+        color: #77669a;
+    }
+
+    .dashboard-section { margin-top: 36px; }
+
+    .module-card {
+        height: 100%;
+        background: #fff;
+        border: 1px solid #edf0ec;
+        border-radius: 13px;
+        padding: 22px;
+        transition: all 0.25s ease;
+        box-shadow: 0 5px 18px rgba(28, 55, 44, 0.045);
+    }
+
+    .module-card:hover {
+        transform: translateY(-4px);
+        border-color: #d8c39e;
+        box-shadow: 0 12px 25px rgba(28, 55, 44, 0.08);
+    }
+
+    .module-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: #edf4f0;
+        color: #173f35;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 17px;
+    }
+
+    .module-icon svg {
+        width: 23px;
+        height: 23px;
+    }
+
+    .module-card h4 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #173f35;
+        margin-bottom: 8px;
+    }
+
+    .module-card p {
+        font-size: 12px;
+        color: #849087;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .dashboard-note {
+        background: #fff;
+        border: 1px solid #e9eee9;
+        border-left: 4px solid #c49a58;
+        border-radius: 9px;
+        padding: 16px 19px;
+        margin-top: 32px;
+    }
+
+    .dashboard-note strong {
+        color: #173f35;
+        font-size: 13px;
+    }
+
+    .dashboard-note p {
+        color: #849087;
+        font-size: 12px;
+        margin: 5px 0 0;
+        line-height: 1.7;
+    }
+
+    .management-link {
+        display: block;
+        height: 100%;
+        text-decoration: none !important;
+        color: inherit;
+    }
+
+    .management-link:hover,
+    .management-link:focus {
+        text-decoration: none !important;
+        color: inherit;
+    }
+
+    .management-link:focus {
+        outline: none;
+    }
+
+    .management-link:focus .module-card {
+        outline: 2px solid #c49a58;
+        outline-offset: 3px;
+    }
+
+    @@media (max-width: 767px) {
+        .admin-dashboard {
+            padding: 25px 0 40px;
+        }
+
+        .admin-heading h1 {
+            font-size: 26px;
+        }
+
+        .admin-welcome {
+            padding: 27px 23px;
+        }
+
+        .admin-welcome h2 {
+            font-size: 22px;
+        }
+
+        .welcome-decoration {
+            display: none;
+        }
+
+        .dashboard-stat {
+            min-height: 135px;
+        }
+    }
+</style>
+
+<div class="admin-dashboard">
+    <div class="container-fluid dashboard-container">
+
+        <div class="admin-heading">
+            <div class="admin-eyebrow">
+                University Library Management System
+            </div>
+
+            <h1>Admin Dashboard</h1>
+
+            <p>
+                Manage and monitor your university library system from one place.
+            </p>
+        </div>
+
+        <div class="admin-welcome">
+
+            <div class="welcome-label">
+                Administration Workspace
+            </div>
+
+            <h2>Welcome, @ViewBag.AdminName</h2>
+
+            <div class="welcome-account">
+                @ViewBag.AdminEmail
+            </div>
+
+            <p>
+                A central workspace for overseeing university libraries,
+                managing staff, monitoring book collections and reviewing
+                borrowing activities across the system.
+            </p>
+
+            <div class="welcome-decoration">
+                <svg viewBox="0 0 100 100" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+
+                    <path d="M50 25C36 15 20 17 12 22V75C25 69 39 71 50 80V25Z"
+                          stroke="currentColor" stroke-width="2.5"
+                          stroke-linejoin="round"/>
+
+                    <path d="M50 25C64 15 80 17 88 22V75C75 69 61 71 50 80V25Z"
+                          stroke="currentColor" stroke-width="2.5"
+                          stroke-linejoin="round"/>
+
+                    <path d="M50 25V80"
+                          stroke="currentColor" stroke-width="2.5"/>
+
+                    <path d="M21 34C29 31 36 33 42 37M21 44C29 41 36 43 42 47"
+                          stroke="currentColor" stroke-width="2"
+                          stroke-linecap="round"/>
+
+                    <path d="M58 37C64 33 71 31 79 34M58 47C64 43 71 41 79 44"
+                          stroke="currentColor" stroke-width="2"
+                          stroke-linecap="round"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="section-heading">
+            <div>
+                <h3>System Overview</h3>
+
+                <div class="section-description">
+                    A summary of your university library resources.
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="dashboard-stat">
+                    <div class="stat-top">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8">
+                                <path d="M3 21h18M5 21V7l7-4 7 4v14"/>
+                                <path d="M9 21v-5h6v5M9 9h.01M15 9h.01"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="stat-number">@ViewBag.TotalLibraries</div>
+                    <div class="stat-label">Total Libraries</div>
+                    <div class="stat-note">Registered university libraries</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="dashboard-stat">
+                    <div class="stat-top">
+                        <div class="stat-icon gold-icon">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="stat-number">@ViewBag.TotalStaff</div>
+                    <div class="stat-label">Total Staff Members</div>
+                    <div class="stat-note">Staff assigned to libraries</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="dashboard-stat">
+                    <div class="stat-top">
+                        <div class="stat-icon blue-icon">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
+                                <path d="M8 7h8M8 11h8"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="stat-number">@ViewBag.TotalBookTitles</div>
+                    <div class="stat-label">Total Book Titles</div>
+                    <div class="stat-note">Unique catalogue records</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="dashboard-stat">
+                    <div class="stat-top">
+                        <div class="stat-icon purple-icon">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8">
+                                <rect x="4" y="3" width="13" height="17" rx="2"/>
+                                <path d="M8 7h5M8 11h5M8 15h3"/>
+                                <path d="M8 21h11a2 2 0 0 0 2-2V7"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="stat-number">@ViewBag.PhysicalBookCopies</div>
+                    <div class="stat-label">Physical Book Copies</div>
+                    <div class="stat-note">Copies across all libraries</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="dashboard-section">
+
+            <div class="section-heading">
+                <div>
+                    <h3>Borrowing Overview</h3>
+
+                    <div class="section-description">
+                        Monitor the circulation of books across the university.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-4 mb-3">
+                    <div class="dashboard-stat">
+                        <div class="stat-top">
+                            <div class="stat-icon gold-icon">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8">
+                                    <path d="M12 8v4l3 2"/>
+                                    <circle cx="12" cy="12" r="9"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="stat-number">@ViewBag.ActiveLoans</div>
+                        <div class="stat-label">Active Loans</div>
+                        <div class="stat-note">Books currently issued to students</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <div class="dashboard-stat">
+                        <div class="stat-top">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8">
+                                    <path d="M20 7v5h-5"/>
+                                    <path d="M4 17v-5h5"/>
+                                    <path d="M5.6 9a7 7 0 0 1 11.8-2L20 12M4 12l2.6 5a7 7 0 0 0 11.8-2"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="stat-number">@ViewBag.AvailableCopies</div>
+                        <div class="stat-label">Available Book Copies</div>
+                        <div class="stat-note">Physical copies available for issue</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <div class="dashboard-stat">
+                        <div class="stat-top">
+                            <div class="stat-icon purple-icon">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8">
+                                    <circle cx="12" cy="12" r="9"/>
+                                    <path d="M12 7v5l3 2M12 3v1M21 12h-1"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="stat-number">@ViewBag.OverdueLoans</div>
+                        <div class="stat-label">Overdue Loans</div>
+                        <div class="stat-note">Active loans past their due date</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="dashboard-section">
+
+            <div class="section-heading">
+                <div>
+                    <h3>Management Areas</h3>
+
+                    <div class="section-description">
+                        Main administrative sections of the library system.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <a asp-controller="Admin"
+                       asp-action="Libraries"
+                       class="management-link">
+
+                        <div class="module-card">
+                            <div class="module-icon">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8">
+                                    <path d="M3 21h18M5 21V7l7-4 7 4v14"/>
+                                    <path d="M9 21v-5h6v5"/>
+                                </svg>
+                            </div>
+
+                            <h4>Library Management</h4>
+
+                            <p>
+                                Manage university libraries, their locations
+                                and assigned staff members.
+                            </p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <a asp-controller="Admin"
+                       asp-action="Staff"
+                       class="management-link">
+
+                        <div class="module-card">
+                            <div class="module-icon">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M19 8v6M22 11h-6"/>
+                                </svg>
+                            </div>
+
+                            <h4>Staff Management</h4>
+
+                            <p>
+                                Create staff accounts, manage staff information
+                                and assign staff to specific libraries.
+                            </p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <a asp-controller="Admin"
+                       asp-action="Books"
+                       class="management-link"
+                       aria-label="Open Book Catalogue">
+
+                        <div class="module-card">
+                            <div class="module-icon">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
+                                </svg>
+                            </div>
+
+                            <h4>Book Catalogue</h4>
+
+                            <p>
+                                Review book information and physical copies
+                                maintained across all university libraries.
+                            </p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <a asp-controller="Admin"
+                       asp-action="Loans"
+                       class="management-link"
+                       aria-label="Open Borrowing and Returns Management">
+
+                        <div class="module-card">
+                            <div class="module-icon">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8">
+                                    <path d="M8 2h8l4 4v16H4V2h4Z"/>
+                                    <path d="M8 2v5h8V2M8 13h8M8 17h8"/>
+                                </svg>
+                            </div>
+
+                            <h4>Borrowing & Returns</h4>
+
+                            <p>
+                                Monitor active loans, returned books and
+                                overdue borrowing records.
+                            </p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- REPORTS & ANALYTICS - CLICKABLE -->
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <a asp-controller="Admin"
+                       asp-action="Reports"
+                       class="management-link"
+                       aria-label="Open Reports and Analytics">
+
+                        <div class="module-card">
+                            <div class="module-icon">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8">
+                                    <path d="M3 3v18h18"/>
+                                    <path d="m18 17-5-5-4 4-4-4"/>
+                                    <path d="M14 7h6v6"/>
+                                </svg>
+                            </div>
+
+                            <h4>Reports & Analytics</h4>
+
+                            <p>
+                                Review library statistics, book availability
+                                and borrowing summaries.
+                            </p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+    <a href="/Admin/Profile"
+       class="management-link"
+       aria-label="Open Admin Profile">
+
+        <div class="module-card">
+            <div class="module-icon">
+                <svg viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M5 21v-2a7 7 0 0 1 14 0v2"/>
+                </svg>
+            </div>
+
+            <h4>Admin Profile</h4>
+
+            <p>
+                View administrator account information
+                and authentication details.
+            </p>
+        </div>
+
+    </a>
+</div>
+
+            </div>
+        </div>
+
+        <div class="dashboard-note">
+            <strong>Dashboard Information</strong>
+
+            <p>
+                Dashboard statistics are retrieved from the ULMS database.
+                Management sections are being developed step by step.
+            </p>
+        </div>
+
+    </div>
+</div>

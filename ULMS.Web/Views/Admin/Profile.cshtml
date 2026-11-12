@@ -1,0 +1,326 @@
+
+@model ULMS.Web.Entities.UserAccount
+
+@{
+    ViewData["Title"] = "Admin Profile";
+
+    bool googleLinked = !string.IsNullOrWhiteSpace(Model.GoogleSubject);
+}
+
+<style>
+    .profile-page {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 35px 0 55px;
+    }
+
+    .profile-header {
+        margin-bottom: 28px;
+    }
+
+    .profile-header h2 {
+        color: #183b2b;
+        font-weight: 800;
+    }
+
+    .profile-header p {
+        color: #718078;
+    }
+
+    .profile-card {
+        background: #ffffff;
+        border: 1px solid #e5ebe6;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 28px rgba(25, 55, 40, 0.07);
+    }
+
+    .profile-banner {
+        background: linear-gradient(135deg, #153d2b, #285c40);
+        padding: 35px;
+        color: #ffffff;
+    }
+
+    .profile-avatar {
+        width: 82px;
+        height: 82px;
+        border-radius: 50%;
+        background: #d7b66a;
+        color: #173c2b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        font-weight: 800;
+        margin-bottom: 17px;
+    }
+
+    .profile-banner h3 {
+        font-weight: 800;
+        margin-bottom: 6px;
+    }
+
+    .profile-role {
+        display: inline-block;
+        background: rgba(255,255,255,0.15);
+        color: #f4d995;
+        border: 1px solid rgba(244,217,149,0.4);
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    .profile-details {
+        padding: 30px 35px;
+    }
+
+    .section-heading {
+        color: #183b2b;
+        font-size: 17px;
+        font-weight: 800;
+        margin-bottom: 22px;
+    }
+
+    .detail-item {
+        padding: 17px 0;
+        border-bottom: 1px solid #edf0ed;
+    }
+
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: #829087;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        margin-bottom: 7px;
+    }
+
+    .detail-value {
+        color: #263d31;
+        font-size: 15px;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    .security-note {
+        background: #f6f8f5;
+        border: 1px solid #e6ebe5;
+        border-radius: 12px;
+        padding: 18px;
+        margin-top: 25px;
+    }
+
+    .security-note h6 {
+        color: #234b35;
+        font-weight: 800;
+        margin-bottom: 7px;
+    }
+
+    .security-note p {
+        color: #718078;
+        font-size: 13px;
+        margin-bottom: 0;
+        line-height: 1.7;
+    }
+
+    .status-pending {
+        color: #9a6b16;
+        background: #fff7e5;
+        border-radius: 20px;
+        padding: 5px 11px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-linked {
+        color: #23633c;
+        background: #e8f5eb;
+        border-radius: 20px;
+        padding: 5px 11px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .back-link {
+        color: #285c40;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #153d2b;
+        text-decoration: none;
+    }
+
+    @@media (max-width: 576px) {
+        .profile-banner {
+            padding: 25px;
+        }
+
+        .profile-details {
+            padding: 25px;
+        }
+    }
+</style>
+
+<div class="profile-page">
+    <div class="container">
+
+        <div class="profile-header">
+            <a href="/Admin" class="back-link">
+                &#8592; Back to Admin Dashboard
+            </a>
+
+            <h2 class="mt-4">Admin Profile</h2>
+
+            <p>
+                View your administrator account information and security details.
+            </p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+
+                <div class="profile-card">
+
+                    <div class="profile-banner">
+
+                        <div class="profile-avatar">
+                            @(!string.IsNullOrWhiteSpace(Model.Name)
+                                ? Model.Name.Trim().Substring(0, 1).ToUpper()
+                                : "A")
+                        </div>
+
+                        <h3>@Model.Name</h3>
+
+                        <div>@Model.Email</div>
+
+                        <span class="profile-role">
+                            ADMINISTRATOR
+                        </span>
+
+                    </div>
+
+                    <div class="profile-details">
+
+                        <h5 class="section-heading">
+                            Account Information
+                        </h5>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <div class="detail-label">
+                                        Full Name
+                                    </div>
+
+                                    <div class="detail-value">
+                                        @Model.Name
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <div class="detail-label">
+                                        Email Address
+                                    </div>
+
+                                    <div class="detail-value">
+                                        @Model.Email
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <div class="detail-label">
+                                        Account ID
+                                    </div>
+
+                                    <div class="detail-value">
+                                        #@Model.UserId
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <div class="detail-label">
+                                        Account Role
+                                    </div>
+
+                                    <div class="detail-value">
+                                        @Model.Role
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <div class="detail-label">
+                                        Account Created
+                                    </div>
+
+                                    <div class="detail-value">
+                                        @Model.CreatedAt.ToString("dd MMMM yyyy")
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <div class="detail-label">
+                                        Google Account Linking
+                                    </div>
+
+                                    <div class="detail-value">
+                                        @if (googleLinked)
+                                        {
+                                            <span class="status-linked">
+                                                Linked
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-pending">
+                                                Pending Setup
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="security-note">
+
+                            <h6>
+                                Account Security
+                            </h6>
+
+                            <p>
+                                Your administrator email address and account role
+                                are protected. They cannot be changed from this
+                                profile page. Google Sign-In configuration will
+                                be completed after website deployment.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

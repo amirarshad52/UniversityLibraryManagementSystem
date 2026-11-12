@@ -432,3 +432,9 @@ FodyWeavers.xsd
 secrets.json
 .usersecrets/
 appsettings.Development.json
+
+# ULMS user-uploaded files
+ULMS.Web/wwwroot/uploads/
+
+# Local development configuration
+ULMS.Web/appsettings.Development.json

@@ -1,0 +1,426 @@
+
+@model ULMS.Web.ViewModels.CreateBookViewModel
+
+@{
+    ViewData["Title"] = "Add New Book";
+}
+
+<style>
+    .create-book-page {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 35px 0 55px;
+        color: #26352f;
+    }
+
+    .create-book-header {
+        background: linear-gradient(135deg, #173d30, #285b45);
+        color: white;
+        border-radius: 16px;
+        padding: 28px 30px;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 22px rgba(24, 61, 47, .12);
+    }
+
+    .create-book-header h1 {
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .create-book-header p {
+        color: #d8e7dd;
+        margin-bottom: 0;
+    }
+
+    .create-book-panel {
+        background: white;
+        border: 1px solid #e8eee9;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(30, 55, 40, .04);
+        overflow: hidden;
+    }
+
+    .create-book-panel-header {
+        padding: 23px 26px;
+        border-bottom: 1px solid #edf1ed;
+    }
+
+    .create-book-panel-header h4 {
+        color: #244b38;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .create-book-body {
+        padding: 28px;
+    }
+
+    .create-book-page .form-group {
+        margin-bottom: 23px;
+    }
+
+    .create-book-page label {
+        color: #344e3e;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .create-book-page .form-control {
+        border: 1px solid #dce5de;
+        border-radius: 8px;
+        min-height: 44px;
+        padding: 10px 13px;
+    }
+
+    .create-book-page .form-control:focus {
+        border-color: #3d7658;
+        box-shadow: 0 0 0 3px rgba(61, 118, 88, .12);
+    }
+
+    .create-book-page textarea.form-control {
+        min-height: 130px;
+        resize: vertical;
+    }
+
+    .field-hint {
+        color: #89958d;
+        font-size: 12px;
+        margin-top: 6px;
+    }
+
+    .required-mark {
+        color: #c65353;
+    }
+
+    .cover-upload-box {
+        border: 2px dashed #cbd9ce;
+        border-radius: 12px;
+        background: #f9fbf9;
+        padding: 25px;
+        text-align: center;
+    }
+
+    .cover-upload-box input {
+        max-width: 100%;
+    }
+
+    .cover-preview {
+        display: none;
+        max-width: 140px;
+        max-height: 180px;
+        object-fit: contain;
+        margin: 18px auto 0;
+        border-radius: 7px;
+        border: 1px solid #e1e8e2;
+    }
+
+    .inventory-section {
+        background: #f8faf8;
+        border: 1px solid #e5ece6;
+        border-radius: 12px;
+        padding: 22px;
+        margin-top: 10px;
+    }
+
+    .inventory-section h5 {
+        color: #244b38;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .btn-save-book {
+        background: #d5ad55;
+        color: #263b2e;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 23px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .btn-save-book:hover {
+        background: #c49a3e;
+        color: #263b2e;
+    }
+
+    .btn-cancel-book {
+        background: #edf2ed;
+        color: #496251;
+        border-radius: 8px;
+        padding: 11px 22px;
+        font-weight: 600;
+    }
+
+    .btn-cancel-book:hover {
+        background: #e1e9e2;
+        color: #244b38;
+        text-decoration: none;
+    }
+
+    .back-link {
+        color: #587263;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #204c39;
+        text-decoration: none;
+    }
+
+    @@media (max-width: 767px) {
+        .create-book-body {
+            padding: 20px;
+        }
+
+        .create-book-header {
+            padding: 23px;
+        }
+
+        .inventory-section {
+            padding: 16px;
+        }
+    }
+</style>
+
+<div class="create-book-page">
+    <div class="container">
+
+        <div class="create-book-header">
+            <h1>Add New Book</h1>
+            <p>
+                Add book information and physical copies to a selected library.
+            </p>
+        </div>
+
+        <div class="mb-4">
+            <a asp-controller="Admin"
+               asp-action="Books"
+               class="back-link">
+                &#8592; Back to Book Catalogue
+            </a>
+        </div>
+
+        <div class="create-book-panel">
+
+            <div class="create-book-panel-header">
+                <h4>Book Information</h4>
+                <small class="text-muted">
+                    Enter the basic details of the new book.
+                    Fields marked with * are required.
+                </small>
+            </div>
+
+            <div class="create-book-body">
+
+                <form asp-controller="Admin"
+                      asp-action="CreateBook"
+                      method="post"
+                      enctype="multipart/form-data">
+
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger"
+                         role="alert">
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Title">
+                            Book Title <span class="required-mark">*</span>
+                        </label>
+
+                        <input asp-for="Title"
+                               class="form-control"
+                               placeholder="Enter complete book title"
+                               maxlength="255" />
+
+                        <span asp-validation-for="Title"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Author">
+                            Author Name <span class="required-mark">*</span>
+                        </label>
+
+                        <input asp-for="Author"
+                               class="form-control"
+                               placeholder="Enter author name"
+                               maxlength="150" />
+
+                        <span asp-validation-for="Author"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ISBN">ISBN</label>
+
+                        <input asp-for="ISBN"
+                               class="form-control"
+                               placeholder="Enter ISBN (optional)"
+                               maxlength="20" />
+
+                        <small class="field-hint">
+                            ISBN is optional. Leave blank if the book
+                            does not have an ISBN.
+                        </small>
+
+                        <span asp-validation-for="ISBN"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Description">Book Description</label>
+
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  placeholder="Write a short description of the book..."
+                                  rows="5"></textarea>
+
+                        <small class="field-hint">
+                            Optional information about the book.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="CoverImage">Book Cover Image</label>
+
+                        <div class="cover-upload-box">
+
+                            <p class="font-weight-bold mb-2">
+                                Select Book Cover
+                            </p>
+
+                            <input asp-for="CoverImage"
+                                   type="file"
+                                   class="form-control-file"
+                                   id="CoverImage"
+                                   accept="image/jpeg,image/png,image/webp" />
+
+                            <small class="field-hint d-block">
+                                Supported formats: JPG, PNG and WebP.
+                            </small>
+
+                            <img id="coverPreview"
+                                 class="cover-preview"
+                                 alt="Selected book cover preview" />
+                        </div>
+
+                        <span asp-validation-for="CoverImage"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="inventory-section">
+
+                        <h5>Library & Inventory Details</h5>
+
+                        <p class="text-muted small mb-4">
+                            Select the library and specify how many
+                            physical copies should be created.
+                        </p>
+
+                        <div class="form-group">
+                            <label asp-for="LibraryId">
+                                Select Library <span class="required-mark">*</span>
+                            </label>
+
+                            <select asp-for="LibraryId"
+                                    asp-items="ViewBag.Libraries"
+                                    class="form-control">
+                                <option value="">-- Select Library --</option>
+                            </select>
+
+                            <span asp-validation-for="LibraryId"
+                                  class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label asp-for="TotalQuantity">
+                                Total Quantity <span class="required-mark">*</span>
+                            </label>
+
+                            <input asp-for="TotalQuantity"
+                                   type="number"
+                                   class="form-control"
+                                   min="1"
+                                   max="500" />
+
+                            <small class="field-hint">
+                                Enter between 1 and 500 copies.
+                                Each copy will receive a separate unique CopyCode
+                                and initially have Available status.
+                            </small>
+
+                            <span asp-validation-for="TotalQuantity"
+                                  class="text-danger small"></span>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="d-flex flex-wrap justify-content-end">
+
+                        <a asp-controller="Admin"
+                           asp-action="Books"
+                           class="btn-cancel-book mr-2 mb-2">
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                                class="btn-save-book mb-2">
+                            Save Book & Create Copies
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+
+            $("#CoverImage").on("change", function () {
+
+                var file = this.files[0];
+
+                if (!file) {
+                    $("#coverPreview").hide().attr("src", "");
+                    return;
+                }
+
+                var allowedTypes = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp"
+                ];
+
+                if (allowedTypes.indexOf(file.type) === -1) {
+                    alert("Please select a JPG, PNG or WebP image.");
+                    this.value = "";
+                    $("#coverPreview").hide().attr("src", "");
+                    return;
+                }
+
+                var imageUrl = URL.createObjectURL(file);
+
+                $("#coverPreview")
+                    .attr("src", imageUrl)
+                    .show();
+            });
+
+        });
+    </script>
+}

@@ -1,0 +1,448 @@
+
+@model IEnumerable<ULMS.Web.Entities.Book>
+
+@{
+    ViewData["Title"] = "Book Management";
+
+    var books = Model ?? Enumerable.Empty<ULMS.Web.Entities.Book>();
+    var totalBooks = books.Count();
+}
+
+<style>
+    .book-admin {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 35px 0 55px;
+        color: #26352f;
+    }
+
+    .book-header {
+        background: linear-gradient(135deg, #173d30, #285b45);
+        color: white;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 22px rgba(24, 61, 47, .12);
+    }
+
+    .book-header h1 {
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .book-header p {
+        color: #d8e7dd;
+        margin-bottom: 0;
+    }
+
+    .book-stat {
+        background: white;
+        border: 1px solid #e8eee9;
+        border-radius: 14px;
+        padding: 22px;
+        box-shadow: 0 4px 15px rgba(30, 55, 40, .04);
+        height: 100%;
+    }
+
+    .book-stat-label {
+        color: #718078;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+    }
+
+    .book-stat-number {
+        color: #204c39;
+        font-size: 30px;
+        font-weight: 750;
+        margin-top: 7px;
+    }
+
+    .book-panel {
+        background: white;
+        border: 1px solid #e8eee9;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(30, 55, 40, .04);
+        overflow: hidden;
+    }
+
+    .book-panel-header {
+        padding: 22px 24px;
+        border-bottom: 1px solid #edf1ed;
+    }
+
+    .book-panel-header h4 {
+        font-weight: 700;
+        color: #244b38;
+        margin-bottom: 5px;
+    }
+
+    .book-search {
+        border: 1px solid #dce5de;
+        border-radius: 8px;
+        padding: 11px 14px;
+        height: 44px;
+        max-width: 330px;
+    }
+
+    .book-search:focus {
+        border-color: #3d7658;
+        box-shadow: 0 0 0 3px rgba(61, 118, 88, .12);
+        outline: none;
+    }
+
+    .btn-book-primary {
+        background: #d5ad55;
+        color: #263b2e;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 19px;
+        font-weight: 700;
+        transition: .2s;
+    }
+
+    .btn-book-primary:hover {
+        background: #c49a3e;
+        color: #263b2e;
+        text-decoration: none;
+    }
+
+    .book-table {
+        margin-bottom: 0;
+    }
+
+    .book-table thead th {
+        background: #f7f9f7;
+        color: #68766e;
+        border-top: none;
+        border-bottom: 1px solid #e8eee9;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        padding: 15px 20px;
+        white-space: nowrap;
+    }
+
+    .book-table tbody td {
+        padding: 16px 20px;
+        vertical-align: middle;
+        border-top: 1px solid #edf1ed;
+    }
+
+    .book-cover {
+        width: 48px;
+        height: 62px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #e4e9e4;
+        background: #f3f5f3;
+    }
+
+    .book-cover-placeholder {
+        width: 48px;
+        height: 62px;
+        border-radius: 5px;
+        background: #edf2ed;
+        color: #54735e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .book-title {
+        color: #294c39;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .book-author {
+        color: #849087;
+        font-size: 13px;
+    }
+
+    .book-isbn {
+        color: #53665a;
+        font-size: 13px;
+    }
+
+    .book-count {
+        background: #edf5ee;
+        color: #39704b;
+        border-radius: 20px;
+        padding: 6px 11px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .empty-books {
+        padding: 65px 20px;
+        text-align: center;
+    }
+
+    .empty-books h5 {
+        color: #31533f;
+        font-weight: 700;
+        margin-top: 15px;
+    }
+
+    .empty-books p {
+        color: #849087;
+        margin-bottom: 20px;
+    }
+
+    .book-back-link {
+        color: #587263;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .book-back-link:hover {
+        color: #204c39;
+        text-decoration: none;
+    }
+
+    @@media (max-width: 767px) {
+        .book-header {
+            padding: 23px;
+        }
+
+        .book-panel-header {
+            padding: 18px;
+        }
+
+        .book-search {
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .book-header-actions {
+            margin-top: 18px;
+        }
+    }
+</style>
+
+<div class="book-admin">
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+
+        <div class="book-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>Book Management</h1>
+                    <p>
+                        Manage the university-wide book catalogue
+                        and book information.
+                    </p>
+                </div>
+
+                <div class="col-md-4 text-md-right book-header-actions">
+                    <a asp-controller="Admin"
+                       asp-action="CreateBook"
+                       class="btn-book-primary">
+                        + Add New Book
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- BACK LINK -->
+
+        <div class="mb-4">
+            <a asp-controller="Admin"
+               asp-action="Index"
+               class="book-back-link">
+                &#8592; Back to Admin Dashboard
+            </a>
+        </div>
+
+        <!-- STATISTICS -->
+
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="book-stat">
+                    <div class="book-stat-label">
+                        Total Book Titles
+                    </div>
+
+                    <div class="book-stat-number">
+                        @totalBooks
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 mb-3">
+                <div class="book-stat d-flex align-items-center">
+                    <div>
+                        <div class="book-stat-label">
+                            Catalogue Information
+                        </div>
+
+                        <div class="mt-2 text-muted">
+                            Book information is shared across all
+                            university libraries. Physical copies
+                            are managed separately.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOOK CATALOGUE -->
+
+        <div class="book-panel">
+
+            <div class="book-panel-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h4>University Book Catalogue</h4>
+                        <small class="text-muted">
+                            All registered book titles
+                        </small>
+                    </div>
+
+                    <div class="col-md-6 text-md-right mt-3 mt-md-0">
+                        <input type="text"
+                               id="bookSearch"
+                               class="form-control book-search d-inline-block"
+                               placeholder="Search title, author or ISBN..." />
+                    </div>
+                </div>
+            </div>
+
+            @if (totalBooks > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table book-table" id="booksTable">
+
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>ISBN</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var book in books)
+                            {
+                                <tr class="book-row">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+
+                                            @if (!string.IsNullOrWhiteSpace(book.CoverImagePath))
+                                            {
+                                                <img src="@Url.Content(book.CoverImagePath)"
+                                                     alt="Book cover"
+                                                     class="book-cover mr-3" />
+                                            }
+                                            else
+                                            {
+                                                <div class="book-cover-placeholder mr-3">
+                                                    <span>&#128218;</span>
+                                                </div>
+                                            }
+
+                                            <div>
+                                                <div class="book-title">
+                                                    @book.Title
+                                                </div>
+
+                                                <div class="book-author">
+                                                    By @book.Author
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="book-isbn">
+                                            @(string.IsNullOrWhiteSpace(book.ISBN)
+                                                ? "Not provided"
+                                                : book.ISBN)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="text-muted small">
+                                            @(string.IsNullOrWhiteSpace(book.Description)
+                                                ? "No description"
+                                                : (book.Description.Length > 90
+                                                    ? book.Description.Substring(0, 90) + "..."
+                                                    : book.Description))
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <div id="noSearchResults"
+                     class="text-center text-muted py-4"
+                     style="display:none;">
+                    No matching books found.
+                </div>
+            }
+            else
+            {
+                <div class="empty-books">
+                    <div style="font-size:45px;color:#91a99a;">
+                        &#128218;
+                    </div>
+
+                    <h5>No Books Added Yet</h5>
+
+                    <p>
+                        Start building the university book catalogue
+                        by adding the first book.
+                    </p>
+
+                    <a asp-controller="Admin"
+                       asp-action="CreateBook"
+                       class="btn-book-primary">
+                        + Add Your First Book
+                    </a>
+                </div>
+            }
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $("#bookSearch").on("keyup", function () {
+
+                var searchValue = $(this).val().toLowerCase();
+                var visibleRows = 0;
+
+                $(".book-row").each(function () {
+
+                    var rowText = $(this).text().toLowerCase();
+
+                    if (rowText.indexOf(searchValue) !== -1) {
+                        $(this).show();
+                        visibleRows++;
+                    }
+                    else {
+                        $(this).hide();
+                    }
+                });
+
+                if (visibleRows === 0 && $(".book-row").length > 0) {
+                    $("#noSearchResults").show();
+                }
+                else {
+                    $("#noSearchResults").hide();
+                }
+            });
+
+        });
+    </script>
+}

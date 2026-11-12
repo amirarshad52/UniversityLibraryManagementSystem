@@ -1,0 +1,270 @@
+
+@model IEnumerable<ULMS.Web.Entities.Library>
+
+@{
+    ViewData["Title"] = "Library Management";
+}
+
+<style>
+    .library-page {
+        background: #f5f7f5;
+        min-height: 100vh;
+        padding: 35px 0 60px;
+    }
+
+    .library-container {
+        max-width: 1250px;
+        margin: auto;
+    }
+
+    .library-heading h1 {
+        color: #183b32;
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .library-heading p {
+        color: #77847e;
+        margin-bottom: 25px;
+    }
+
+    .library-panel {
+        background: #fff;
+        border: 1px solid #e8ede9;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(20, 55, 43, .04);
+        margin-bottom: 25px;
+    }
+
+    .panel-title {
+        color: #214438;
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        border: 1px solid #dce5df;
+        border-radius: 7px;
+        height: 44px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        border-color: #b89a62;
+        box-shadow: 0 0 0 3px rgba(184, 154, 98, .12);
+    }
+
+    textarea.form-control {
+        height: auto;
+    }
+
+    .btn-library {
+        background: #214438;
+        color: white;
+        border: none;
+        border-radius: 7px;
+        padding: 11px 22px;
+        font-weight: 600;
+    }
+
+    .btn-library:hover {
+        background: #17352b;
+        color: white;
+    }
+
+    .library-table th {
+        background: #f3f6f3;
+        color: #52665b;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        border-top: none;
+        padding: 15px;
+    }
+
+    .library-table td {
+        color: #34473d;
+        font-size: 14px;
+        padding: 17px 15px;
+        vertical-align: middle;
+    }
+
+    .library-name {
+        font-weight: 700;
+        color: #214438;
+    }
+
+    .library-count {
+        background: #edf4ef;
+        color: #315b45;
+        padding: 5px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 35px 15px;
+        color: #87948c;
+    }
+
+    .validation-summary-errors,
+    .field-validation-error {
+        color: #bd4141;
+        font-size: 13px;
+    }
+
+    .text-danger {
+        font-size: 12px;
+    }
+
+    @@media (max-width: 767px) {
+        .library-panel {
+            padding: 18px;
+        }
+
+        .library-heading h1 {
+            font-size: 25px;
+        }
+
+        .library-table {
+            min-width: 600px;
+        }
+    }
+</style>
+
+<div class="library-page">
+    <div class="container-fluid library-container">
+
+        <div class="library-heading">
+            <div class="mb-2">
+                <a asp-controller="Admin"
+                   asp-action="Index"
+                   class="text-muted">
+                    ← Back to Dashboard
+                </a>
+            </div>
+
+            <h1>Library Management</h1>
+            <p>Manage university libraries and their location information.</p>
+        </div>
+
+        @if (TempData["LibrarySuccess"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                @TempData["LibrarySuccess"]
+                <button type="button" class="close"
+                        data-dismiss="alert">
+                    <span>&times;</span>
+                </button>
+            </div>
+        }
+
+        <div class="library-panel">
+            <h4 class="panel-title">Add New Library</h4>
+
+            <form asp-controller="Admin"
+                  asp-action="AddLibrary"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"></div>
+
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label for="Name">Library Name *</label>
+                        <input type="text"
+                               id="Name"
+                               name="Name"
+                               class="form-control"
+                               maxlength="150"
+                               placeholder="Enter library name"
+                               required />
+
+                        <span class="text-danger">
+                            @Html.ValidationMessage("Name")
+                        </span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="Location">Location</label>
+                        <input type="text"
+                               id="Location"
+                               name="Location"
+                               class="form-control"
+                               maxlength="255"
+                               placeholder="Enter library location (optional)" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-library">
+                    + Add Library
+                </button>
+            </form>
+        </div>
+
+        <div class="library-panel">
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                <h4 class="panel-title mb-2">University Libraries</h4>
+
+                <span class="library-count">
+                    Total Libraries: @Model.Count()
+                </span>
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table library-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Library ID</th>
+                                <th>Library Name</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var library in Model)
+                            {
+                                <tr>
+                                    <td>#@library.LibraryId</td>
+
+                                    <td class="library-name">
+                                        @library.Name
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(library.Location)
+                                            ? "Not specified"
+                                            : library.Location)
+                                    </td>
+
+                                    <td>
+                                        <span class="library-count">
+                                            Active
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <h5>No Libraries Found</h5>
+                    <p>Add your first university library using the form above.</p>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
