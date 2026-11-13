@@ -1,0 +1,399 @@
+@model ULMS.Web.Controllers.StaffReturnBookViewModel
+
+@{
+    ViewData["Title"] = "Return Book";
+}
+
+<style>
+    .return-page {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 30px 0 50px;
+    }
+
+    .page-heading { color: #23372b; font-weight: 700; }
+    .page-subtitle { color: #718078; }
+
+    .back-link {
+        color: #34734c;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #245b38;
+        text-decoration: none;
+    }
+
+    .return-card {
+        background: white;
+        border: 1px solid #e8eee9;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 15px rgba(25, 55, 35, .05);
+    }
+
+    .section-title {
+        color: #23372b;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        color: #52645a;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        min-height: 43px;
+        border-color: #dfe8e1;
+    }
+
+    .form-control:focus {
+        border-color: #34734c;
+        box-shadow: 0 0 0 3px rgba(52, 115, 76, .12);
+    }
+
+    .btn-search, .btn-return {
+        background: #34734c;
+        border-color: #34734c;
+        color: white;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+
+    .btn-search:hover, .btn-return:hover {
+        background: #245b38;
+        border-color: #245b38;
+        color: white;
+    }
+
+    .btn-outline-success { border-radius: 7px; }
+
+    .library-info, .student-info {
+        background: #f1f7f2;
+        border: 1px solid #dcebdd;
+        border-radius: 10px;
+        padding: 18px;
+    }
+
+    .info-label {
+        color: #718078;
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        color: #23372b;
+        font-weight: 600;
+    }
+
+    .student-result {
+        display: block;
+        padding: 14px 16px;
+        border: 1px solid #e5ede6;
+        border-radius: 9px;
+        color: #45554b;
+        text-decoration: none !important;
+        margin-bottom: 10px;
+        transition: background .2s, border-color .2s;
+    }
+
+    .student-result:hover {
+        background: #f1f7f2;
+        border-color: #34734c;
+        color: #245b38;
+    }
+
+    .student-name { color: #23372b; font-weight: 700; }
+    .student-result:hover .student-name { color: #245b38; }
+
+    .student-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .detail-label {
+        color: #718078;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        color: #23372b;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    .table thead th {
+        background: #f5f8f5;
+        color: #52645a;
+        font-size: 13px;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .table td {
+        vertical-align: middle;
+        color: #45554b;
+        font-size: 13px;
+    }
+
+    .empty-state {
+        color: #718078;
+        text-align: center;
+        padding: 30px 15px;
+        background: #f7faf7;
+        border: 1px solid #e5ede6;
+        border-radius: 10px;
+    }
+
+    .empty-state h5 { color: #23372b; font-weight: 700; }
+
+    .search-hint {
+        color: #718078;
+        font-size: 12px;
+        margin-top: 7px;
+    }
+
+    @@media (max-width: 767px) {
+        .return-card { padding: 17px; }
+        .student-details { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="return-page">
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+        <div class="mb-4">
+            <a href="/Staff/Index" class="back-link">
+                &#8592; Back to Dashboard
+            </a>
+
+            <h2 class="page-heading mt-3">Return Book</h2>
+
+            <p class="page-subtitle">
+                Search by student details or the unique Copy Code to return a book issued from your assigned library.
+            </p>
+        </div>
+
+        <!-- RESULT MESSAGE -->
+        @if (!string.IsNullOrWhiteSpace(Model.Message))
+        {
+            <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-warning") alert-dismissible fade show"
+                 role="alert">
+                @Model.Message
+
+                <button type="button"
+                        class="close"
+                        data-dismiss="alert"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <!-- LIBRARY INFORMATION -->
+        <div class="return-card">
+            <div class="d-flex justify-content-between flex-wrap">
+                <div>
+                    <div class="info-label">Your Assigned Library</div>
+                    <div class="info-value">@Model.LibraryName</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDENT OR COPY SEARCH -->
+        <div class="return-card">
+            <h4 class="section-title">1. Search Student or Book Copy</h4>
+
+            <form method="get" action="/Staff/ReturnBook">
+                <div class="form-row align-items-end">
+                    <div class="col-md-9 mb-3">
+                        <label class="form-label">
+                            Student Name, Email, Student ID or Copy Code
+                        </label>
+
+                        <input type="text"
+                               name="search"
+                               value="@Model.Search"
+                               class="form-control"
+                               maxlength="256"
+                               placeholder="Enter student name, email, ID or unique Copy Code" />
+
+                        <div class="search-hint">
+                            Example Copy Code: L2-B2-4F4128C06F5942C2
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <button type="submit" class="btn btn-search btn-block">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            @if (Model.StudentResults != null && Model.StudentResults.Any())
+            {
+                <hr />
+
+                <h5 class="section-title">Student Search Results</h5>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in Model.StudentResults)
+                            {
+                                <tr>
+                                    <td>@student.StudentId</td>
+                                    <td>@student.Name</td>
+                                    <td>@student.Email</td>
+                                    <td>
+                                        <a href="@Url.Action(
+                                            "ReturnBook",
+                                            "Staff",
+                                            new { studentId = student.StudentId })"
+                                           class="btn btn-sm btn-outline-success">
+                                            Select Student
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else if (!string.IsNullOrWhiteSpace(Model.Search) &&
+                     Model.SelectedStudent == null &&
+                     string.IsNullOrWhiteSpace(Model.Message))
+            {
+                <hr />
+                <div class="empty-state">
+                    <h5>No Matching Result Found</h5>
+                    <p class="mb-0">
+                        No student or active book copy was found in your assigned library.
+                        Check the name, email, Student ID or Copy Code and try again.
+                    </p>
+                </div>
+            }
+        </div>
+
+        <!-- SELECTED STUDENT -->
+        @if (Model.SelectedStudent != null)
+        {
+            <div class="return-card">
+                <h4 class="section-title">2. Student Details</h4>
+
+                <div class="student-info">
+                    <div class="student-details">
+                        <div>
+                            <div class="detail-label">Student ID</div>
+                            <div class="detail-value">@Model.SelectedStudent.StudentId</div>
+                        </div>
+
+                        <div>
+                            <div class="detail-label">Student Name</div>
+                            <div class="detail-value">@Model.SelectedStudent.Name</div>
+                        </div>
+
+                        <div>
+                            <div class="detail-label">University Email</div>
+                            <div class="detail-value">@Model.SelectedStudent.Email</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CURRENT ACTIVE LOANS -->
+            <div class="return-card">
+                <h4 class="section-title">3. Active Loan(s) to Return</h4>
+
+                @if (Model.ActiveLoans != null && Model.ActiveLoans.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Loan ID</th>
+                                    <th>Book Title</th>
+                                    <th>Copy Code</th>
+                                    <th>Issue Date</th>
+                                    <th>Due Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var loan in Model.ActiveLoans)
+                                {
+                                    <tr>
+                                        <td>#@loan.LoanId</td>
+                                        <td>@loan.BookTitle</td>
+                                        <td>@loan.CopyCode</td>
+                                        <td>@loan.IssueDate.ToString("dd MMM yyyy")</td>
+                                        <td>@loan.DueDate.ToString("dd MMM yyyy")</td>
+                                        <td>
+                                            <form method="post"
+                                                  action="/Staff/ReturnBook"
+                                                  class="return-loan-form">
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="loanId"
+                                                       value="@loan.LoanId" />
+
+                                                <button type="submit" class="btn btn-sm btn-return">
+                                                    Return Book
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <h5>No Active Loans</h5>
+                        <p class="mb-0">
+                            This student has no currently issued books in your assigned library.
+                        </p>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.return-loan-form').on('submit', function (e) {
+                var confirmed = confirm(
+                    'Are you sure you want to return this book?'
+                );
+
+                if (!confirmed) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

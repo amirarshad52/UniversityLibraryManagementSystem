@@ -1,0 +1,516 @@
+@model ULMS.Web.Controllers.StaffCopiesViewModel
+
+@{
+    ViewData["Title"] = "Manage Copies";
+}
+
+<style>
+    .copies-page {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 30px 0 50px;
+    }
+
+    .page-heading {
+        color: #23372b;
+        font-weight: 700;
+    }
+
+    .page-subtitle {
+        color: #718078;
+    }
+
+    .copies-card {
+        background: #fff;
+        border: 1px solid #e8eee9;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 15px rgba(25, 55, 35, .05);
+    }
+
+    .section-title {
+        color: #23372b;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        color: #52645a;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        min-height: 43px;
+        border-color: #dfe8e1;
+    }
+
+    .form-control:focus {
+        border-color: #34734c;
+        box-shadow: 0 0 0 3px rgba(52, 115, 76, .12);
+    }
+
+    .btn-primary-green,
+    .btn-add-copy {
+        background: #34734c;
+        border-color: #34734c;
+        color: #fff;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+
+    .btn-primary-green:hover,
+    .btn-add-copy:hover {
+        background: #245b38;
+        border-color: #245b38;
+        color: #fff;
+    }
+
+    .btn-reset {
+        border: 1px solid #dfe8e1;
+        color: #52645a;
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+
+    .btn-reset:hover {
+        background: #f5f8f5;
+        color: #23372b;
+    }
+
+    .library-info {
+        background: #f1f7f2;
+        border: 1px solid #dcebdd;
+        border-radius: 10px;
+        padding: 18px;
+    }
+
+    .info-label {
+        color: #718078;
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        color: #23372b;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+
+    .count-number {
+        color: #34734c;
+        font-size: 23px;
+        font-weight: 700;
+    }
+
+    .table thead th {
+        background: #f5f8f5;
+        color: #52645a;
+        font-size: 13px;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .table td {
+        vertical-align: middle;
+        color: #45554b;
+        font-size: 13px;
+    }
+
+    .copy-code {
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        color: #52645a;
+        overflow-wrap: anywhere;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-available {
+        background: #e5f4e9;
+        color: #26713e;
+    }
+
+    .status-issued {
+        background: #fff3d8;
+        color: #946200;
+    }
+
+    .status-maintenance {
+        background: #fde8e7;
+        color: #b33c35;
+    }
+
+    .empty-state {
+        color: #718078;
+        text-align: center;
+        padding: 28px 10px;
+    }
+
+    .help-text {
+        color: #718078;
+        font-size: 12px;
+    }
+
+    .status-form {
+        min-width: 190px;
+    }
+
+    .status-form .form-control {
+        min-height: 36px;
+        font-size: 12px;
+    }
+
+    .btn-status {
+        background: #f1f7f2;
+        border: 1px solid #dcebdd;
+        color: #34734c;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .btn-status:hover {
+        background: #e5f0e7;
+        color: #245b38;
+    }
+
+    .back-link {
+        color: #34734c;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #245b38;
+        text-decoration: none;
+    }
+
+    @@media (max-width: 767px) {
+        .copies-card {
+            padding: 17px;
+        }
+    }
+</style>
+
+<div class="copies-page">
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+        <div class="mb-4">
+            <a href="/Staff/Index" class="back-link">
+                &#8592; Back to Dashboard
+            </a>
+
+            <h2 class="page-heading mt-3">Manage Copies</h2>
+
+            <p class="page-subtitle">
+                Manage physical book copies available in your assigned library.
+            </p>
+        </div>
+
+        <!-- RESULT MESSAGE -->
+        @if (!string.IsNullOrWhiteSpace(Model.Message))
+        {
+            <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-warning") alert-dismissible fade show"
+                 role="alert">
+                @Model.Message
+
+                <button type="button"
+                        class="close"
+                        data-dismiss="alert"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <!-- LIBRARY INFORMATION -->
+        <div class="copies-card">
+            <div class="row align-items-center">
+                <div class="col-md-8 mb-3 mb-md-0">
+                    <div class="info-label">Your Assigned Library</div>
+                    <div class="info-value">@Model.LibraryName</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="info-label">Copies Shown</div>
+                    <div class="count-number">
+                        @(Model.Copies == null ? 0 : Model.Copies.Count)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADD NEW PHYSICAL COPY -->
+        <div class="copies-card">
+            <h4 class="section-title">1. Add New Copy</h4>
+
+            <p class="page-subtitle small">
+                Select a book from the shared catalogue to add a new physical
+                copy to @Model.LibraryName.
+            </p>
+
+            @if (Model.Books != null && Model.Books.Any())
+            {
+                <form method="post" action="@Url.Action("AddCopy", "Staff")">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-row align-items-end">
+                        <div class="col-md-9 mb-3">
+                            <label class="form-label" for="bookId">
+                                Select Book from Shared Catalogue
+                            </label>
+
+                            <select id="bookId"
+                                    name="bookId"
+                                    class="form-control"
+                                    required>
+                                <option value="">-- Select a Book --</option>
+
+                                @foreach (var book in Model.Books)
+                                {
+                                    <option value="@book.BookId">
+                                        @book.Title - @book.Author
+                                    </option>
+                                }
+                            </select>
+
+                            <small class="form-text help-text">
+                                This creates a physical copy only. It does not
+                                create a new catalogue book.
+                            </small>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <button type="submit"
+                                    class="btn btn-add-copy btn-block">
+                                Add New Copy
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <h5>No Books in Shared Catalogue</h5>
+                    <p class="mb-0">
+                        Add a book through the separate Add New Book section
+                        before adding its physical copies.
+                    </p>
+                </div>
+            }
+        </div>
+
+        <!-- SEARCH AND FILTER -->
+        <div class="copies-card">
+            <h4 class="section-title">2. Search and Filter Copies</h4>
+
+            <form method="get" action="@Url.Action("Copies", "Staff")">
+                <div class="form-row align-items-end">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="search">
+                            Search by Book Title, Author or Copy Code
+                        </label>
+
+                        <input type="text"
+                               id="search"
+                               name="search"
+                               value="@Model.Search"
+                               class="form-control"
+                               maxlength="256"
+                               placeholder="Enter title, author or copy code" />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label" for="status">
+                            Filter by Status
+                        </label>
+
+                        <select id="status" name="status" class="form-control">
+                            <option value="" selected="@(string.IsNullOrEmpty(Model.Status) ? "selected" : null)">
+                                All Statuses
+                            </option>
+                            <option value="Available" selected="@(Model.Status == "Available" ? "selected" : null)">
+                                Available
+                            </option>
+                            <option value="Issued" selected="@(Model.Status == "Issued" ? "selected" : null)">
+                                Issued
+                            </option>
+                            <option value="Maintenance" selected="@(Model.Status == "Maintenance" ? "selected" : null)">
+                                Maintenance
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <button type="submit"
+                                class="btn btn-primary-green btn-block mb-2">
+                            Search
+                        </button>
+
+                        <a href="@Url.Action("Copies", "Staff")"
+                           class="btn btn-reset btn-block">
+                            Reset
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <!-- COPIES TABLE -->
+        <div class="copies-card">
+            <h4 class="section-title">3. Physical Copies</h4>
+
+            @if (Model.Copies != null && Model.Copies.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Author</th>
+                                <th>Copy Code</th>
+                                <th>Status</th>
+                                <th>Change Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var copy in Model.Copies)
+                            {
+                                <tr>
+                                    <td>@copy.BookTitle</td>
+                                    <td>@copy.Author</td>
+                                    <td>
+                                        <span class="copy-code">@copy.CopyCode</span>
+                                    </td>
+                                    <td>
+                                        @if (copy.Status == "Available")
+                                        {
+                                            <span class="status-badge status-available">
+                                                Available
+                                            </span>
+                                        }
+                                        else if (copy.Status == "Issued")
+                                        {
+                                            <span class="status-badge status-issued">
+                                                Issued
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge status-maintenance">
+                                                @copy.Status
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (copy.Status == "Available" ||
+                                             copy.Status == "Maintenance")
+                                        {
+                                            <form method="post"
+                                                  action="@Url.Action("ChangeCopyStatus", "Staff")"
+                                                  class="status-form">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="copyId"
+                                                       value="@copy.CopyId" />
+
+                                                <input type="hidden"
+                                                       name="search"
+                                                       value="@Model.Search" />
+
+                                                <input type="hidden"
+                                                       name="status"
+                                                       value="@Model.Status" />
+
+                                                <div class="input-group input-group-sm">
+                                                    <select name="newStatus"
+                                                            class="form-control"
+                                                            aria-label="New copy status">
+                                                        @if (copy.Status == "Available")
+                                                        {
+                                                            <option value="Maintenance">
+                                                                Maintenance
+                                                            </option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="Available">
+                                                                Available
+                                                            </option>
+                                                        }
+                                                    </select>
+
+                                                    <div class="input-group-append">
+                                                        <button type="submit"
+                                                                class="btn btn-status">
+                                                            Update
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="help-text">
+                                                Issued copies cannot be changed manually.
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <h5>No Copies Found</h5>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Search) ||
+                         !string.IsNullOrWhiteSpace(Model.Status))
+                    {
+                        <p>
+                            No physical copies match your search or selected
+                            status. Try another search or reset the filters.
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            Your assigned library does not have any physical
+                            copies yet. Use Add New Copy above to add one.
+                        </p>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="small page-subtitle">
+            Staff can change a copy between Available and Maintenance only.
+            Issued status is managed automatically by the borrowing process.
+        </div>
+
+    </div>
+</div>

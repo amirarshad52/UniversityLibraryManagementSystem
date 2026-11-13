@@ -10,20 +10,56 @@ DROP TRIGGER IF EXISTS TR_Loans_AfterReturn;
 DELIMITER $$
 
 -- 1. Protect BookCopies status
+-- Internal loan operations can update status.
+-- Staff manual changes are limited to:
+-- Available <-> Maintenance.
+-- Active-loan copies cannot be changed manually.
+
 CREATE TRIGGER TR_BookCopies_BeforeUpdate
 BEFORE UPDATE ON BookCopies
 FOR EACH ROW
 BEGIN
-    IF NOT (NEW.Status <=> OLD.Status)
-       AND COALESCE(@ULMS_INTERNAL_COPY_STATUS, 0) <> 1 THEN
+    DECLARE active_loan_count INT DEFAULT 0;
 
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT =
-            'Copy status can only be changed by loan operations';
+    IF NOT (NEW.Status <=> OLD.Status) THEN
+
+        IF COALESCE(@ULMS_INTERNAL_COPY_STATUS, 0) <> 1 THEN
+
+            IF NOT (
+                (OLD.Status = 'Available'
+                    AND NEW.Status = 'Maintenance')
+                OR
+                (OLD.Status = 'Maintenance'
+                    AND NEW.Status = 'Available')
+            ) THEN
+
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT =
+                    'Only Available and Maintenance status changes are allowed';
+
+            END IF;
+
+            SELECT COUNT(*)
+            INTO active_loan_count
+            FROM Loans
+            WHERE CopyId = OLD.CopyId
+              AND ReturnDate IS NULL;
+
+            IF active_loan_count > 0 THEN
+
+                SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT =
+                    'Copy with active loan cannot be changed manually';
+
+            END IF;
+
+        END IF;
+
     END IF;
 END$$
 
--- 2. Check availability and lock copy
+
+-- 2. Check availability before issuing
 CREATE TRIGGER TR_Loans_BeforeInsert
 BEFORE INSERT ON Loans
 FOR EACH ROW
@@ -42,10 +78,13 @@ BEGIN
 
     IF NEW.ReturnDate IS NOT NULL
        OR NEW.ReturnedByStaffId IS NOT NULL THEN
+
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'New loan must be active';
+
     END IF;
 END$$
+
 
 -- 3. Mark copy Issued after issue
 CREATE TRIGGER TR_Loans_AfterInsert
@@ -70,6 +109,7 @@ BEGIN
     SET @ULMS_INTERNAL_COPY_STATUS = previous_flag;
 END$$
 
+
 -- 4. Protect loan history
 CREATE TRIGGER TR_Loans_BeforeUpdate
 BEFORE UPDATE ON Loans
@@ -83,6 +123,7 @@ BEGIN
 
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Loan history fields cannot be changed';
+
     END IF;
 
     IF OLD.ReturnDate IS NOT NULL
@@ -92,9 +133,12 @@ BEGIN
        ) THEN
 
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Returned loan cannot be reopened or modified';
+        SET MESSAGE_TEXT =
+            'Returned loan cannot be reopened or modified';
+
     END IF;
 END$$
+
 
 -- 5. Mark copy Available after return
 CREATE TRIGGER TR_Loans_AfterReturn
@@ -120,6 +164,7 @@ BEGIN
         WHERE CopyId = OLD.CopyId;
 
         SET @ULMS_INTERNAL_COPY_STATUS = previous_flag;
+
     END IF;
 END$$
 

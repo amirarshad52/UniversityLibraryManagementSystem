@@ -1,0 +1,486 @@
+
+@model ULMS.Web.Controllers.StaffHistoryViewModel
+
+@{
+    ViewData["Title"] = "Borrowing History";
+}
+
+<style>
+    body {
+        background: #f5f7f4;
+    }
+
+    .history-page {
+        padding: 35px 0;
+    }
+
+    .page-heading {
+        color: #23372b;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .page-subtitle {
+        color: #718078;
+        margin-bottom: 25px;
+    }
+
+    .history-card {
+        background: #fff;
+        border: 1px solid #e8eee9;
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(25,55,35,.05);
+        margin-bottom: 22px;
+    }
+
+    .section-title {
+        color: #23372b;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        color: #52645a;
+        font-weight: 600;
+    }
+
+    .form-control {
+        border: 1px solid #dfe8e1;
+        border-radius: 8px;
+        min-height: 42px;
+    }
+
+    .form-control:focus {
+        border-color: #34734c;
+        box-shadow: 0 0 0 3px rgba(52,115,76,.12);
+    }
+
+    .btn-search {
+        background: #34734c;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-weight: 600;
+    }
+
+    .btn-search:hover {
+        background: #245b38;
+        color: white;
+    }
+
+    .btn-reset {
+        display: inline-block;
+        color: #52645a;
+        border: 1px solid #dfe8e1;
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px 18px;
+        text-decoration: none;
+    }
+
+    .btn-reset:hover {
+        background: #f5f8f5;
+        color: #23372b;
+        text-decoration: none;
+    }
+
+    .library-info {
+        background: #f1f7f2;
+        border: 1px solid #dcebdd;
+        border-radius: 10px;
+        padding: 13px 16px;
+        margin-bottom: 20px;
+        color: #52645a;
+    }
+
+    /* Table layout */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .history-table {
+        width: 100%;
+        min-width: 1250px;
+        border-collapse: collapse;
+        table-layout: auto;
+    }
+
+    .history-table th {
+        background: #f5f8f5;
+        color: #52645a;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        padding: 14px 12px;
+        border-bottom: 1px solid #e8eee9;
+        white-space: nowrap;
+    }
+
+    .history-table td {
+        padding: 14px 12px;
+        border-bottom: 1px solid #edf1ed;
+        color: #39483e;
+        font-size: 13px;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .history-table tbody tr:hover {
+        background: #fafcfa;
+    }
+
+    /* Loan ID */
+    .history-table th:nth-child(1),
+    .history-table td:nth-child(1) {
+        min-width: 85px;
+    }
+
+    /* Student */
+    .history-table th:nth-child(2),
+    .history-table td:nth-child(2) {
+        min-width: 200px;
+    }
+
+    /* Book */
+    .history-table th:nth-child(3),
+    .history-table td:nth-child(3) {
+        min-width: 200px;
+    }
+
+    /* Copy Code */
+    .history-table th:nth-child(4),
+    .history-table td:nth-child(4) {
+        min-width: 220px;
+    }
+
+    /* Dates */
+    .history-table th:nth-child(5),
+    .history-table td:nth-child(5),
+    .history-table th:nth-child(6),
+    .history-table td:nth-child(6),
+    .history-table th:nth-child(7),
+    .history-table td:nth-child(7) {
+        min-width: 125px;
+    }
+
+    /* Status */
+    .history-table th:nth-child(8),
+    .history-table td:nth-child(8) {
+        min-width: 110px;
+    }
+
+    .student-name,
+    .book-title {
+        color: #23372b;
+        font-weight: 600;
+    }
+
+    .secondary-text {
+        color: #718078;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+
+    .copy-code {
+        display: inline-block;
+        background: #f1f7f2;
+        border: 1px solid #dcebdd;
+        color: #34734c;
+        border-radius: 6px;
+        padding: 5px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .status-issued {
+        background: #fff5df;
+        color: #946200;
+    }
+
+    .status-returned {
+        background: #e8f5eb;
+        color: #287442;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 45px 15px;
+        color: #718078;
+    }
+
+    .empty-state h5 {
+        color: #23372b;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .back-link {
+        color: #34734c;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #245b38;
+        text-decoration: none;
+    }
+
+    .record-count {
+        color: #718078;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 767px) {
+        .history-page {
+            padding: 22px 0;
+        }
+
+        .history-card {
+            padding: 16px;
+        }
+    }
+</style>
+
+<div class="container history-page">
+
+    <a href="/Staff/Index" class="back-link">
+        &#8592; Back to Dashboard
+    </a>
+
+    <div class="mt-4 mb-4">
+        <h2 class="page-heading">Borrowing History</h2>
+        <p class="page-subtitle">
+            View and search borrowing and return records from your assigned library.
+        </p>
+    </div>
+
+    <div class="library-info">
+        <strong>Your Assigned Library:</strong>
+        @Model.LibraryName
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="alert alert-warning">
+            @Model.Message
+        </div>
+    }
+
+    <div class="history-card">
+
+        <h5 class="section-title">Search Borrowing Records</h5>
+
+        <form method="get" action="/Staff/History">
+
+            <div class="form-row">
+
+                <div class="form-group col-md-7">
+                    <label class="form-label">
+                        Search
+                    </label>
+
+                    <input type="text"
+                           name="search"
+                           value="@Model.Search"
+                           class="form-control"
+                           maxlength="256"
+                           placeholder="Student name, email, ID, book title or Copy Code" />
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label class="form-label">
+                        Borrowing Status
+                    </label>
+
+                    <select name="status" class="form-control">
+
+                        <option value="All"
+                                selected="@(Model.Status == "All" ? "selected" : null)">
+                            All Records
+                        </option>
+
+                        <option value="Issued"
+                                selected="@(Model.Status == "Issued" ? "selected" : null)">
+                            Issued
+                        </option>
+
+                        <option value="Returned"
+                                selected="@(Model.Status == "Returned" ? "selected" : null)">
+                            Returned
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="form-group col-md-2 d-flex align-items-end">
+                    <button type="submit"
+                            class="btn btn-search btn-block">
+                        Search
+                    </button>
+                </div>
+
+            </div>
+
+            <a href="/Staff/History" class="btn-reset">
+                Reset Filters
+            </a>
+
+        </form>
+
+    </div>
+
+    <div class="history-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h5 class="section-title mb-0">
+                Borrowing Records
+            </h5>
+
+            <span class="record-count">
+                @Model.TotalRecords records found
+            </span>
+
+        </div>
+
+        @if (Model.Records != null && Model.Records.Any())
+        {
+            <div class="table-responsive">
+
+                <table class="history-table">
+
+                    <thead>
+                        <tr>
+                            <th>Loan ID</th>
+                            <th>Student</th>
+                            <th>Book</th>
+                            <th>Copy Code</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model.Records)
+                        {
+                            <tr>
+
+                                <td>
+                                    #@item.LoanId
+                                </td>
+
+                                <td>
+                                    <div class="student-name">
+                                        @item.StudentName
+                                    </div>
+
+                                    <div class="secondary-text">
+                                        @item.StudentEmail
+                                    </div>
+
+                                    <div class="secondary-text">
+                                        Student ID: @item.StudentId
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="book-title">
+                                        @item.BookTitle
+                                    </div>
+
+                                    <div class="secondary-text">
+                                        @item.Author
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="copy-code">
+                                        @item.CopyCode
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @item.IssueDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    @item.DueDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    @if (item.ReturnDate.HasValue)
+                                    {
+                                        @item.ReturnDate.Value.ToString("dd MMM yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span class="secondary-text">
+                                            Not returned
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (item.ReturnDate.HasValue)
+                                    {
+                                        <span class="status-badge status-returned">
+                                            Returned
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-issued">
+                                            Issued
+                                        </span>
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            @if (Model.TotalRecords > 200)
+            {
+                <div class="alert alert-info mt-3 mb-0">
+                    Showing the latest 200 records out of
+                    @Model.TotalRecords records. Use search and status
+                    filters to narrow your results.
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <h5>No Borrowing Records Found</h5>
+
+                <p class="mb-0">
+                    No records match your search or selected status.
+                </p>
+            </div>
+        }
+
+    </div>
+
+</div>

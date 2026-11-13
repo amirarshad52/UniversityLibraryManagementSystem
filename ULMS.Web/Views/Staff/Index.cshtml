@@ -1,0 +1,968 @@
+@model ULMS.Web.Controllers.StaffDashboardViewModel
+
+@{
+    ViewData["Title"] = "Staff Dashboard";
+}
+
+<style>
+    .staff-dashboard {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 30px 0 50px;
+        font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    .dashboard-heading {
+        color: #23372b;
+        font-weight: 700;
+    }
+
+    .dashboard-subtitle {
+        color: #718078;
+    }
+
+    .staff-welcome {
+        background: linear-gradient(135deg, #183d2b, #34734c);
+        color: white;
+        padding: 28px;
+        border-radius: 16px;
+        margin-bottom: 28px;
+    }
+
+    .staff-welcome h2 {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .staff-welcome p {
+        margin-bottom: 5px;
+        color: #e0eee4;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 14px;
+        padding: 23px;
+        height: 100%;
+        border: 1px solid #e8eee9;
+        box-shadow: 0 4px 15px rgba(25, 55, 35, .05);
+    }
+
+    .stat-label {
+        color: #718078;
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .stat-number {
+        font-size: 30px;
+        font-weight: 700;
+        color: #23372b;
+        margin: 0;
+    }
+
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        background: #eaf3ec;
+        color: #34734c;
+        flex-shrink: 0;
+    }
+
+    .maintenance-stat-icon {
+        background: #fff3df;
+        color: #a66a16;
+    }
+
+    .dashboard-section {
+        background: white;
+        border-radius: 14px;
+        padding: 24px;
+        border: 1px solid #e8eee9;
+        box-shadow: 0 4px 15px rgba(25, 55, 35, .05);
+        margin-top: 25px;
+    }
+
+    .section-title {
+        color: #23372b;
+        font-weight: 700;
+        font-size: 19px;
+        margin-bottom: 20px;
+    }
+
+    .table thead th {
+        background: #f5f8f5;
+        color: #52645a;
+        font-size: 13px;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .table td {
+        vertical-align: middle;
+        color: #45554b;
+        font-size: 13px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #fff3d8;
+        color: #946200;
+    }
+
+    .status-returned {
+        background: #e5f4e9;
+        color: #287443;
+    }
+
+    .status-overdue {
+        background: #fde8e7;
+        color: #b33c35;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 35px 10px;
+        color: #718078;
+    }
+
+    /* =========================================
+       MONTHLY CHARTS
+    ========================================= */
+
+    .monthly-graphs {
+        display: flex;
+        flex-direction: row;
+        gap: 22px;
+        width: 100%;
+        align-items: stretch;
+        margin-top: 25px;
+    }
+
+    .graph-card {
+        flex: 1 1 0;
+        min-width: 0;
+        background: #fff;
+        border: 1px solid #e8eee9;
+        border-radius: 14px;
+        padding: 23px 22px 18px;
+        box-shadow: 0 4px 15px rgba(25, 55, 35, .05);
+        transition: all 0.25s ease;
+    }
+
+    .graph-card:hover {
+        box-shadow: 0 10px 24px rgba(25, 55, 35, .08);
+        border-color: #c9d9cc;
+    }
+
+    .graph-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .graph-title {
+        color: #23372b;
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .graph-subtitle {
+        color: #929c95;
+        font-size: 11px;
+        margin-top: 5px;
+    }
+
+    .graph-icon {
+        width: 39px;
+        height: 39px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        background: #eaf3ec;
+        color: #34734c;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .graph-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .graph-gold-icon {
+        background: #f8f2e8;
+        color: #a17b43;
+    }
+
+    .graph-canvas-wrapper {
+        position: relative;
+        width: 100%;
+        height: 270px;
+        margin-top: 12px;
+    }
+
+    .graph-legend {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #849087;
+        font-size: 11px;
+    }
+
+    .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .legend-green {
+        background: #26965c;
+    }
+
+    .legend-red {
+        background: #d94b4b;
+    }
+
+    .legend-gold {
+        background: #a17b43;
+    }
+
+    /* =========================================
+       RESPONSIVE DESIGN
+    ========================================= */
+
+    @@media (max-width: 767px) {
+
+        .staff-welcome {
+            padding: 22px;
+        }
+
+        .dashboard-section {
+            padding: 16px;
+        }
+
+        .monthly-graphs {
+            flex-direction: column;
+        }
+
+        .graph-card {
+            width: 100%;
+        }
+
+        .graph-canvas-wrapper {
+            height: 250px;
+        }
+    }
+</style>
+
+<div class="staff-dashboard">
+
+    <div class="container">
+
+        <!-- DASHBOARD HEADING -->
+
+        <div class="mb-4">
+
+            <h2 class="dashboard-heading">
+                Staff Dashboard
+            </h2>
+
+            <p class="dashboard-subtitle">
+                Manage your library operations and borrowing activities.
+            </p>
+
+        </div>
+
+        <!-- WELCOME SECTION -->
+
+        <div class="staff-welcome">
+
+            <h2>
+                Welcome, @Model.StaffName!
+            </h2>
+
+            <p>
+                <strong>Assigned Library:</strong>
+                @Model.LibraryName
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                @Model.StaffEmail
+            </p>
+
+        </div>
+
+        <!-- STATISTICS -->
+
+        <div class="row">
+
+            <!-- TOTAL BOOK COPIES -->
+
+            <div class="col-md-6 col-lg-4 col-xl mb-3">
+
+                <div class="stat-card">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Total Book Copies
+                            </div>
+
+                            <h3 class="stat-number">
+                                @Model.TotalBookCopies
+                            </h3>
+
+                        </div>
+
+                        <div class="stat-icon">
+                            &#128218;
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- AVAILABLE COPIES -->
+
+            <div class="col-md-6 col-lg-4 col-xl mb-3">
+
+                <div class="stat-card">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Available Copies
+                            </div>
+
+                            <h3 class="stat-number">
+                                @Model.AvailableCopies
+                            </h3>
+
+                        </div>
+
+                        <div class="stat-icon">
+                            &#10003;
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CURRENTLY ISSUED -->
+
+            <div class="col-md-6 col-lg-4 col-xl mb-3">
+
+                <div class="stat-card">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Currently Issued
+                            </div>
+
+                            <h3 class="stat-number">
+                                @Model.CurrentlyIssuedBooks
+                            </h3>
+
+                        </div>
+
+                        <div class="stat-icon">
+                            &#128214;
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- MAINTENANCE COPIES -->
+
+            <div class="col-md-6 col-lg-4 col-xl mb-3">
+
+                <div class="stat-card">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Maintenance Copies
+                            </div>
+
+                            <h3 class="stat-number">
+                                @Model.MaintenanceCopies
+                            </h3>
+
+                        </div>
+
+                        <div class="stat-icon maintenance-stat-icon">
+                            &#9881;
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- OVERDUE BOOKS -->
+
+            <div class="col-md-6 col-lg-4 col-xl mb-3">
+
+                <div class="stat-card">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <div class="stat-label">
+                                Overdue Books
+                            </div>
+
+                            <h3 class="stat-number">
+                                @Model.OverdueBooks
+                            </h3>
+
+                        </div>
+
+                        <div class="stat-icon">
+                            &#9888;
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- =====================================
+             MONTHLY BORROWING ANALYTICS
+        ====================================== -->
+
+        <div class="monthly-graphs">
+
+            <!-- BOOKS BORROWED GRAPH -->
+
+            <div class="graph-card">
+
+                <div class="graph-card-header">
+
+                    <div>
+                        <h4 class="graph-title">
+                            Monthly Borrowing
+                        </h4>
+
+                        <div class="graph-subtitle">
+                            Books issued during the current month
+                        </div>
+                    </div>
+
+                    <div class="graph-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8">
+
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+
+                            <path d="M8 7h8M8 11h8" />
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <div class="graph-canvas-wrapper">
+
+                    <canvas id="staffBorrowedChart"></canvas>
+
+                </div>
+
+                <div class="graph-legend">
+
+                    <div class="legend-item">
+                        <span class="legend-dot legend-green"></span>
+                        Increasing
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot legend-red"></span>
+                        Decreasing
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot legend-gold"></span>
+                        No change
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- BOOKS RETURNED GRAPH -->
+
+            <div class="graph-card">
+
+                <div class="graph-card-header">
+
+                    <div>
+                        <h4 class="graph-title">
+                            Monthly Returns
+                        </h4>
+
+                        <div class="graph-subtitle">
+                            Books returned during the current month
+                        </div>
+                    </div>
+
+                    <div class="graph-icon graph-gold-icon">
+
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8">
+
+                            <path d="M20 7v5h-5" />
+
+                            <path d="M4 17v-5h5" />
+
+                            <path d="M5.6 9a7 7 0 0 1 11.8-2L20 12M4 12l2.6 5a7 7 0 0 0 11.8-2" />
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <div class="graph-canvas-wrapper">
+
+                    <canvas id="staffReturnedChart"></canvas>
+
+                </div>
+
+                <div class="graph-legend">
+
+                    <div class="legend-item">
+                        <span class="legend-dot legend-green"></span>
+                        Increasing
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot legend-red"></span>
+                        Decreasing
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot legend-gold"></span>
+                        No change
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RECENT BORROWING ACTIVITIES -->
+
+        <div class="dashboard-section">
+
+            <h4 class="section-title">
+                Recent Borrowing Activities
+            </h4>
+
+            @if (Model.RecentActivities != null &&
+                 Model.RecentActivities.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover">
+
+                        <thead>
+
+                            <tr>
+                                <th>Loan ID</th>
+                                <th>Student</th>
+                                <th>Book</th>
+                                <th>Copy Code</th>
+                                <th>Issue Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var activity in Model.RecentActivities)
+                            {
+                                bool overdue =
+                                    activity.ReturnDate == null &&
+                                    activity.DueDate.Date <
+                                    DateTime.UtcNow.AddHours(5).Date;
+
+                                <tr>
+
+                                    <td>
+                                        #@activity.LoanId
+                                    </td>
+
+                                    <td>
+                                        @activity.StudentName
+                                    </td>
+
+                                    <td>
+                                        @activity.BookTitle
+                                    </td>
+
+                                    <td>
+                                        @activity.CopyCode
+                                    </td>
+
+                                    <td>
+                                        @activity.IssueDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @activity.DueDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+
+                                        @if (activity.ReturnDate != null)
+                                        {
+                                            <span class="status-badge status-returned">
+                                                Returned
+                                            </span>
+                                        }
+                                        else if (overdue)
+                                        {
+                                            <span class="status-badge status-overdue">
+                                                Overdue
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge status-active">
+                                                Issued
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+
+                    <h5>
+                        No Borrowing Activities Yet
+                    </h5>
+
+                    <p>
+                        Recent borrowing records will appear here.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================
+     CHART.JS
+====================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const borrowedData = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+                (int[])ViewBag.BorrowedChartData
+            )
+        );
+
+        const returnedData = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+                (int[])ViewBag.ReturnedChartData
+            )
+        );
+
+        const chartLabels = ["0", "5", "10", "15", "20", "25", "30"];
+
+        function createMonthlyChart(canvasId, chartData) {
+
+            const canvas = document.getElementById(canvasId);
+
+            if (!canvas || typeof Chart === "undefined") {
+                return;
+            }
+
+            new Chart(canvas, {
+
+                type: "line",
+
+                data: {
+
+                    labels: chartLabels,
+
+                    datasets: [{
+
+                        label: "Books",
+
+                        data: chartData,
+
+                        borderWidth: 3,
+
+                        borderColor: "#a17b43",
+
+                        backgroundColor: "rgba(161, 123, 67, 0.08)",
+
+                        fill: false,
+
+                        tension: 0.4,
+
+                        pointRadius: 0,
+
+                        pointHoverRadius: 0,
+
+                        pointHitRadius: 8,
+
+                        spanGaps: true,
+
+                        segment: {
+
+                            borderColor: function (context) {
+
+                                const previousValue =
+                                    context.p0.parsed.y;
+
+                                const currentValue =
+                                    context.p1.parsed.y;
+
+                                if (currentValue > previousValue) {
+                                    return "#26965c";
+                                }
+
+                                if (currentValue < previousValue) {
+                                    return "#d94b4b";
+                                }
+
+                                return "#a17b43";
+                            }
+
+                        }
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        intersect: false,
+                        mode: "index"
+                    },
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+
+                            backgroundColor: "#183d2b",
+
+                            titleColor: "#ffffff",
+
+                            bodyColor: "#ffffff",
+
+                            padding: 12,
+
+                            displayColors: false,
+
+                            callbacks: {
+
+                                title: function (items) {
+                                    return "Day " + items[0].label;
+                                },
+
+                                label: function (context) {
+                                    return "Books: " + context.parsed.y;
+                                }
+
+                            }
+
+                        }
+
+                    },
+
+                    scales: {
+
+                        x: {
+
+                            title: {
+
+                                display: true,
+
+                                text: "Days of Month",
+
+                                color: "#718078",
+
+                                font: {
+                                    size: 11,
+                                    weight: "600"
+                                }
+
+                            },
+
+                            grid: {
+                                display: false
+                            },
+
+                            ticks: {
+
+                                color: "#87918b",
+
+                                font: {
+                                    size: 11
+                                }
+
+                            },
+
+                            border: {
+                                color: "#e6ebe6"
+                            }
+
+                        },
+
+                        y: {
+
+                            min: 0,
+
+                            max: 7,
+
+                            beginAtZero: true,
+
+                            title: {
+
+                                display: true,
+
+                                text: "Number of Books",
+
+                                color: "#718078",
+
+                                font: {
+                                    size: 11,
+                                    weight: "600"
+                                }
+
+                            },
+
+                            ticks: {
+
+                                stepSize: 1,
+
+                                precision: 0,
+
+                                color: "#87918b",
+
+                                font: {
+                                    size: 11
+                                }
+
+                            },
+
+                            grid: {
+
+                                color: "#edf0ec",
+
+                                drawBorder: false
+
+                            },
+
+                            border: {
+                                display: false
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+        createMonthlyChart(
+            "staffBorrowedChart",
+            borrowedData
+        );
+
+        createMonthlyChart(
+            "staffReturnedChart",
+            returnedData
+        );
+
+    });
+
+</script>

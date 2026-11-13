@@ -1,0 +1,818 @@
+@{
+    ViewData["Title"] = "Student Login";
+    Layout = "_Layout";
+}
+
+@section Styles {
+<style>
+    .login-page {
+        min-height: 790px;
+        display: flex;
+        background: #f7faf8;
+        overflow: hidden;
+        font-family: inherit;
+    }
+
+    /* LEFT CINEMATIC SECTION */
+
+    .login-visual {
+        width: 56%;
+        min-height: 790px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+            radial-gradient(ellipse at 50% 48%, rgba(71, 145, 93, .30), transparent 48%),
+            linear-gradient(135deg, #071d13 0%, #103c27 48%, #071b12 100%);
+        perspective: 1100px;
+    }
+
+    .visual-glow {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(83, 175, 111, .13);
+        filter: blur(90px);
+        animation: glowPulse 5s ease-in-out infinite alternate;
+    }
+
+    .visual-grid {
+        position: absolute;
+        inset: 0;
+        opacity: .13;
+        background-image:
+            linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+        background-size: 55px 55px;
+        mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+    }
+
+    .visual-content {
+        position: relative;
+        z-index: 5;
+        width: 100%;
+        max-width: 680px;
+        padding: 55px 35px;
+        text-align: center;
+    }
+
+    .visual-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        color: #c5e5ce;
+        background: rgba(255,255,255,.07);
+        border: 1px solid rgba(190,235,200,.18);
+        border-radius: 50px;
+        padding: 9px 18px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        backdrop-filter: blur(10px);
+    }
+
+    .visual-label span {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #8be3a1;
+        box-shadow: 0 0 12px #8be3a1;
+    }
+
+    .library-stage {
+        height: 365px;
+        position: relative;
+        margin: 18px auto 10px;
+        transform-style: preserve-3d;
+    }
+
+    .stage-ring {
+        position: absolute;
+        width: 340px;
+        height: 100px;
+        left: 50%;
+        top: 53%;
+        transform: translate(-50%, -50%) rotateX(72deg);
+        border: 1px solid rgba(142, 221, 160, .30);
+        border-radius: 50%;
+        box-shadow: 0 0 25px rgba(95, 201, 122, .12);
+    }
+
+    .stage-ring.ring-two {
+        width: 440px;
+        height: 140px;
+        transform: translate(-50%, -50%) rotateX(72deg);
+        opacity: .45;
+    }
+
+    .stage-ring.ring-three {
+        width: 530px;
+        height: 180px;
+        transform: translate(-50%, -50%) rotateX(72deg);
+        opacity: .2;
+    }
+
+    /* FLOATING BOOKS */
+
+    .floating-book {
+        position: absolute;
+        width: 110px;
+        height: 145px;
+        border-radius: 5px 10px 10px 5px;
+        transform-style: preserve-3d;
+        box-shadow: 12px 20px 30px rgba(0,0,0,.35);
+        animation: bookFloat 5s ease-in-out infinite;
+    }
+
+    .floating-book::before {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 0;
+        bottom: 0;
+        width: 8px;
+        background: rgba(0,0,0,.2);
+        border-radius: 4px 0 0 4px;
+    }
+
+    .floating-book::after {
+        content: "";
+        position: absolute;
+        right: -7px;
+        top: 5px;
+        width: 7px;
+        height: 135px;
+        background: #e5d9bb;
+        border-radius: 0 3px 3px 0;
+        transform: skewY(-5deg);
+    }
+
+    .book-cover {
+        height: 100%;
+        padding: 27px 12px 12px 18px;
+        border-radius: 5px 9px 9px 5px;
+        color: rgba(255,255,255,.92);
+        border: 1px solid rgba(255,255,255,.17);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
+        background: linear-gradient(145deg, #477e58, #17442c 65%, #0e2e1e);
+    }
+
+    .book-cover strong {
+        font-family: Georgia, serif;
+        font-size: 13px;
+        letter-spacing: 1px;
+    }
+
+    .book-cover small {
+        font-size: 8px;
+        letter-spacing: 2px;
+        color: #d5e8d8;
+    }
+
+    .book-cover .book-decoration {
+        font-size: 27px;
+        color: #d6c28c;
+    }
+
+    .book-one {
+        left: 12%;
+        top: 24%;
+        transform: rotateY(-25deg) rotateZ(-12deg);
+        animation-delay: -1s;
+    }
+
+    .book-one .book-cover {
+        background: linear-gradient(145deg, #b58b50, #70502d 75%, #402d1b);
+    }
+
+    .book-two {
+        right: 12%;
+        top: 18%;
+        width: 95px;
+        height: 130px;
+        animation-delay: -2.5s;
+    }
+
+    .book-two .book-cover {
+        background: linear-gradient(145deg, #537f91, #214b60 75%, #143344);
+    }
+
+    .book-three {
+        left: 19%;
+        bottom: 8%;
+        width: 85px;
+        height: 115px;
+        animation-delay: -3s;
+    }
+
+    .book-three .book-cover {
+        background: linear-gradient(145deg, #9b6571, #663443 75%, #3c1c28);
+    }
+
+    .book-four {
+        right: 19%;
+        bottom: 10%;
+        width: 90px;
+        height: 120px;
+        animation-delay: -1.8s;
+    }
+
+    .book-four .book-cover {
+        background: linear-gradient(145deg, #858d54, #4e5b2b 75%, #30391b);
+    }
+
+    /* OPEN BOOK */
+
+    .open-book {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 270px;
+        height: 180px;
+        transform: translate(-50%, -50%) rotateX(15deg);
+        transform-style: preserve-3d;
+        animation: openBookFloat 5s ease-in-out infinite;
+        filter: drop-shadow(0 15px 25px rgba(0,0,0,.35));
+    }
+
+    .book-pages {
+        position: absolute;
+        width: 50%;
+        height: 125px;
+        bottom: 25px;
+        background: linear-gradient(135deg, #fffdf0, #d9d0b3);
+        border-radius: 4px 0 0 5px;
+        transform-origin: right center;
+        box-shadow: inset -5px 0 8px rgba(0,0,0,.08);
+        overflow: hidden;
+    }
+
+    .book-pages.left-page {
+        left: 0;
+        transform: skewY(7deg);
+    }
+
+    .book-pages.right-page {
+        right: 0;
+        transform: skewY(-7deg);
+        border-radius: 0 4px 5px 0;
+        background: linear-gradient(135deg, #eee7d1, #fffdf0);
+    }
+
+    .book-pages::after {
+        content: "";
+        position: absolute;
+        top: 23px;
+        left: 17px;
+        right: 17px;
+        height: 65px;
+        background: repeating-linear-gradient(
+            to bottom,
+            rgba(89,89,70,.35) 0px,
+            rgba(89,89,70,.35) 1px,
+            transparent 1px,
+            transparent 12px
+        );
+        opacity: .7;
+    }
+
+    .book-spine {
+        position: absolute;
+        left: 50%;
+        bottom: 20px;
+        height: 135px;
+        width: 9px;
+        background: linear-gradient(90deg, #79582d, #e1c58a, #76552c);
+        transform: translateX(-50%);
+        border-radius: 50%;
+        z-index: 2;
+    }
+
+    .book-light {
+        position: absolute;
+        width: 200px;
+        height: 70px;
+        left: 50%;
+        bottom: 15px;
+        transform: translateX(-50%);
+        background: rgba(150, 235, 160, .32);
+        filter: blur(35px);
+        border-radius: 50%;
+        animation: lightPulse 3s ease-in-out infinite alternate;
+    }
+
+    /* PARTICLES */
+
+    .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #c3f0c8;
+        border-radius: 50%;
+        box-shadow: 0 0 12px #8fe6a2;
+        animation: particleMove 6s linear infinite;
+    }
+
+    .particle.p1 { left: 15%; top: 25%; animation-delay: 0s; }
+    .particle.p2 { left: 76%; top: 20%; animation-delay: 1s; }
+    .particle.p3 { left: 30%; top: 75%; animation-delay: 2s; }
+    .particle.p4 { left: 85%; top: 68%; animation-delay: 3s; }
+    .particle.p5 { left: 50%; top: 10%; animation-delay: 1.5s; }
+    .particle.p6 { left: 10%; top: 60%; animation-delay: 2.5s; }
+    .particle.p7 { left: 68%; top: 80%; animation-delay: 4s; }
+
+    .visual-heading {
+        color: #fff;
+        font-family: Georgia, serif;
+        font-size: clamp(27px, 3vw, 38px);
+        font-weight: 700;
+        line-height: 1.3;
+        margin-top: 15px;
+        letter-spacing: .3px;
+    }
+
+    .visual-heading span {
+        color: #a7d9ae;
+    }
+
+    .visual-description {
+        color: #c1d6c7;
+        max-width: 440px;
+        margin: 12px auto 0;
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .visual-footer {
+        position: absolute;
+        bottom: 22px;
+        left: 25px;
+        right: 25px;
+        text-align: center;
+        color: rgba(220,240,225,.55);
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    /* RIGHT LOGIN SECTION */
+
+    .login-panel {
+        width: 44%;
+        min-height: 790px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 35px;
+        background: #fbfcfb;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 410px;
+    }
+
+    /* UPDATED LOGO */
+
+    .login-logo {
+        width: 100%;
+        height: 190px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 5px;
+        overflow: hidden;
+    }
+
+    .login-logo img {
+        width: 100%;
+        max-width: 390px;
+        height: 180px;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+    }
+
+    .login-welcome {
+        color: #23372b;
+        font-size: 31px;
+        font-weight: 750;
+        text-align: center;
+        margin-bottom: 10px;
+        letter-spacing: -.7px;
+    }
+
+    .login-subtitle {
+        color: #77847b;
+        font-size: 14px;
+        text-align: center;
+        line-height: 1.8;
+        margin-bottom: 32px;
+    }
+
+    .login-divider {
+        height: 1px;
+        background: #e8eee9;
+        margin: 25px 0;
+    }
+
+    .login-info {
+        color: #394d40;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .google-login-button {
+        width: 100%;
+        min-height: 56px;
+        border: 1px solid #dce4de;
+        border-radius: 10px;
+        background: #fff;
+        color: #35443a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        font-size: 14px;
+        font-weight: 650;
+        box-shadow: 0 4px 14px rgba(30, 65, 43, .04);
+        cursor: not-allowed;
+        opacity: 1;
+    }
+
+    .google-login-button:hover {
+        background: #fff;
+        border-color: #dce4de;
+    }
+
+    .google-icon {
+        width: 21px;
+        height: 21px;
+        flex-shrink: 0;
+    }
+
+    .coming-soon {
+        text-align: center;
+        margin-top: 13px;
+        color: #87958b;
+        font-size: 11px;
+    }
+
+    .login-notice {
+        background: #f0f6f1;
+        border: 1px solid #e1ece3;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 25px;
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+    }
+
+    .notice-icon {
+        color: #34744d;
+        font-size: 18px;
+        line-height: 1;
+    }
+
+    .login-notice p {
+        color: #607267;
+        font-size: 11px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .login-privacy {
+        text-align: center;
+        margin-top: 27px;
+        color: #98a39b;
+        font-size: 11px;
+    }
+
+    .login-privacy a {
+        color: #34744d;
+        font-weight: 650;
+        text-decoration: none;
+    }
+
+    .login-privacy a:hover {
+        text-decoration: underline;
+    }
+
+    /* ANIMATIONS */
+
+    @@keyframes bookFloat {
+        0%, 100% {
+            translate: 0 0;
+        }
+        50% {
+            translate: 0 -19px;
+        }
+    }
+
+    @@keyframes openBookFloat {
+        0%, 100% {
+            margin-top: 0;
+        }
+        50% {
+            margin-top: -14px;
+        }
+    }
+
+    @@keyframes glowPulse {
+        from { opacity: .5; transform: scale(.85); }
+        to { opacity: 1; transform: scale(1.15); }
+    }
+
+    @@keyframes lightPulse {
+        from { opacity: .4; transform: translateX(-50%) scale(.8); }
+        to { opacity: .9; transform: translateX(-50%) scale(1.2); }
+    }
+
+    @@keyframes particleMove {
+        0% { opacity: 0; transform: translateY(20px) scale(.5); }
+        30% { opacity: 1; }
+        70% { opacity: .8; }
+        100% { opacity: 0; transform: translateY(-90px) scale(1.3); }
+    }
+
+    /* RESPONSIVE */
+
+    @@media (max-width: 991.98px) {
+        .login-page {
+            flex-direction: column;
+        }
+
+        .login-visual,
+        .login-panel {
+            width: 100%;
+        }
+
+        .login-visual {
+            min-height: 650px;
+        }
+
+        .login-panel {
+            min-height: 590px;
+            padding: 45px 25px;
+        }
+
+        .library-stage {
+            max-width: 600px;
+        }
+
+        .login-logo {
+            height: 180px;
+        }
+
+        .login-logo img {
+            max-width: 360px;
+            height: 170px;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .login-visual {
+            min-height: 570px;
+        }
+
+        .visual-content {
+            padding: 35px 15px;
+        }
+
+        .library-stage {
+            height: 285px;
+            transform: scale(.82);
+            margin: 0 auto;
+        }
+
+        .visual-heading {
+            font-size: 27px;
+        }
+
+        .visual-description {
+            font-size: 12px;
+        }
+
+        .floating-book.book-one { left: 5%; }
+        .floating-book.book-two { right: 5%; }
+        .floating-book.book-three { left: 8%; }
+        .floating-book.book-four { right: 8%; }
+
+        .stage-ring.ring-three {
+            width: 400px;
+        }
+
+        .login-panel {
+            min-height: 590px;
+            padding: 35px 22px;
+        }
+
+        .login-logo {
+            height: 145px;
+            margin-bottom: 5px;
+        }
+
+        .login-logo img {
+            max-width: 310px;
+            height: 140px;
+        }
+
+        .login-welcome {
+            font-size: 27px;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .login-page *,
+        .login-page *::before,
+        .login-page *::after {
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+        }
+    }
+</style>
+}
+
+<div class="login-page">
+
+    <!-- LEFT: CINEMATIC LIBRARY -->
+
+    <section class="login-visual">
+
+        <div class="visual-glow"></div>
+        <div class="visual-grid"></div>
+
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+        <div class="particle p4"></div>
+        <div class="particle p5"></div>
+        <div class="particle p6"></div>
+        <div class="particle p7"></div>
+
+        <div class="visual-content">
+
+            <div class="visual-label">
+                <span></span>
+                UNIVERSITY LIBRARY
+            </div>
+
+            <div class="library-stage">
+
+                <div class="stage-ring"></div>
+                <div class="stage-ring ring-two"></div>
+                <div class="stage-ring ring-three"></div>
+
+                <div class="floating-book book-one">
+                    <div class="book-cover">
+                        <strong>KNOWLEDGE</strong>
+                        <span class="book-decoration">✦</span>
+                        <small>EST. LEARNING</small>
+                    </div>
+                </div>
+
+                <div class="floating-book book-two">
+                    <div class="book-cover">
+                        <strong>SCIENCE</strong>
+                        <span class="book-decoration">✧</span>
+                        <small>DISCOVER</small>
+                    </div>
+                </div>
+
+                <div class="floating-book book-three">
+                    <div class="book-cover">
+                        <strong>HISTORY</strong>
+                        <span class="book-decoration">✦</span>
+                        <small>EXPLORE</small>
+                    </div>
+                </div>
+
+                <div class="floating-book book-four">
+                    <div class="book-cover">
+                        <strong>IDEAS</strong>
+                        <span class="book-decoration">✧</span>
+                        <small>CREATE</small>
+                    </div>
+                </div>
+
+                <div class="book-light"></div>
+
+                <div class="open-book">
+                    <div class="book-pages left-page"></div>
+                    <div class="book-pages right-page"></div>
+                    <div class="book-spine"></div>
+                </div>
+
+            </div>
+
+            <h1 class="visual-heading">
+                A World of Knowledge,
+                <span>At Your Fingertips.</span>
+            </h1>
+
+            <p class="visual-description">
+                Explore academic resources, discover new ideas and
+                make every page a step towards your future.
+            </p>
+
+        </div>
+
+        <div class="visual-footer">
+            Discover Knowledge · Explore Possibilities
+        </div>
+
+    </section>
+
+    <!-- RIGHT: LOGIN PANEL -->
+
+    <section class="login-panel">
+
+        <div class="login-card">
+
+            <div class="login-logo">
+                <img src="~/image/logo/ULMS%20LOGO.png"
+                     alt="ULMS Logo" />
+            </div>
+
+            <h2 class="login-welcome">
+                Welcome Back!
+            </h2>
+
+            <p class="login-subtitle">
+                Your university library journey starts here.
+                Sign in to access your student library account.
+            </p>
+
+            <div class="login-divider"></div>
+
+            <p class="login-info">
+                Continue with your University of Lahore account
+            </p>
+
+            <button type="button"
+                    class="google-login-button"
+                    disabled
+                    aria-disabled="true">
+
+                <svg class="google-icon"
+                     viewBox="0 0 48 48"
+                     aria-hidden="true">
+
+                    <path fill="#EA4335"
+                          d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5Z" />
+
+                    <path fill="#4285F4"
+                          d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.47-4.74 7.16l7.73 6C44.43 37.94 46.98 31.8 46.98 24.55Z" />
+
+                    <path fill="#FBBC05"
+                          d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.86.92 7.5 2.53 10.78l8-6.19Z" />
+
+                    <path fill="#34A853"
+                          d="M24 48c6.48 0 11.93-2.13 15.91-5.82l-7.73-6c-2.15 1.45-4.89 2.3-8.18 2.3-6.26 0-11.57-4.22-13.47-9.91l-8 6.19C6.51 42.62 14.62 48 24 48Z" />
+
+                </svg>
+
+                Continue with Google
+
+            </button>
+
+            <p class="coming-soon">
+                Google sign-in will be available soon.
+            </p>
+
+            <div class="login-notice">
+
+                <span class="notice-icon">ⓘ</span>
+
+                <p>
+                    Student access is intended for eligible
+                    University of Lahore Google accounts.
+                    Please use your official university email
+                    when signing in.
+                </p>
+
+            </div>
+
+            <div class="login-privacy">
+                By using ULMS, you acknowledge our
+                <a asp-controller="Home"
+                   asp-action="Privacy">
+                    Privacy Policy
+                </a>.
+            </div>
+
+        </div>
+
+    </section>
+
+</div>

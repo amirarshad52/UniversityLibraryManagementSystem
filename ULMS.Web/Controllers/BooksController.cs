@@ -1,4 +1,4 @@
-
+using System;
 using System.Linq;
 using System.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
@@ -40,26 +40,40 @@ namespace ULMS.Web.Controllers
             return View(books);
         }
 
-        public IActionResult Details(int id)
-        {
-            var book = _context.Books
-                .FirstOrDefault(item => item.BookId == id);
+        public IActionResult Details(int id, string layout = null)
+{
+    var book = _context.Books
+        .FirstOrDefault(item => item.BookId == id);
 
-            if (book == null)
-            {
-                return NotFound();
-            }
+    if (book == null)
+    {
+        return NotFound();
+    }
 
-            var copies = _context.BookCopies
-                .Include(copy => copy.Library)
-                .Where(copy => copy.BookId == id)
-                .OrderBy(copy => copy.Library.Name)
-                .ThenBy(copy => copy.CopyCode)
-                .ToList();
+    var copies = _context.BookCopies
+        .Include(copy => copy.Library)
+        .Where(copy => copy.BookId == id)
+        .OrderBy(copy => copy.Library.Name)
+        .ThenBy(copy => copy.CopyCode)
+        .ToList();
 
-            ViewBag.BookCopies = copies;
+    ViewBag.BookCopies = copies;
 
-            return View(book);
-        }
+    // Select the correct navigation layout
+    if (string.Equals(layout, "Admin", StringComparison.OrdinalIgnoreCase))
+    {
+        ViewBag.LayoutRole = "Admin";
+    }
+    else if (string.Equals(layout, "Staff", StringComparison.OrdinalIgnoreCase))
+    {
+        ViewBag.LayoutRole = "Staff";
+    }
+    else
+    {
+        ViewBag.LayoutRole = "";
+    }
+
+    return View(book);
+}
     }
 }

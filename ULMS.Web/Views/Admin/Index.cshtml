@@ -1,4 +1,3 @@
-
 @{
     ViewData["Title"] = "Admin Dashboard";
 }
@@ -16,7 +15,9 @@
         max-width: 1350px;
     }
 
-    .admin-heading { margin-bottom: 28px; }
+    .admin-heading {
+        margin-bottom: 28px;
+    }
 
     .admin-eyebrow {
         color: #a17b43;
@@ -206,53 +207,114 @@
         color: #77669a;
     }
 
-    .dashboard-section { margin-top: 36px; }
+    .dashboard-section {
+        margin-top: 36px;
+    }
 
-    .module-card {
-        height: 100%;
+    /* MONTHLY CHARTS */
+
+    .monthly-graphs {
+        display: flex;
+        flex-direction: row;
+        gap: 22px;
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .graph-card {
+        flex: 1 1 0;
+        min-width: 0;
         background: #fff;
         border: 1px solid #edf0ec;
-        border-radius: 13px;
-        padding: 22px;
-        transition: all 0.25s ease;
+        border-radius: 14px;
+        padding: 23px 22px 18px;
         box-shadow: 0 5px 18px rgba(28, 55, 44, 0.045);
+        transition: all 0.25s ease;
     }
 
-    .module-card:hover {
-        transform: translateY(-4px);
+    .graph-card:hover {
+        box-shadow: 0 10px 24px rgba(28, 55, 44, 0.08);
         border-color: #d8c39e;
-        box-shadow: 0 12px 25px rgba(28, 55, 44, 0.08);
     }
 
-    .module-icon {
-        width: 46px;
-        height: 46px;
-        border-radius: 12px;
+    .graph-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .graph-title {
+        color: #173f35;
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .graph-subtitle {
+        color: #929c95;
+        font-size: 11px;
+        margin-top: 5px;
+    }
+
+    .graph-icon {
+        width: 39px;
+        height: 39px;
+        flex-shrink: 0;
+        border-radius: 10px;
         background: #edf4f0;
         color: #173f35;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 17px;
     }
 
-    .module-icon svg {
-        width: 23px;
-        height: 23px;
+    .graph-icon svg {
+        width: 20px;
+        height: 20px;
     }
 
-    .module-card h4 {
-        font-size: 15px;
-        font-weight: 700;
-        color: #173f35;
-        margin-bottom: 8px;
+    .graph-canvas-wrapper {
+        position: relative;
+        width: 100%;
+        height: 270px;
+        margin-top: 12px;
     }
 
-    .module-card p {
-        font-size: 12px;
+    .graph-legend {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         color: #849087;
-        line-height: 1.7;
-        margin: 0;
+        font-size: 11px;
+    }
+
+    .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .legend-green {
+        background: #26965c;
+    }
+
+    .legend-red {
+        background: #d94b4b;
+    }
+
+    .legend-gold {
+        background: #a17b43;
     }
 
     .dashboard-note {
@@ -274,28 +336,6 @@
         font-size: 12px;
         margin: 5px 0 0;
         line-height: 1.7;
-    }
-
-    .management-link {
-        display: block;
-        height: 100%;
-        text-decoration: none !important;
-        color: inherit;
-    }
-
-    .management-link:hover,
-    .management-link:focus {
-        text-decoration: none !important;
-        color: inherit;
-    }
-
-    .management-link:focus {
-        outline: none;
-    }
-
-    .management-link:focus .module-card {
-        outline: 2px solid #c49a58;
-        outline-offset: 3px;
     }
 
     @@media (max-width: 767px) {
@@ -321,6 +361,18 @@
 
         .dashboard-stat {
             min-height: 135px;
+        }
+
+        .monthly-graphs {
+            flex-direction: column;
+        }
+
+        .graph-card {
+            width: 100%;
+        }
+
+        .graph-canvas-wrapper {
+            height: 250px;
         }
     }
 </style>
@@ -364,22 +416,22 @@
 
                     <path d="M50 25C36 15 20 17 12 22V75C25 69 39 71 50 80V25Z"
                           stroke="currentColor" stroke-width="2.5"
-                          stroke-linejoin="round"/>
+                          stroke-linejoin="round" />
 
                     <path d="M50 25C64 15 80 17 88 22V75C75 69 61 71 50 80V25Z"
                           stroke="currentColor" stroke-width="2.5"
-                          stroke-linejoin="round"/>
+                          stroke-linejoin="round" />
 
                     <path d="M50 25V80"
-                          stroke="currentColor" stroke-width="2.5"/>
+                          stroke="currentColor" stroke-width="2.5" />
 
                     <path d="M21 34C29 31 36 33 42 37M21 44C29 41 36 43 42 47"
                           stroke="currentColor" stroke-width="2"
-                          stroke-linecap="round"/>
+                          stroke-linecap="round" />
 
                     <path d="M58 37C64 33 71 31 79 34M58 47C64 43 71 41 79 44"
                           stroke="currentColor" stroke-width="2"
-                          stroke-linecap="round"/>
+                          stroke-linecap="round" />
                 </svg>
             </div>
         </div>
@@ -402,8 +454,8 @@
                         <div class="stat-icon">
                             <svg viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" stroke-width="1.8">
-                                <path d="M3 21h18M5 21V7l7-4 7 4v14"/>
-                                <path d="M9 21v-5h6v5M9 9h.01M15 9h.01"/>
+                                <path d="M3 21h18M5 21V7l7-4 7 4v14" />
+                                <path d="M9 21v-5h6v5M9 9h.01M15 9h.01" />
                             </svg>
                         </div>
                     </div>
@@ -420,9 +472,9 @@
                         <div class="stat-icon gold-icon">
                             <svg viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" stroke-width="1.8">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
                             </svg>
                         </div>
                     </div>
@@ -439,9 +491,9 @@
                         <div class="stat-icon blue-icon">
                             <svg viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" stroke-width="1.8">
-                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
-                                <path d="M8 7h8M8 11h8"/>
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                                <path d="M8 7h8M8 11h8" />
                             </svg>
                         </div>
                     </div>
@@ -458,9 +510,9 @@
                         <div class="stat-icon purple-icon">
                             <svg viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" stroke-width="1.8">
-                                <rect x="4" y="3" width="13" height="17" rx="2"/>
-                                <path d="M8 7h5M8 11h5M8 15h3"/>
-                                <path d="M8 21h11a2 2 0 0 0 2-2V7"/>
+                                <rect x="4" y="3" width="13" height="17" rx="2" />
+                                <path d="M8 7h5M8 11h5M8 15h3" />
+                                <path d="M8 21h11a2 2 0 0 0 2-2V7" />
                             </svg>
                         </div>
                     </div>
@@ -473,243 +525,113 @@
 
         </div>
 
-        <div class="dashboard-section">
-
-            <div class="section-heading">
-                <div>
-                    <h3>Borrowing Overview</h3>
-
-                    <div class="section-description">
-                        Monitor the circulation of books across the university.
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-
-                <div class="col-lg-4 mb-3">
-                    <div class="dashboard-stat">
-                        <div class="stat-top">
-                            <div class="stat-icon gold-icon">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8">
-                                    <path d="M12 8v4l3 2"/>
-                                    <circle cx="12" cy="12" r="9"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div class="stat-number">@ViewBag.ActiveLoans</div>
-                        <div class="stat-label">Active Loans</div>
-                        <div class="stat-note">Books currently issued to students</div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 mb-3">
-                    <div class="dashboard-stat">
-                        <div class="stat-top">
-                            <div class="stat-icon">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8">
-                                    <path d="M20 7v5h-5"/>
-                                    <path d="M4 17v-5h5"/>
-                                    <path d="M5.6 9a7 7 0 0 1 11.8-2L20 12M4 12l2.6 5a7 7 0 0 0 11.8-2"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div class="stat-number">@ViewBag.AvailableCopies</div>
-                        <div class="stat-label">Available Book Copies</div>
-                        <div class="stat-note">Physical copies available for issue</div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 mb-3">
-                    <div class="dashboard-stat">
-                        <div class="stat-top">
-                            <div class="stat-icon purple-icon">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8">
-                                    <circle cx="12" cy="12" r="9"/>
-                                    <path d="M12 7v5l3 2M12 3v1M21 12h-1"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div class="stat-number">@ViewBag.OverdueLoans</div>
-                        <div class="stat-label">Overdue Loans</div>
-                        <div class="stat-note">Active loans past their due date</div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+        <!-- MONTHLY BORROWING ANALYTICS -->
 
         <div class="dashboard-section">
 
             <div class="section-heading">
                 <div>
-                    <h3>Management Areas</h3>
+                    <h3>Monthly Borrowing Analytics</h3>
 
                     <div class="section-description">
-                        Main administrative sections of the library system.
+                        Monthly comparison of books borrowed and returned across the university.
                     </div>
                 </div>
             </div>
 
-            <div class="row">
+            <div class="monthly-graphs">
 
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <a asp-controller="Admin"
-                       asp-action="Libraries"
-                       class="management-link">
+                <!-- BOOKS BORROWED GRAPH -->
 
-                        <div class="module-card">
-                            <div class="module-icon">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8">
-                                    <path d="M3 21h18M5 21V7l7-4 7 4v14"/>
-                                    <path d="M9 21v-5h6v5"/>
-                                </svg>
+                <div class="graph-card">
+
+                    <div class="graph-card-header">
+                        <div>
+                            <h4 class="graph-title">Books Borrowed</h4>
+
+                            <div class="graph-subtitle">
+                                Books issued during the current month
                             </div>
-
-                            <h4>Library Management</h4>
-
-                            <p>
-                                Manage university libraries, their locations
-                                and assigned staff members.
-                            </p>
                         </div>
-                    </a>
+
+                        <div class="graph-icon">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                                <path d="M8 7h8M8 11h8" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="graph-canvas-wrapper">
+                        <canvas id="borrowedChart"></canvas>
+                    </div>
+
+                    <div class="graph-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot legend-green"></span>
+                            Increasing
+                        </div>
+
+                        <div class="legend-item">
+                            <span class="legend-dot legend-red"></span>
+                            Decreasing
+                        </div>
+
+                        <div class="legend-item">
+                            <span class="legend-dot legend-gold"></span>
+                            No change
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <a asp-controller="Admin"
-                       asp-action="Staff"
-                       class="management-link">
+                <!-- BOOKS RETURNED GRAPH -->
 
-                        <div class="module-card">
-                            <div class="module-icon">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                    <path d="M19 8v6M22 11h-6"/>
-                                </svg>
+                <div class="graph-card">
+
+                    <div class="graph-card-header">
+                        <div>
+                            <h4 class="graph-title">Books Returned</h4>
+
+                            <div class="graph-subtitle">
+                                Books returned during the current month
                             </div>
-
-                            <h4>Staff Management</h4>
-
-                            <p>
-                                Create staff accounts, manage staff information
-                                and assign staff to specific libraries.
-                            </p>
                         </div>
-                    </a>
-                </div>
 
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <a asp-controller="Admin"
-                       asp-action="Books"
-                       class="management-link"
-                       aria-label="Open Book Catalogue">
-
-                        <div class="module-card">
-                            <div class="module-icon">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8">
-                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
-                                </svg>
-                            </div>
-
-                            <h4>Book Catalogue</h4>
-
-                            <p>
-                                Review book information and physical copies
-                                maintained across all university libraries.
-                            </p>
+                        <div class="graph-icon gold-icon">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8">
+                                <path d="M20 7v5h-5" />
+                                <path d="M4 17v-5h5" />
+                                <path d="M5.6 9a7 7 0 0 1 11.8-2L20 12M4 12l2.6 5a7 7 0 0 0 11.8-2" />
+                            </svg>
                         </div>
-                    </a>
-                </div>
+                    </div>
 
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <a asp-controller="Admin"
-                       asp-action="Loans"
-                       class="management-link"
-                       aria-label="Open Borrowing and Returns Management">
+                    <div class="graph-canvas-wrapper">
+                        <canvas id="returnedChart"></canvas>
+                    </div>
 
-                        <div class="module-card">
-                            <div class="module-icon">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8">
-                                    <path d="M8 2h8l4 4v16H4V2h4Z"/>
-                                    <path d="M8 2v5h8V2M8 13h8M8 17h8"/>
-                                </svg>
-                            </div>
-
-                            <h4>Borrowing & Returns</h4>
-
-                            <p>
-                                Monitor active loans, returned books and
-                                overdue borrowing records.
-                            </p>
+                    <div class="graph-legend">
+                        <div class="legend-item">
+                            <span class="legend-dot legend-green"></span>
+                            Increasing
                         </div>
-                    </a>
-                </div>
 
-                <!-- REPORTS & ANALYTICS - CLICKABLE -->
-
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <a asp-controller="Admin"
-                       asp-action="Reports"
-                       class="management-link"
-                       aria-label="Open Reports and Analytics">
-
-                        <div class="module-card">
-                            <div class="module-icon">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8">
-                                    <path d="M3 3v18h18"/>
-                                    <path d="m18 17-5-5-4 4-4-4"/>
-                                    <path d="M14 7h6v6"/>
-                                </svg>
-                            </div>
-
-                            <h4>Reports & Analytics</h4>
-
-                            <p>
-                                Review library statistics, book availability
-                                and borrowing summaries.
-                            </p>
+                        <div class="legend-item">
+                            <span class="legend-dot legend-red"></span>
+                            Decreasing
                         </div>
-                    </a>
+
+                        <div class="legend-item">
+                            <span class="legend-dot legend-gold"></span>
+                            No change
+                        </div>
+                    </div>
+
                 </div>
-
-                <div class="col-lg-4 col-md-6 mb-3">
-    <a href="/Admin/Profile"
-       class="management-link"
-       aria-label="Open Admin Profile">
-
-        <div class="module-card">
-            <div class="module-icon">
-                <svg viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="1.8">
-                    <circle cx="12" cy="8" r="4"/>
-                    <path d="M5 21v-2a7 7 0 0 1 14 0v2"/>
-                </svg>
-            </div>
-
-            <h4>Admin Profile</h4>
-
-            <p>
-                View administrator account information
-                and authentication details.
-            </p>
-        </div>
-
-    </a>
-</div>
 
             </div>
         </div>
@@ -718,10 +640,205 @@
             <strong>Dashboard Information</strong>
 
             <p>
-                Dashboard statistics are retrieved from the ULMS database.
-                Management sections are being developed step by step.
+                Dashboard statistics and monthly chart data are retrieved
+                from the ULMS database. The charts show actual borrowing
+                and return activity for the current month.
             </p>
         </div>
 
     </div>
 </div>
+
+<!-- CHART.JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const borrowedData = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+                (int[])ViewBag.BorrowedChartData
+            )
+        );
+
+        const returnedData = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+                (int[])ViewBag.ReturnedChartData
+            )
+        );
+
+        const chartLabels = ["0", "5", "10", "15", "20", "25", "30"];
+
+        function createMonthlyChart(canvasId, chartData) {
+
+            const canvas = document.getElementById(canvasId);
+
+            if (!canvas) {
+                return;
+            }
+
+            new Chart(canvas, {
+                type: "line",
+
+                data: {
+                    labels: chartLabels,
+
+                    datasets: [{
+                        label: "Books",
+
+                        data: chartData,
+
+                        borderWidth: 3,
+
+                        borderColor: "#a17b43",
+
+                        backgroundColor: "rgba(161, 123, 67, 0.08)",
+
+                        fill: false,
+
+                        tension: 0.4,
+
+                        pointRadius: 0,
+
+                        pointHoverRadius: 0,
+
+                        pointHitRadius: 8,
+
+                        spanGaps: true,
+
+                        segment: {
+                            borderColor: function (context) {
+
+                                const previousValue =
+                                    context.p0.parsed.y;
+
+                                const currentValue =
+                                    context.p1.parsed.y;
+
+                                if (currentValue > previousValue) {
+                                    return "#26965c";
+                                }
+
+                                if (currentValue < previousValue) {
+                                    return "#d94b4b";
+                                }
+
+                                return "#a17b43";
+                            }
+                        }
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    interaction: {
+                        intersect: false,
+                        mode: "index"
+                    },
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            backgroundColor: "#173f35",
+
+                            titleColor: "#ffffff",
+
+                            bodyColor: "#ffffff",
+
+                            padding: 12,
+
+                            displayColors: false,
+
+                            callbacks: {
+                                title: function (items) {
+                                    return "Day " + items[0].label;
+                                },
+
+                                label: function (context) {
+                                    return "Books: " + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Days of Month",
+                                color: "#77837c",
+                                font: {
+                                    size: 11,
+                                    weight: "600"
+                                }
+                            },
+
+                            grid: {
+                                display: false
+                            },
+
+                            ticks: {
+                                color: "#87918b",
+                                font: {
+                                    size: 11
+                                }
+                            },
+
+                            border: {
+                                color: "#e6ebe6"
+                            }
+                        },
+
+                        y: {
+                            min: 0,
+
+                            max: 7,
+
+                            beginAtZero: true,
+
+                            title: {
+                                display: true,
+                                text: "Number of Books",
+                                color: "#77837c",
+                                font: {
+                                    size: 11,
+                                    weight: "600"
+                                }
+                            },
+
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0,
+                                color: "#87918b",
+                                font: {
+                                    size: 11
+                                }
+                            },
+
+                            grid: {
+                                color: "#edf0ec",
+                                drawBorder: false
+                            },
+
+                            border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        createMonthlyChart("borrowedChart", borrowedData);
+
+        createMonthlyChart("returnedChart", returnedData);
+
+    });
+</script>

@@ -1,0 +1,553 @@
+
+@model ULMS.Web.Controllers.StaffBooksViewModel
+
+@{
+    ViewData["Title"] = "Books Catalogue";
+
+    var books = Model.Books ??
+        new List<ULMS.Web.Controllers.StaffBookCatalogueItemViewModel>();
+}
+
+<style>
+    .staff-books-page {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 35px 0 55px;
+        color: #26352f;
+    }
+
+    .staff-books-header {
+        background: linear-gradient(135deg, #173d30, #285b45);
+        color: white;
+        border-radius: 16px;
+        padding: 28px 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 22px rgba(24, 61, 47, .12);
+    }
+
+    .staff-books-header h1 {
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .staff-books-header p {
+        color: #d8e7dd;
+        margin-bottom: 0;
+    }
+
+    .btn-add-book {
+        background: #d5ad55;
+        color: #263b2e;
+        border: none;
+        border-radius: 8px;
+        padding: 11px 19px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .btn-add-book:hover {
+        background: #c49a3e;
+        color: #263b2e;
+        text-decoration: none;
+    }
+
+    .staff-book-stat {
+        background: white;
+        border: 1px solid #e8eee9;
+        border-radius: 14px;
+        padding: 21px;
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(30, 55, 40, .04);
+    }
+
+    .staff-book-stat-label {
+        color: #718078;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .staff-book-stat-number {
+        color: #204c39;
+        font-size: 29px;
+        font-weight: 750;
+        margin-top: 7px;
+    }
+
+    .staff-book-panel {
+        background: white;
+        border: 1px solid #e8eee9;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(30, 55, 40, .04);
+        overflow: hidden;
+    }
+
+    .staff-book-panel-header {
+        padding: 22px 24px;
+        border-bottom: 1px solid #edf1ed;
+    }
+
+    .staff-book-panel-header h4 {
+        font-weight: 700;
+        color: #244b38;
+        margin-bottom: 5px;
+    }
+
+    .staff-book-search {
+        border: 1px solid #dce5de;
+        border-radius: 8px;
+        padding: 10px 13px;
+        height: 44px;
+        max-width: 350px;
+    }
+
+    .staff-book-search:focus {
+        border-color: #3d7658;
+        box-shadow: 0 0 0 3px rgba(61, 118, 88, .12);
+        outline: none;
+    }
+
+    .staff-book-table {
+        margin-bottom: 0;
+    }
+
+    .staff-book-table thead th {
+        background: #f7f9f7;
+        color: #68766e;
+        border-top: none;
+        border-bottom: 1px solid #e8eee9;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        padding: 15px 17px;
+        white-space: nowrap;
+    }
+
+    .staff-book-table tbody td {
+        padding: 15px 17px;
+        vertical-align: middle;
+        border-top: 1px solid #edf1ed;
+    }
+
+    .staff-book-cover {
+        width: 52px;
+        height: 68px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #e4e9e4;
+        background: #f3f5f3;
+    }
+
+    .staff-book-cover-placeholder {
+        width: 52px;
+        height: 68px;
+        border-radius: 5px;
+        background: #edf2ed;
+        color: #54735e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .staff-book-title {
+        color: #294c39;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .staff-book-author {
+        color: #849087;
+        font-size: 13px;
+    }
+
+    .staff-book-isbn {
+        color: #53665a;
+        font-size: 13px;
+    }
+
+    .staff-book-count {
+        background: #edf5ee;
+        color: #39704b;
+        border-radius: 20px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .staff-book-available {
+        background: #e9f5ec;
+        color: #287443;
+        border-radius: 20px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .staff-book-unavailable {
+        background: #f2f2f0;
+        color: #747b75;
+        border-radius: 20px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .staff-book-details {
+        background: #edf5ee;
+        color: #285b3e;
+        border: 1px solid #cbded0;
+        border-radius: 7px;
+        padding: 6px 13px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+        display: inline-block;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+    .staff-book-details:hover {
+        background: #285b45;
+        color: white;
+        border-color: #285b45;
+        text-decoration: none;
+    }
+
+    .staff-book-empty {
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .staff-book-empty h5 {
+        color: #31533f;
+        font-weight: 700;
+        margin-top: 15px;
+    }
+
+    .staff-book-empty p {
+        color: #849087;
+    }
+
+    .staff-book-back {
+        color: #587263;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .staff-book-back:hover {
+        color: #204c39;
+        text-decoration: none;
+    }
+
+    @@media (max-width: 767px) {
+        .staff-books-header {
+            padding: 23px;
+        }
+
+        .staff-book-panel-header {
+            padding: 18px;
+        }
+
+        .staff-book-search {
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .staff-books-actions {
+            margin-top: 18px;
+        }
+    }
+</style>
+
+<div class="staff-books-page">
+    <div class="container">
+
+        <!-- HEADER -->
+
+        <div class="staff-books-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>Books Catalogue</h1>
+
+                    <p>
+                        Explore the university book catalogue and
+                        manage books for @Model.LibraryName.
+                    </p>
+                </div>
+
+                <div class="col-md-4 text-md-right staff-books-actions">
+                    <a href="/Staff/Books/Create"
+                       class="btn-add-book">
+                        + Add New Book
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- BACK LINK -->
+
+        <div class="mb-4">
+            <a href="/Staff"
+               class="staff-book-back">
+                &#8592; Back to Staff Dashboard
+            </a>
+        </div>
+
+        <!-- ALERT -->
+
+        @if (!string.IsNullOrWhiteSpace(Model.Message))
+        {
+            <div class="alert @(Model.IsSuccess
+                ? "alert-success"
+                : "alert-danger")">
+                @Model.Message
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(ViewBag.SearchMessage as string))
+        {
+            <div class="alert alert-warning">
+                @ViewBag.SearchMessage
+            </div>
+        }
+
+        <!-- STATISTICS -->
+
+        <div class="row mb-4">
+
+            <div class="col-md-4 mb-3">
+                <div class="staff-book-stat">
+                    <div class="staff-book-stat-label">
+                        University Catalogue Titles
+                    </div>
+
+                    <div class="staff-book-stat-number">
+                        @Model.TotalCatalogueTitles
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="staff-book-stat">
+                    <div class="staff-book-stat-label">
+                        Your Library Total Copies
+                    </div>
+
+                    <div class="staff-book-stat-number">
+                        @Model.TotalCopies
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="staff-book-stat">
+                    <div class="staff-book-stat-label">
+                        Your Library Available Copies
+                    </div>
+
+                    <div class="staff-book-stat-number">
+                        @Model.AvailableCopies
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CATALOGUE -->
+
+        <div class="staff-book-panel">
+
+            <div class="staff-book-panel-header">
+                <div class="row align-items-center">
+
+                    <div class="col-md-6">
+                        <h4>University Book Catalogue</h4>
+
+                        <small class="text-muted">
+                            Copy information is limited to your assigned library.
+                        </small>
+                    </div>
+
+                    <div class="col-md-6 text-md-right mt-3 mt-md-0">
+
+                        <form method="get"
+                              action="/Staff/Books"
+                              class="d-flex justify-content-md-end">
+
+                            <input type="text"
+                                   name="search"
+                                   value="@Model.Search"
+                                   class="form-control staff-book-search"
+                                   placeholder="Search title, author or ISBN..." />
+
+                            <button type="submit"
+                                    class="btn btn-success ml-2">
+                                Search
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+
+            @if (books.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table staff-book-table">
+
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>ISBN</th>
+                                <th>Your Library Copies</th>
+                                <th>Available</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var book in books)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <div class="d-flex align-items-center">
+
+                                            @if (!string.IsNullOrWhiteSpace(book.CoverImagePath))
+                                            {
+                                                <img src="@Url.Content(book.CoverImagePath)"
+                                                     alt="Book cover"
+                                                     class="staff-book-cover mr-3" />
+                                            }
+                                            else
+                                            {
+                                                <div class="staff-book-cover-placeholder mr-3">
+                                                    &#128218;
+                                                </div>
+                                            }
+
+                                            <div>
+                                                <div class="staff-book-title">
+                                                    @book.Title
+                                                </div>
+
+                                                <div class="staff-book-author">
+                                                    By @book.Author
+                                                </div>
+
+                                                @if (!string.IsNullOrWhiteSpace(book.Description))
+                                                {
+                                                    <div class="text-muted small mt-1">
+                                                        @(book.Description.Length > 85
+                                                            ? book.Description.Substring(0, 85) + "..."
+                                                            : book.Description)
+                                                    </div>
+                                                }
+                                            </div>
+
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="staff-book-isbn">
+                                            @(string.IsNullOrWhiteSpace(book.ISBN)
+                                                ? "Not provided"
+                                                : book.ISBN)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="staff-book-count">
+                                            @book.TotalCopies
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @if (book.AvailableCopies > 0)
+                                        {
+                                            <span class="staff-book-available">
+                                                @book.AvailableCopies Available
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="staff-book-unavailable">
+                                                0 Available
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <a asp-controller="Books"
+                                         asp-action="Details"
+                                         asp-route-id="@book.BookId"
+                                         asp-route-layout="Staff"
+                                         class="staff-book-details">
+                                         Details
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="staff-book-empty">
+
+                    <div style="font-size:45px;color:#91a99a;">
+                        &#128218;
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Search))
+                    {
+                        <h5>No Matching Books Found</h5>
+
+                        <p>
+                            No books matched your search.
+                        </p>
+
+                        <a href="/Staff/Books"
+                           class="btn btn-outline-success">
+                            Clear Search
+                        </a>
+                    }
+                    else
+                    {
+                        <h5>No Books in Catalogue</h5>
+
+                        <p>
+                            Start building the university book catalogue
+                            by adding the first book.
+                        </p>
+
+                        <a href="/Staff/Books/Create"
+                           class="btn-add-book">
+                            + Add First Book
+                        </a>
+                    }
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+</div>

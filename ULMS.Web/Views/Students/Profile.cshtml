@@ -1,0 +1,122 @@
+@model ULMS.Web.Controllers.StudentProfileViewModel
+
+@{
+    ViewData["Title"] = "Student Profile";
+
+    var displayName = string.IsNullOrWhiteSpace(Model.Name)
+        ? "Student"
+        : Model.Name.Trim();
+
+    var firstLetter = displayName.Substring(0, 1).ToUpper();
+}
+
+<style>
+    body { background: #f5f7f4; }
+    .st-page { padding: 35px 0 45px; color: #23372b; }
+    .st-heading { color: #23372b; font-weight: 700; }
+    .st-muted { color: #718078; }
+    .st-card { background: white; border: 1px solid #e8eee9; border-radius: 16px; box-shadow: 0 5px 18px rgba(35,55,43,.05); overflow: hidden; }
+    .st-profile-hero { background: linear-gradient(135deg, #183d2b, #34734c); padding: 32px 20px 65px; color: white; text-align: center; }
+    .st-avatar { width: 94px; height: 94px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: -48px auto 15px; background: #eaf3ec; border: 5px solid white; color: #34734c; font-size: 37px; font-weight: 700; position: relative; }
+    .st-info { padding: 10px 30px 28px; }
+    .st-info-row { padding: 17px 0; border-bottom: 1px solid #edf1ee; }
+    .st-info-row:last-child { border-bottom: 0; }
+    .st-info-label { color: #718078; font-size: 13px; font-weight: 600; }
+    .st-info-value { color: #23372b; font-weight: 600; word-break: break-word; }
+    .st-badge { display: inline-block; padding: 7px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .st-green { background: #e5f3e8; color: #287443; }
+    .st-yellow { background: #fff3d8; color: #946b16; }
+    .st-notice { background: #eaf3ec; border: 1px solid #dceadd; color: #365b41; border-radius: 10px; padding: 15px 17px; line-height: 1.6; }
+    .st-btn { background: #34734c; border-color: #34734c; color: white; border-radius: 8px; font-weight: 600; }
+    .st-btn:hover { background: #245b38; border-color: #245b38; color: white; }
+</style>
+
+<div class="st-page">
+    <div class="container">
+
+        <div class="mb-4">
+            <div class="small st-muted font-weight-bold mb-2" style="letter-spacing:1px;">STUDENT ACCOUNT</div>
+            <h2 class="st-heading mb-2">My Profile</h2>
+            <p class="st-muted mb-0">View your registered student information.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+
+                <div class="st-card">
+
+                    <div class="st-profile-hero">
+                        <div class="small mb-2" style="color:#dce9df;letter-spacing:1px;">UNIVERSITY LIBRARY PORTAL</div>
+                        <h4 class="font-weight-bold mb-1">Student Profile</h4>
+                        <p class="mb-0 small" style="color:#dce9df;">Your account information</p>
+                    </div>
+
+                    <div class="st-avatar">
+                        @firstLetter
+                    </div>
+
+                    <div class="text-center px-3 mb-4">
+                        <h4 class="st-heading mb-1">@displayName</h4>
+                        <p class="st-muted mb-0">Student Account</p>
+                    </div>
+
+                    <div class="st-info">
+
+                        <div class="st-info-row row">
+                            <div class="col-sm-4 st-info-label">Student ID</div>
+                            <div class="col-sm-8 st-info-value">@Model.StudentId</div>
+                        </div>
+
+                        <div class="st-info-row row">
+                            <div class="col-sm-4 st-info-label">Full Name</div>
+                            <div class="col-sm-8 st-info-value">@displayName</div>
+                        </div>
+
+                        <div class="st-info-row row">
+                            <div class="col-sm-4 st-info-label">University Email</div>
+                            <div class="col-sm-8 st-info-value">@Model.Email</div>
+                        </div>
+
+                        <div class="st-info-row row">
+                            <div class="col-sm-4 st-info-label">Account Status</div>
+                            <div class="col-sm-8">
+                                @if (Model.IsGoogleAccountLinked)
+                                {
+                                    <span class="st-badge st-green">Google Account Linked</span>
+                                }
+                                else
+                                {
+                                    <span class="st-badge st-yellow">Provisional Profile</span>
+                                }
+                            </div>
+                        </div>
+
+                        @if (Model.CreatedAt.HasValue)
+                        {
+                            <div class="st-info-row row">
+                                <div class="col-sm-4 st-info-label">Account Created</div>
+                                <div class="col-sm-8 st-info-value">
+                                    @Model.CreatedAt.Value.ToString("dd MMM yyyy")
+                                </div>
+                            </div>
+                        }
+
+                        <div class="st-notice mt-4">
+                            <strong>Profile Information</strong><br />
+                            Your student profile information is read-only. If any information needs correction, please contact the university library staff.
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a asp-controller="Student" asp-action="Index" class="btn st-btn px-4">
+                                Back to Dashboard
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

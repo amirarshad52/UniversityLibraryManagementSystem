@@ -1,0 +1,343 @@
+
+@model ULMS.Web.Controllers.StaffProfilePageViewModel
+
+@{
+    ViewData["Title"] = "Staff Profile";
+
+    string staffInitial = string.IsNullOrWhiteSpace(Model.Name)
+        ? "S"
+        : Model.Name.Trim().Substring(0, 1).ToUpperInvariant();
+}
+
+@section Styles {
+    <style>
+        .staff-profile-page {
+            min-height: 75vh;
+            padding: 45px 0 60px;
+            background: #f5f7f4;
+            color: #23372b;
+        }
+
+        .staff-profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .staff-profile-heading {
+            margin-bottom: 25px;
+        }
+
+        .staff-profile-heading h2 {
+            color: #23372b;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .staff-profile-heading p {
+            color: #718078;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .staff-profile-card {
+            background: #ffffff;
+            border: 1px solid #e8eee9;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(25, 55, 35, 0.05);
+        }
+
+        .staff-profile-banner {
+            padding: 32px;
+            background: linear-gradient(120deg, #183d2b, #34734c);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .staff-profile-avatar {
+            width: 82px;
+            height: 82px;
+            min-width: 82px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eaf3ec;
+            color: #34734c;
+            font-size: 32px;
+            font-weight: 800;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .staff-profile-banner h3 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .staff-profile-banner p {
+            color: #e0eee4;
+            font-size: 14px;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .staff-profile-badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 6px 13px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #e0eee4;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .staff-profile-details {
+            padding: 30px 32px;
+        }
+
+        .staff-profile-details h4 {
+            color: #23372b;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .staff-detail-item {
+            height: 100%;
+            min-height: 92px;
+            padding: 17px;
+            background: #f5f8f5;
+            border: 1px solid #e5ede6;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .staff-detail-item:hover {
+            background: #eaf3ec;
+            border-color: #cbded0;
+            transform: translateY(-2px);
+        }
+
+        .staff-detail-label {
+            display: block;
+            color: #718078;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 9px;
+        }
+
+        .staff-detail-value {
+            display: block;
+            color: #23372b;
+            font-size: 15px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .staff-profile-footer {
+            padding: 20px 32px;
+            border-top: 1px solid #e8eee9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .staff-profile-footer p {
+            color: #718078;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .staff-back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 20px;
+            border-radius: 9px;
+            background: #34734c;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .staff-back-button:hover {
+            background: #245b38;
+            color: #ffffff;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+        @@media (max-width: 576px) {
+            .staff-profile-page {
+                padding: 30px 12px 40px;
+            }
+
+            .staff-profile-banner {
+                padding: 24px 20px;
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .staff-profile-banner h3 {
+                font-size: 21px;
+            }
+
+            .staff-profile-details {
+                padding: 24px 18px;
+            }
+
+            .staff-profile-footer {
+                padding: 20px;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+}
+
+<section class="staff-profile-page">
+    <div class="container staff-profile-container">
+
+        <!-- PAGE HEADING -->
+        <div class="staff-profile-heading">
+            <h2>My Profile</h2>
+            <p>
+                View your staff account and assigned library information.
+            </p>
+        </div>
+
+        <div class="staff-profile-card">
+
+            <!-- PROFILE HEADER -->
+            <div class="staff-profile-banner">
+
+                <div class="staff-profile-avatar">
+                    @staffInitial
+                </div>
+
+                <div>
+                    <h3>@Model.Name</h3>
+
+                    <p>@Model.Email</p>
+
+                    <span class="staff-profile-badge">
+                        Library Staff
+                    </span>
+                </div>
+
+            </div>
+
+            <!-- PROFILE DETAILS -->
+            <div class="staff-profile-details">
+
+                <h4>Account Information</h4>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <div class="staff-detail-item">
+                            <span class="staff-detail-label">
+                                Staff ID
+                            </span>
+
+                            <span class="staff-detail-value">
+                                @Model.StaffId
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="staff-detail-item">
+                            <span class="staff-detail-label">
+                                Full Name
+                            </span>
+
+                            <span class="staff-detail-value">
+                                @Model.Name
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="staff-detail-item">
+                            <span class="staff-detail-label">
+                                University Email
+                            </span>
+
+                            <span class="staff-detail-value">
+                                @Model.Email
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="staff-detail-item">
+                            <span class="staff-detail-label">
+                                Assigned Library ID
+                            </span>
+
+                            <span class="staff-detail-value">
+                                @Model.LibraryId
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="staff-detail-item">
+                            <span class="staff-detail-label">
+                                Assigned Library
+                            </span>
+
+                            <span class="staff-detail-value">
+                                @Model.LibraryName
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="staff-detail-item">
+                            <span class="staff-detail-label">
+                                Account Created
+                            </span>
+
+                            <span class="staff-detail-value">
+                                @Model.CreatedAt.ToString("dd MMMM yyyy")
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PROFILE FOOTER -->
+            <div class="staff-profile-footer">
+
+                <p>
+                    Your profile information is currently read-only.
+                </p>
+
+                <a asp-controller="Staff"
+                   asp-action="Index"
+                   class="staff-back-button">
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</section>

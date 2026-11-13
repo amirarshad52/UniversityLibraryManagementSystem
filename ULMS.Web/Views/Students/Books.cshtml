@@ -1,0 +1,141 @@
+@model IEnumerable<ULMS.Web.Controllers.StudentBookListItemViewModel>
+
+@{
+    ViewData["Title"] = "Books Catalogue";
+}
+
+<style>
+    body { background: #f5f7f4; }
+    .st-page { padding: 35px 0 45px; color: #23372b; }
+    .st-heading { color: #23372b; font-weight: 700; }
+    .st-muted { color: #718078; }
+    .st-card { background: white; border: 1px solid #e8eee9; border-radius: 15px; box-shadow: 0 4px 15px rgba(35,55,43,.045); overflow: hidden; }
+    .st-card-body { padding: 22px; }
+    .st-btn { background: #34734c; border-color: #34734c; color: white; border-radius: 8px; font-weight: 600; }
+    .st-btn:hover { background: #245b38; border-color: #245b38; color: white; }
+    .st-input { border: 1px solid #dce6de; border-radius: 8px; min-height: 44px; }
+    .st-input:focus { border-color: #6a9b78; box-shadow: 0 0 0 .18rem rgba(52,115,76,.13); }
+    .st-book-card { transition: transform .18s ease, box-shadow .18s ease; }
+    .st-book-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(35,55,43,.09); }
+    .st-cover { height: 225px; background: #f1f7f2; display: flex; align-items: center; justify-content: center; padding: 18px; }
+    .st-cover img { max-height: 190px; max-width: 100%; object-fit: contain; }
+    .st-badge { display: inline-block; padding: 6px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .st-green { background: #e5f3e8; color: #287443; }
+    .st-grey { background: #edf0ed; color: #66736a; }
+    .st-outline { color: #34734c; border: 1px solid #34734c; background: white; border-radius: 8px; font-weight: 600; }
+    .st-outline:hover { background: #34734c; color: white; }
+</style>
+
+<div class="st-page">
+    <div class="container">
+
+        <div class="mb-4">
+            <div class="small st-muted font-weight-bold mb-2" style="letter-spacing:1px;">UNIVERSITY LIBRARY</div>
+            <h2 class="st-heading mb-2">Books Catalogue</h2>
+            <p class="st-muted mb-0">Explore books available across university libraries.</p>
+        </div>
+
+        <div class="st-card mb-4">
+            <div class="st-card-body">
+                <form method="get" asp-controller="Student" asp-action="Books">
+                    <div class="form-row">
+                        <div class="col-md-9 mb-2 mb-md-0">
+                            <input type="text"
+                                   name="search"
+                                   value="@ViewBag.Search"
+                                   class="form-control st-input"
+                                   maxlength="256"
+                                   placeholder="Search by book title, author or ISBN..." />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn st-btn btn-block" style="min-height:44px;">
+                                Search Books
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                @if (ViewBag.SearchMessage != null)
+                {
+                    <div class="alert alert-warning mt-3 mb-0">
+                        @ViewBag.SearchMessage
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="st-heading mb-1">Catalogue Results</h5>
+                <small class="st-muted">Browse the available book collection</small>
+            </div>
+            <span class="st-badge st-green">@ViewBag.TotalBooks book(s) found</span>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="st-card">
+                <div class="st-card-body text-center py-5">
+                    <div class="mx-auto mb-3" style="width:58px;height:58px;border-radius:16px;background:#eaf3ec;color:#34734c;display:flex;align-items:center;justify-content:center;font-size:25px;">&#128218;</div>
+                    <h5 class="st-heading">No books found</h5>
+                    <p class="st-muted mb-0">Try another title, author or ISBN.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var book in Model)
+                {
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="st-card st-book-card h-100">
+                            <div class="st-cover">
+                                @if (!string.IsNullOrWhiteSpace(book.CoverImagePath))
+                                {
+                                    <img src="@Url.Content(book.CoverImagePath)" alt="@book.Title" />
+                                }
+                                else
+                                {
+                                    <div class="text-center st-muted">
+                                        <div style="font-size:42px;color:#9caf9f;">&#128218;</div>
+                                        <small>No Cover Image</small>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="st-card-body d-flex flex-column">
+                                <h5 class="st-heading mb-2">@book.Title</h5>
+                                <p class="st-muted mb-2">By @book.Author</p>
+
+                                @if (!string.IsNullOrWhiteSpace(book.ISBN))
+                                {
+                                    <small class="st-muted mb-3">ISBN: @book.ISBN</small>
+                                }
+
+                                <div class="mb-3 mt-auto">
+                                    <span class="st-badge st-grey">Total Copies: @book.TotalCopies</span>
+                                    @if (book.AvailableCopies > 0)
+                                    {
+                                        <span class="st-badge st-green mt-1">Available: @book.AvailableCopies</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="st-badge st-grey mt-1">Currently Unavailable</span>
+                                    }
+                                </div>
+
+                                <a asp-controller="Student"
+                                   asp-action="Details"
+                                   asp-route-id="@book.BookId"
+                                   class="btn st-outline btn-block">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</div>

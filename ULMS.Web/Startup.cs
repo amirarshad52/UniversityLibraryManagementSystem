@@ -1,4 +1,3 @@
-
 using System;
 using System.Data.Entity;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -6,11 +5,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MySql.Data.EntityFramework;
 using ULMS.Web.Data;
 using ULMS.Web.Services;
+using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ULMS.Web
 {
@@ -55,6 +57,46 @@ namespace ULMS.Web
 
                 options.ExpireTimeSpan = TimeSpan.FromHours(8);
                 options.SlidingExpiration = true;
+                options.Events = new CookieAuthenticationEvents
+                {
+                    OnValidatePrincipal = async context =>
+                    {
+                        // Only check Staff accounts.
+                        if (context.Principal?.IsInRole("Staff") != true)
+                            return;
+
+                        string userIdValue = context.Principal
+                            .FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                        int userId;
+
+                        if (!int.TryParse(userIdValue, out userId))
+                        {
+                            context.RejectPrincipal();
+
+                            await context.HttpContext.SignOutAsync(
+                                CookieAuthenticationDefaults.AuthenticationScheme);
+
+                            return;
+                        }
+
+                        var db = context.HttpContext.RequestServices
+                            .GetRequiredService<ULMSDbContext>();
+
+                        bool staffIsActive = db.UserAccounts.Any(x =>
+                            x.UserId == userId &&
+                            x.Role == "Staff" &&
+                            x.IsActive);
+
+                        if (!staffIsActive)
+                        {
+                            context.RejectPrincipal();
+
+                            await context.HttpContext.SignOutAsync(
+                                CookieAuthenticationDefaults.AuthenticationScheme);
+                        }
+                    }
+                };
             })
             .AddCookie("ULMS.External", options =>
             {
@@ -89,13 +131,18 @@ namespace ULMS.Web
                     });
             }
 
-            // Authorization Policies
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminOnly", policy =>
                 {
                     policy.RequireAuthenticatedUser();
                     policy.RequireRole("Admin");
+                });
+
+                options.AddPolicy("StaffOnly", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("Staff");
                 });
             });
         }

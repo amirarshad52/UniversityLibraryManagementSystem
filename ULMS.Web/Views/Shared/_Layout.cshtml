@@ -1,15 +1,159 @@
 ﻿
 @{
-    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentController =
+        ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    var layoutRole = ViewBag.LayoutRole as string ?? "";
+
+    // Read role from Privacy page route parameter
+    var privacyLayout =
+        Context.Request.Query["layout"].ToString();
+
+    if (currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
+        currentAction.Equals("Privacy", StringComparison.OrdinalIgnoreCase))
+    {
+        if (privacyLayout.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            layoutRole = "Admin";
+        }
+        else if (privacyLayout.Equals("Staff", StringComparison.OrdinalIgnoreCase))
+        {
+            layoutRole = "Staff";
+        }
+        else if (privacyLayout.Equals("Student", StringComparison.OrdinalIgnoreCase))
+        {
+            layoutRole = "Student";
+        }
+    }
+
+    var isPrivacyPage =
+        currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
+        currentAction.Equals("Privacy", StringComparison.OrdinalIgnoreCase);
+
+    var isAdminDetailsPage =
+        currentController.Equals("Books", StringComparison.OrdinalIgnoreCase) &&
+        currentAction.Equals("Details", StringComparison.OrdinalIgnoreCase) &&
+        layoutRole.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+
+    var isStaffDetailsPage =
+        currentController.Equals("Books", StringComparison.OrdinalIgnoreCase) &&
+        currentAction.Equals("Details", StringComparison.OrdinalIgnoreCase) &&
+        layoutRole.Equals("Staff", StringComparison.OrdinalIgnoreCase);
 
     var isAdminPage =
-        currentController == "Admin" ||
-        currentController == "AdminProfile";
+        currentController.StartsWith("Admin", StringComparison.OrdinalIgnoreCase) ||
+        isAdminDetailsPage ||
+        (isPrivacyPage && layoutRole.Equals("Admin", StringComparison.OrdinalIgnoreCase));
+
+    var isStaffPage =
+        currentController.StartsWith("Staff", StringComparison.OrdinalIgnoreCase) ||
+        isStaffDetailsPage ||
+        (isPrivacyPage && layoutRole.Equals("Staff", StringComparison.OrdinalIgnoreCase));
+
+    var isStudentPage =
+        currentController.StartsWith("Student", StringComparison.OrdinalIgnoreCase) ||
+        (isPrivacyPage && layoutRole.Equals("Student", StringComparison.OrdinalIgnoreCase));
+
+    var isRolePage = isAdminPage || isStaffPage || isStudentPage;
+
+    // PUBLIC NAVIGATION
+
+    var isHomeActive =
+        currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
+        currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+
+    var isPublicBooksActive =
+        currentController.Equals("Books", StringComparison.OrdinalIgnoreCase);
+
+    // STUDENT NAVIGATION
+
+    var isStudentDashboardActive =
+        isStudentPage &&
+        currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+
+    var isStudentCatalogueActive =
+        isStudentPage &&
+        currentAction.Equals("Books", StringComparison.OrdinalIgnoreCase);
+
+    var isStudentMyBooksActive =
+        isStudentPage &&
+        currentAction.Equals("MyBorrowedBooks", StringComparison.OrdinalIgnoreCase);
+
+    var isStudentHistoryActive =
+        isStudentPage &&
+        currentAction.Equals("History", StringComparison.OrdinalIgnoreCase);
+
+    // STAFF NAVIGATION
+
+    var isStaffDashboardActive =
+        isStaffPage &&
+        currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+
+    var isStaffIssueBookActive =
+        isStaffPage &&
+        currentAction.Equals("IssueBook", StringComparison.OrdinalIgnoreCase);
+
+    var isStaffReturnBookActive =
+        isStaffPage &&
+        currentAction.Equals("ReturnBook", StringComparison.OrdinalIgnoreCase);
+
+    var isStaffHistoryActive =
+        isStaffPage &&
+        currentAction.Equals("History", StringComparison.OrdinalIgnoreCase);
+
+    var isStaffBooksActive =
+        isStaffPage &&
+        (currentAction.Equals("Books", StringComparison.OrdinalIgnoreCase) ||
+         isStaffDetailsPage);
+
+    var isStaffCopiesActive =
+        isStaffPage &&
+        currentAction.Equals("Copies", StringComparison.OrdinalIgnoreCase);
+
+    var isStaffBookManagementActive =
+        isStaffBooksActive || isStaffCopiesActive;
+
+    // ADMIN NAVIGATION
+
+    var isAdminDashboardActive =
+        isAdminPage &&
+        currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+
+    var isAdminLibrariesActive =
+        isAdminPage &&
+        currentAction.Equals("Libraries", StringComparison.OrdinalIgnoreCase);
+
+    var isAdminStaffActive =
+        isAdminPage &&
+        currentAction.Equals("Staff", StringComparison.OrdinalIgnoreCase);
+
+    var isAdminBooksActive =
+        isAdminPage &&
+        (currentAction.Equals("Books", StringComparison.OrdinalIgnoreCase) ||
+         isAdminDetailsPage);
+
+    var isAdminLoansActive =
+        isAdminPage &&
+        currentAction.Equals("Loans", StringComparison.OrdinalIgnoreCase);
+
+    var isAdminReportsActive =
+        isAdminPage &&
+        currentAction.Equals("Reports", StringComparison.OrdinalIgnoreCase);
+
+    var isAdminManagementActive =
+        isAdminLibrariesActive ||
+        isAdminStaffActive ||
+        isAdminBooksActive;
 }
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -21,23 +165,342 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/custom-3d.css" asp-append-version="true" />
 
+    <style>
+
+        /* =====================================
+           NAVBAR MAIN ALIGNMENT
+        ===================================== */
+
+        .ulms-header .navbar > .container {
+            max-width: 1440px;
+            width: 100%;
+            padding-left: 28px;
+            padding-right: 28px;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        /* =====================================
+           LOGO AND BRAND
+        ===================================== */
+
+        .ulms-brand {
+            display: flex !important;
+            align-items: center;
+            flex-direction: row;
+            flex-wrap: nowrap !important;
+            white-space: nowrap !important;
+            flex-shrink: 0;
+            gap: 9px;
+            margin-right: 25px;
+            padding: 0;
+        }
+
+        .ulms-brand img {
+            width: 43px;
+            height: 43px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .ulms-brand span {
+            display: inline-block;
+            white-space: nowrap !important;
+            font-size: 23px;
+            font-weight: 750;
+            line-height: 1;
+            letter-spacing: 0;
+        }
+
+        /* =====================================
+           NAVBAR CONTENT
+        ===================================== */
+
+        .ulms-header .navbar-collapse {
+            align-items: center;
+            min-width: 0;
+            flex-grow: 1;
+        }
+
+        .ulms-main-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            column-gap: 27px;
+            row-gap: 8px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .ulms-main-nav .nav-item {
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .ulms-main-nav .nav-link {
+            color: #40534a;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 3px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .ulms-main-nav .nav-link:hover {
+            color: #173f35;
+        }
+
+        .ulms-main-nav .nav-link.active {
+            color: #173f35 !important;
+            background: transparent !important;
+            text-decoration: underline;
+            text-decoration-color: #173f35;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 6px;
+            font-weight: 700;
+        }
+
+        /* =====================================
+           MANAGEMENT DROPDOWN
+        ===================================== */
+
+        .ulms-main-nav .dropdown-menu {
+            border: 1px solid #e5ece8;
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 220px;
+            margin-top: 10px;
+            box-shadow: 0 10px 28px rgba(20, 55, 43, 0.12);
+        }
+
+        .ulms-main-nav .dropdown-item {
+            color: #40534a;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 11px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .ulms-main-nav .dropdown-item:hover {
+            background: #edf4ef;
+            color: #173f35;
+        }
+
+        .ulms-main-nav .dropdown-toggle::after {
+            vertical-align: middle;
+        }
+
+        /* =====================================
+           PROFILE / LOGIN BUTTON
+        ===================================== */
+
+        .ulms-login-area {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-left: 22px;
+            flex-shrink: 0;
+        }
+
+        .ulms-login-area .login-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #173f35;
+            color: #ffffff !important;
+            border: 1px solid #173f35;
+            border-radius: 30px;
+            padding: 9px 22px;
+            min-width: 85px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .ulms-login-area .login-button:hover {
+            background: #245747;
+            border-color: #245747;
+            color: #ffffff !important;
+        }
+
+        /* =====================================
+           MEDIUM DESKTOP
+        ===================================== */
+
+        @@media (min-width: 1200px) and (max-width: 1399.98px) {
+
+            .ulms-header .navbar > .container {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .ulms-brand {
+                margin-right: 15px;
+            }
+
+            .ulms-main-nav {
+                column-gap: 27px;
+            }
+
+            .ulms-main-nav .nav-link {
+                font-size: 13px;
+                padding-left: 3px;
+                padding-right: 3px;
+            }
+
+            .ulms-login-area {
+                margin-left: 12px;
+            }
+        }
+
+        /* =====================================
+           TABLET AND MOBILE
+        ===================================== */
+
+        @@media (max-width: 1199.98px) {
+
+            .ulms-header .navbar > .container {
+                flex-wrap: wrap;
+            }
+
+            .ulms-brand {
+                margin-right: 10px;
+            }
+
+            .ulms-main-nav {
+                align-items: flex-start;
+                flex-direction: column;
+                column-gap: 0;
+                row-gap: 6px;
+                padding-top: 12px;
+                width: 100%;
+            }
+
+            .ulms-main-nav .nav-link {
+                padding: 9px 12px;
+                font-size: 14px;
+            }
+
+            .ulms-main-nav .dropdown-menu {
+                margin-top: 3px;
+                margin-left: 12px;
+            }
+
+            .ulms-login-area {
+                margin: 12px 0;
+                justify-content: flex-start;
+            }
+        }
+
+        @@media (max-width: 575px) {
+
+            .ulms-header .navbar > .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .ulms-brand img {
+                width: 38px;
+                height: 38px;
+            }
+
+            .ulms-brand span {
+                font-size: 21px;
+            }
+        }
+
+        /* =====================================
+           COMPACT FOOTER
+        ===================================== */
+
+        .ulms-footer {
+            padding-top: 24px !important;
+            padding-bottom: 12px !important;
+        }
+
+        .ulms-footer .footer-main {
+            gap: 24px !important;
+            padding-top: 0 !important;
+            padding-bottom: 18px !important;
+        }
+
+        .ulms-footer .footer-brand-name img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+        }
+
+        .ulms-footer .footer-brand p {
+            margin-top: 9px !important;
+            margin-bottom: 0 !important;
+            line-height: 1.6;
+        }
+
+        .ulms-footer .footer-links h5,
+        .ulms-footer .footer-social h5 {
+            margin-bottom: 10px !important;
+        }
+
+        .ulms-footer .footer-links a {
+            margin-bottom: 6px !important;
+        }
+
+        .ulms-footer .footer-bottom {
+            padding-top: 12px !important;
+            margin-top: 0 !important;
+        }
+
+        .ulms-footer .footer-bottom p {
+            margin-bottom: 0 !important;
+            line-height: 1.5;
+        }
+
+        @@media (max-width: 767px) {
+            .ulms-footer {
+                padding-top: 22px !important;
+                padding-bottom: 10px !important;
+            }
+
+            .ulms-footer .footer-main {
+                gap: 18px !important;
+                padding-bottom: 15px !important;
+            }
+        }
+
+    </style>
+
     @await RenderSectionAsync("Styles", required: false)
+
 </head>
 
 <body>
 
     <header class="ulms-header">
-        <nav class="navbar navbar-expand-lg navbar-light">
+
+        <nav class="navbar navbar-expand-xl navbar-light">
+
             <div class="container">
+
+                <!-- BRAND LOGO -->
 
                 <a class="navbar-brand ulms-brand"
                    asp-controller="Home"
                    asp-action="Index">
+
                     <img src="~/image/logo/ULMS%20LOGO.png"
                          alt="ULMS Logo"
                          class="brand-logo" />
+
                     <span>ULMS</span>
+
                 </a>
+
+                <!-- MOBILE TOGGLER -->
 
                 <button class="navbar-toggler"
                         type="button"
@@ -46,42 +509,272 @@
                         aria-controls="ulmsNavbar"
                         aria-expanded="false"
                         aria-label="Toggle navigation">
+
                     <span class="navbar-toggler-icon"></span>
+
                 </button>
+
+                <!-- NAVIGATION CONTENT -->
 
                 <div class="collapse navbar-collapse" id="ulmsNavbar">
 
                     <ul class="navbar-nav ulms-main-nav">
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Home
-                            </a>
-                        </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Books"
-                               asp-action="Index">
-                                Books
-                            </a>
-                        </li>
+                        @* PUBLIC PAGES *@
+
+                        @if (!isRolePage)
+                        {
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isHomeActive ? "active" : "")"
+                                   asp-controller="Home"
+                                   asp-action="Index">
+                                    Home
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isPublicBooksActive ? "active" : "")"
+                                   asp-controller="Books"
+                                   asp-action="Index">
+                                    Books
+                                </a>
+
+                            </li>
+                        }
+
+                        @* STUDENT PAGES *@
+
+                        @if (isStudentPage)
+                        {
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isStudentDashboardActive ? "active" : "")"
+                                   asp-controller="Student"
+                                   asp-action="Index">
+                                    Dashboard
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isStudentCatalogueActive ? "active" : "")"
+                                   asp-controller="Student"
+                                   asp-action="Books">
+                                    Catalogue
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isStudentMyBooksActive ? "active" : "")"
+                                   asp-controller="Student"
+                                   asp-action="MyBorrowedBooks">
+                                    My Books
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isStudentHistoryActive ? "active" : "")"
+                                   asp-controller="Student"
+                                   asp-action="History">
+                                    History
+                                </a>
+
+                            </li>
+                        }
+
+                        @* STAFF PAGES *@
+
+                        @if (isStaffPage)
+                        {
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isStaffDashboardActive ? "active" : "")"
+                                   asp-controller="Staff"
+                                   asp-action="Index">
+                                    Dashboard
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isStaffIssueBookActive ? "active" : "")"
+                                   asp-controller="Staff"
+                                   asp-action="IssueBook">
+                                    Issue Book
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isStaffReturnBookActive ? "active" : "")"
+                                   asp-controller="Staff"
+                                   asp-action="ReturnBook">
+                                    Return Book
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isStaffHistoryActive ? "active" : "")"
+                                   asp-controller="Staff"
+                                   asp-action="History">
+                                    Borrowing History
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item dropdown">
+
+                                <a class="nav-link dropdown-toggle @(isStaffBookManagementActive ? "active" : "")"
+                                   href="#"
+                                   id="staffBookManagementDropdown"
+                                   role="button"
+                                   data-toggle="dropdown"
+                                   aria-haspopup="true"
+                                   aria-expanded="false">
+
+                                    Book Management
+
+                                </a>
+
+                                <div class="dropdown-menu"
+                                     aria-labelledby="staffBookManagementDropdown">
+
+                                    <a class="dropdown-item"
+                                       asp-controller="Staff"
+                                       asp-action="Books">
+                                        Books Management
+                                    </a>
+
+                                    <a class="dropdown-item"
+                                       asp-controller="Staff"
+                                       asp-action="Copies">
+                                        Manage Copies
+                                    </a>
+
+                                </div>
+
+                            </li>
+                        }
+
+                        @* ADMIN PAGES *@
+
+                        @if (isAdminPage)
+                        {
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isAdminDashboardActive ? "active" : "")"
+                                   asp-controller="Admin"
+                                   asp-action="Index">
+                                    Dashboard
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item dropdown">
+
+                                <a class="nav-link dropdown-toggle @(isAdminManagementActive ? "active" : "")"
+                                   href="#"
+                                   id="adminManagementDropdown"
+                                   role="button"
+                                   data-toggle="dropdown"
+                                   aria-haspopup="true"
+                                   aria-expanded="false">
+
+                                    Management
+
+                                </a>
+
+                                <div class="dropdown-menu"
+                                     aria-labelledby="adminManagementDropdown">
+
+                                    <a class="dropdown-item"
+                                       asp-controller="Admin"
+                                       asp-action="Libraries">
+                                        Library Management
+                                    </a>
+
+                                    <a class="dropdown-item"
+                                       asp-controller="Admin"
+                                       asp-action="Staff">
+                                        Staff Management
+                                    </a>
+
+                                    <a class="dropdown-item"
+                                       asp-controller="Admin"
+                                       asp-action="Books">
+                                        Book Management
+                                    </a>
+
+                                </div>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isAdminLoansActive ? "active" : "")"
+                                   asp-controller="Admin"
+                                   asp-action="Loans">
+                                    Borrowing &amp; Returns
+                                </a>
+
+                            </li>
+
+                            <li class="nav-item">
+
+                                <a class="nav-link @(isAdminReportsActive ? "active" : "")"
+                                   asp-controller="Admin"
+                                   asp-action="Reports">
+                                    Reports &amp; Analytics
+                                </a>
+
+                            </li>
+                        }
+
                     </ul>
+
+                    <!-- RIGHT SIDE PROFILE / LOGIN -->
 
                     <div class="ulms-login-area">
 
                         @if (isAdminPage)
                         {
                             <a class="btn login-button"
-                               href="/Admin/Profile">
-                                Admin Profile
-                                <span aria-hidden="true">→</span>
+                               asp-controller="Admin"
+                               asp-action="Profile">
+                                Profile
+                            </a>
+                        }
+                        else if (isStaffPage)
+                        {
+                            <a class="btn login-button"
+                               asp-controller="Staff"
+                               asp-action="Profile">
+                                Profile
+                            </a>
+                        }
+                        else if (isStudentPage)
+                        {
+                            <a class="btn login-button"
+                               href="/Student/Profile">
+                                Profile
                             </a>
                         }
                         else
                         {
-                            <a class="btn login-button" href="/Account/Login">
+                            <a class="btn login-button"
+                               href="/Account/Login">
                                 Login
                                 <span aria-hidden="true">→</span>
                             </a>
@@ -90,24 +783,40 @@
                     </div>
 
                 </div>
+
             </div>
+
         </nav>
+
     </header>
 
+    <!-- PAGE CONTENT -->
+
     <main>
+
         @RenderBody()
+
     </main>
 
+    <!-- FOOTER -->
+
     <footer class="ulms-footer">
+
         <div class="container">
 
             <div class="footer-main">
 
+                <!-- FOOTER BRAND -->
+
                 <div class="footer-brand">
+
                     <div class="footer-brand-name">
+
                         <img src="~/image/logo/ULMS%20LOGO.png"
                              alt="ULMS Logo" />
+
                         <span>ULMS</span>
+
                     </div>
 
                     <p>
@@ -115,17 +824,27 @@
                         Discover academic books, explore learning resources
                         and stay connected with your university library.
                     </p>
+
                 </div>
+
+                <!-- QUICK LINKS -->
 
                 <div class="footer-links">
+
                     <h5>Quick Links</h5>
 
-                    <a asp-controller="Home" asp-action="Index">Home</a>
-                    <a asp-controller="Books" asp-action="Index">Books Catalogue</a>
-                    <a asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+                    <a asp-controller="Home"
+                       asp-action="Privacy"
+                       asp-route-layout="@(isAdminPage ? "Admin" : isStaffPage ? "Staff" : isStudentPage ? "Student" : null)">
+                        Privacy Policy
+                    </a>
+
                 </div>
 
+                <!-- SOCIAL LINKS -->
+
                 <div class="footer-social">
+
                     <h5>Connect With Me</h5>
 
                     <a href="https://github.com/amirarshad52"
@@ -134,10 +853,14 @@
                        class="social-link">
 
                         <svg viewBox="0 0 24 24" aria-hidden="true">
+
                             <path fill="currentColor"
                                   d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.76-.24.76-.54v-2.1c-3.1.67-3.76-1.32-3.76-1.32-.5-1.29-1.24-1.63-1.24-1.63-1.02-.7.08-.69.08-.69 1.12.08 1.7 1.15 1.7 1.15 1 .1.79 2.2 3.36 1.57.1-.73.39-1.23.7-1.51-2.47-.28-5.07-1.24-5.07-5.52 0-1.22.44-2.21 1.15-2.99-.12-.28-.5-1.42.11-2.95 0 0 .94-.3 3.08 1.14a10.7 10.7 0 0 1 5.6 0c2.14-1.45 3.08-1.14 3.08-1.14.61 1.53.23 2.67.11 2.95.72.78 1.15 1.77 1.15 2.99 0 4.29-2.6 5.24-5.08 5.51.4.35.75 1.03.75 2.08v3.08c0 .3.2.65.77.54A11.2 11.2 0 0 0 12 .8Z" />
+
                         </svg>
+
                         <span>GitHub</span>
+
                     </a>
 
                     <a href="https://www.linkedin.com/in/amir-arshad-40531725a"
@@ -146,28 +869,48 @@
                        class="social-link">
 
                         <svg viewBox="0 0 24 24" aria-hidden="true">
+
                             <path fill="currentColor"
                                   d="M20.45 2H3.55C2.69 2 2 2.68 2 3.52v16.96c0 .84.69 1.52 1.55 1.52h16.9c.86 0 1.55-.68 1.55-1.52V3.52c0-.84-.69-1.52-1.55-1.52ZM8.08 18.35H5.12V9.02h2.96v9.33ZM6.6 7.75a1.71 1.71 0 1 1 0-3.42 1.71 1.71 0 0 1 0 3.42Zm12.01 10.6h-2.95v-4.54c0-1.08-.02-2.47-1.5-2.47-1.5 0-1.73 1.17-1.73 2.39v4.62H9.48V9.02h2.83v1.27h.04c.4-.73 1.36-1.5 2.8-1.5 3 0 3.46 1.97 3.46 4.53v5.03Z" />
+
                         </svg>
+
                         <span>LinkedIn</span>
+
                     </a>
+
                 </div>
 
             </div>
 
+            <!-- FOOTER BOTTOM -->
+
             <div class="footer-bottom">
-                <p>© @DateTime.Now.Year ULMS. All Rights Reserved.</p>
-                <p>University Library Management System</p>
+
+                <p>
+                    © @DateTime.Now.Year ULMS. All Rights Reserved.
+                </p>
+
+                <p>
+                    University Library Management System
+                </p>
+
             </div>
 
         </div>
+
     </footer>
 
+    <!-- JAVASCRIPT -->
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
+
 </html>

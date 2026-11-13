@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ULMS.Web.Models;
@@ -19,8 +20,21 @@ namespace ULMS.Web.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Privacy(string layout)
         {
+            if (string.Equals(layout, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                ViewBag.LayoutRole = "Admin";
+            }
+            else if (string.Equals(layout, "Staff", StringComparison.OrdinalIgnoreCase))
+            {
+                ViewBag.LayoutRole = "Staff";
+            }
+            else if (string.Equals(layout, "Student", StringComparison.OrdinalIgnoreCase))
+            {
+                ViewBag.LayoutRole = "Student";
+            }
+
             return View();
         }
 

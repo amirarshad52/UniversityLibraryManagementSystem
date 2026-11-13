@@ -1,0 +1,102 @@
+@model ULMS.Web.Controllers.StudentLoanListViewModel
+
+@{
+    ViewData["Title"] = "My Borrowed Books";
+}
+
+<style>
+    body { background: #f5f7f4; }
+    .st-page { padding: 35px 0 45px; color: #23372b; }
+    .st-heading { color: #23372b; font-weight: 700; }
+    .st-muted { color: #718078; }
+    .st-card { background: white; border: 1px solid #e8eee9; border-radius: 15px; box-shadow: 0 4px 15px rgba(35,55,43,.045); overflow: hidden; }
+    .st-card-body { padding: 24px; }
+    .st-table { margin-bottom: 0; }
+    .st-table thead th { background: #f1f7f2; color: #52675a; border-top: 0; border-bottom: 1px solid #e3ebe5; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; padding: 15px; white-space: nowrap; }
+    .st-table td { padding: 16px 15px; vertical-align: middle; border-color: #edf1ee; color: #405247; }
+    .st-table tbody tr:hover { background: #f8fbf8; }
+    .st-badge { display: inline-block; padding: 6px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .st-green { background: #e5f3e8; color: #287443; }
+    .st-yellow { background: #fff3d8; color: #946b16; }
+    .st-red { background: #fde8e7; color: #b33c35; }
+    .st-btn { background: #34734c; border-color: #34734c; color: white; border-radius: 8px; font-weight: 600; }
+    .st-btn:hover { background: #245b38; border-color: #245b38; color: white; }
+    .st-notice { background: #eaf3ec; border: 1px solid #dceadd; color: #365b41; border-radius: 10px; padding: 15px 18px; }
+</style>
+
+<div class="st-page">
+    <div class="container">
+
+        <div class="mb-4">
+            <div class="small st-muted font-weight-bold mb-2" style="letter-spacing:1px;">YOUR LIBRARY RECORDS</div>
+            <h2 class="st-heading mb-2">My Borrowed Books</h2>
+            <p class="st-muted mb-0">Books currently issued to <strong>@Model.StudentName</strong>.</p>
+        </div>
+
+        <div class="st-card">
+            <div class="st-card-body">
+                @if (Model.Records == null || !Model.Records.Any())
+                {
+                    <div class="text-center py-5">
+                        <div class="mx-auto mb-3" style="width:60px;height:60px;border-radius:17px;background:#eaf3ec;color:#34734c;display:flex;align-items:center;justify-content:center;font-size:27px;">&#128218;</div>
+                        <h5 class="st-heading">No Active Books</h5>
+                        <p class="st-muted">You currently have no borrowed books.</p>
+                        <a asp-controller="Student" asp-action="Books" class="btn st-btn">Explore Catalogue</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table st-table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Copy Code</th>
+                                    <th>Library</th>
+                                    <th>Issue Date</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Records)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.BookTitle</strong><br />
+                                            <small class="st-muted">@item.Author</small>
+                                        </td>
+                                        <td>@item.CopyCode</td>
+                                        <td>@item.LibraryName</td>
+                                        <td>@item.IssueDate.ToString("dd MMM yyyy")</td>
+                                        <td><strong>@item.DueDate.ToString("dd MMM yyyy")</strong></td>
+                                        <td>
+                                            @if (item.DueDate.Date < Model.Today.Date)
+                                            {
+                                                <span class="st-badge st-red">Overdue</span>
+                                            }
+                                            else if (item.DueDate.Date <= Model.Today.Date.AddDays(3))
+                                            {
+                                                <span class="st-badge st-yellow">Due Soon</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="st-badge st-green">Issued</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="st-notice mt-4 mb-0">
+                        <strong>Borrowing Reminder</strong><br />
+                        The borrowing period is 14 calendar days. Please return your books to the library staff on or before the due date.
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

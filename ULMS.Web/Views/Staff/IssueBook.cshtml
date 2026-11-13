@@ -1,0 +1,660 @@
+
+@model ULMS.Web.Controllers.StaffIssueBookViewModel
+
+@{
+    ViewData["Title"] = "Issue Book";
+}
+
+<style>
+    .issue-page {
+        background: #f5f7f4;
+        min-height: 100vh;
+        padding: 30px 0 50px;
+    }
+
+    .page-heading {
+        color: #23372b;
+        font-weight: 700;
+    }
+
+    .page-subtitle {
+        color: #718078;
+    }
+
+    .issue-card {
+        background: white;
+        border: 1px solid #e8eee9;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 15px rgba(25, 55, 35, .05);
+    }
+
+    .section-title {
+        color: #23372b;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        color: #52645a;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        min-height: 43px;
+        border-color: #dfe8e1;
+    }
+
+    .form-control:focus {
+        border-color: #34734c;
+        box-shadow: 0 0 0 3px rgba(52, 115, 76, .12);
+    }
+
+    .btn-search,
+    .btn-issue,
+    .btn-create {
+        background: #34734c;
+        border-color: #34734c;
+        color: white;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+
+    .btn-search:hover,
+    .btn-issue:hover,
+    .btn-create:hover {
+        background: #245b38;
+        border-color: #245b38;
+        color: white;
+    }
+
+    .btn-issue:disabled {
+        background: #9eaaa1;
+        border-color: #9eaaa1;
+        cursor: not-allowed;
+    }
+
+    .student-info {
+        background: #f1f7f2;
+        border: 1px solid #dcebdd;
+        border-radius: 10px;
+        padding: 18px;
+    }
+
+    .info-label {
+        color: #718078;
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        color: #23372b;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .limit-card {
+        background: #f5f8f5;
+        border: 1px solid #e5ede6;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .limit-number {
+        font-size: 23px;
+        font-weight: 700;
+        color: #34734c;
+    }
+
+    .table thead th {
+        background: #f5f8f5;
+        color: #52645a;
+        font-size: 13px;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .table td {
+        vertical-align: middle;
+        color: #45554b;
+        font-size: 13px;
+    }
+
+    .status-overdue {
+        background: #fde8e7;
+        color: #b33c35;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #fff3d8;
+        color: #946200;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        color: #718078;
+        text-align: center;
+        padding: 25px 10px;
+    }
+
+    .create-student-box {
+        background: #f7faf7;
+        border: 1px solid #dcebdd;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .create-student-description {
+        color: #718078;
+        font-size: 13px;
+        margin-bottom: 18px;
+    }
+
+    .back-link {
+        color: #34734c;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #245b38;
+        text-decoration: none;
+    }
+
+    @@media (max-width: 767px) {
+        .issue-card {
+            padding: 17px;
+        }
+
+        .create-student-box {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="issue-page">
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+        <div class="mb-4">
+            <a href="/Staff/Index" class="back-link">
+                &#8592; Back to Dashboard
+            </a>
+
+            <h2 class="page-heading mt-3">Issue Book</h2>
+
+            <p class="page-subtitle">
+                Search for a student and issue an available book.
+            </p>
+        </div>
+
+        <!-- RESULT MESSAGE -->
+        @if (!string.IsNullOrWhiteSpace(Model.Message))
+        {
+            <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-warning") alert-dismissible fade show"
+                 role="alert">
+
+                @Model.Message
+
+                <button type="button"
+                        class="close"
+                        data-dismiss="alert"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <!-- LIBRARY INFORMATION -->
+        <div class="issue-card">
+            <div class="d-flex justify-content-between flex-wrap">
+                <div>
+                    <div class="info-label">Your Assigned Library</div>
+                    <div class="info-value mb-0">
+                        @Model.LibraryName
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-label">Available Copies</div>
+                    <div class="info-value mb-0">
+                        @Model.AvailableCopies.Count
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDENT SEARCH -->
+        <div class="issue-card">
+            <h4 class="section-title">1. Search Student</h4>
+
+            <form method="get" action="/Staff/IssueBook">
+
+                <div class="form-row align-items-end">
+
+                    <div class="col-md-9 mb-3">
+                        <label class="form-label">
+                            Student Name, Email or Student ID
+                        </label>
+
+                        <input type="text"
+                               name="search"
+                               value="@Model.Search"
+                               class="form-control"
+                               maxlength="256"
+                               placeholder="Enter student name, email or ID" />
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <button type="submit"
+                                class="btn btn-search btn-block">
+                            Search Student
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Search))
+            {
+                <hr />
+
+                <h5 class="section-title">
+                    Student Search Results
+                </h5>
+
+                @if (Model.StudentResults.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var student in Model.StudentResults)
+                                {
+                                    <tr>
+                                        <td>@student.StudentId</td>
+                                        <td>@student.Name</td>
+                                        <td>@student.Email</td>
+                                        <td>
+                                            <a href="@Url.Action(
+                                                "IssueBook",
+                                                "Staff",
+                                                new {
+                                                    search = Model.Search,
+                                                    studentId = student.StudentId
+                                                })"
+                                               class="btn btn-sm btn-outline-success">
+                                                Select Student
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <h5>No Student Found</h5>
+                        <p>
+                            No existing student record matches your search.
+                        </p>
+                    </div>
+
+                    <!-- CREATE PROVISIONAL STUDENT -->
+                    <div class="create-student-box">
+
+                        <h5 class="section-title mb-2">
+                            Create New Student
+                        </h5>
+
+                        <p class="create-student-description">
+                            Enter the student's full name and UOL university
+                            email to create a provisional student record.
+                        </p>
+
+                        <form method="post"
+                              action="/Staff/CreateProvisionalStudent">
+
+                            @Html.AntiForgeryToken()
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Student Full Name
+                                </label>
+
+                                <input type="text"
+                                       name="studentName"
+                                       class="form-control"
+                                       maxlength="150"
+                                       required
+                                       placeholder="Enter student's full name" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Student University Email
+                                </label>
+
+                                <input type="email"
+                                       name="studentEmail"
+                                       class="form-control"
+                                       maxlength="256"
+                                       required
+                                       value="@(Model.Search.Contains("@") ? Model.Search : "")"
+                                       placeholder="example@student.uol.edu.pk" />
+
+                                <small class="form-text text-muted">
+                                    Only uol.edu.pk and its university
+                                    subdomains are accepted.
+                                </small>
+                            </div>
+
+                            <button type="submit"
+                                    class="btn btn-create">
+                                Create Student
+                            </button>
+
+                        </form>
+
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- SELECTED STUDENT -->
+        @if (Model.SelectedStudent != null)
+        {
+            <div class="issue-card">
+
+                <h4 class="section-title">
+                    2. Selected Student
+                </h4>
+
+                <div class="student-info">
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <div class="info-label">Student ID</div>
+                            <div class="info-value">
+                                @Model.SelectedStudent.StudentId
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-label">Student Name</div>
+                            <div class="info-value">
+                                @Model.SelectedStudent.Name
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">
+                                @Model.SelectedStudent.Email
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- BORROWING LIMIT -->
+                <div class="row mt-3">
+
+                    <div class="col-md-6 mb-3">
+                        <div class="limit-card">
+                            <div class="info-label">
+                                Current Active Loans
+                            </div>
+
+                            <div class="limit-number">
+                                @Model.ActiveLoanCount / 5
+                            </div>
+
+                            <small class="text-muted">
+                                Maximum five active books across all libraries.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="limit-card">
+                            <div class="info-label">
+                                Borrowing Eligibility
+                            </div>
+
+                            @if (Model.HasOverdueLoan)
+                            {
+                                <span class="status-overdue">
+                                    Overdue Book Found
+                                </span>
+
+                                <p class="small text-muted mt-2 mb-0">
+                                    New book issuance is blocked until the overdue
+                                    book is returned.
+                                </p>
+                            }
+                            else if (Model.ActiveLoanCount >= 5)
+                            {
+                                <span class="status-overdue">
+                                    Maximum Limit Reached
+                                </span>
+
+                                <p class="small text-muted mt-2 mb-0">
+                                    Student cannot borrow another book.
+                                </p>
+                            }
+                            else
+                            {
+                                <span class="status-active">
+                                    Eligible for Borrowing
+                                </span>
+
+                                <p class="small text-muted mt-2 mb-0">
+                                    Student has not reached the borrowing limit.
+                                </p>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- CURRENT ACTIVE LOANS -->
+                <h5 class="section-title mt-4">
+                    Current Active Loans
+                </h5>
+
+                @if (Model.ActiveLoans.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Loan ID</th>
+                                    <th>Book</th>
+                                    <th>Copy Code</th>
+                                    <th>Issue Date</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var loan in Model.ActiveLoans)
+                                {
+                                    bool overdue =
+                                        loan.DueDate.Date < Model.IssueDate.Date;
+
+                                    <tr>
+                                        <td>#@loan.LoanId</td>
+                                        <td>@loan.BookTitle</td>
+                                        <td>@loan.CopyCode</td>
+                                        <td>
+                                            @loan.IssueDate.ToString("dd MMM yyyy")
+                                        </td>
+                                        <td>
+                                            @loan.DueDate.ToString("dd MMM yyyy")
+                                        </td>
+                                        <td>
+                                            @if (overdue)
+                                            {
+                                                <span class="status-overdue">
+                                                    Overdue
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="status-active">
+                                                    Issued
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        No active borrowing records for this student.
+                    </div>
+                }
+
+            </div>
+
+            <!-- ISSUE BOOK FORM -->
+            <div class="issue-card">
+
+                <h4 class="section-title">
+                    3. Select Book Copy and Issue
+                </h4>
+
+                @if (Model.AvailableCopies.Any())
+                {
+                    <form method="post" action="/Staff/IssueBook">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="studentId"
+                               value="@Model.SelectedStudent.StudentId" />
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Select Available Book Copy
+                            </label>
+
+                            <select name="copyId"
+                                    class="form-control"
+                                    required>
+
+                                <option value="">
+                                    -- Select a Book Copy --
+                                </option>
+
+                                @foreach (var copy in Model.AvailableCopies)
+                                {
+                                    <option value="@copy.CopyId">
+                                        @copy.BookTitle
+                                        - @copy.Author
+                                        (Copy: @copy.CopyCode)
+                                    </option>
+                                }
+
+                            </select>
+
+                            <small class="form-text text-muted">
+                                Only available physical copies from
+                                @Model.LibraryName are displayed.
+                            </small>
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Issue Date
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       value="@Model.IssueDate.ToString("dd MMM yyyy")"
+                                       readonly />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Due Date
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       value="@Model.DueDate.ToString("dd MMM yyyy")"
+                                       readonly />
+                            </div>
+
+                        </div>
+
+                        @if (Model.HasOverdueLoan ||
+                             Model.ActiveLoanCount >= 5)
+                        {
+                            <div class="alert alert-warning">
+                                This student is not eligible for a new book
+                                at this time.
+                            </div>
+                        }
+
+                        <button type="submit"
+                                class="btn btn-issue"
+                                disabled="@(Model.HasOverdueLoan ||
+                                           Model.ActiveLoanCount >= 5)">
+
+                            Confirm Issue
+                        </button>
+
+                    </form>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <h5>No Available Copies</h5>
+
+                        <p>
+                            Your assigned library currently has no available
+                            physical copies to issue.
+                        </p>
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+</div>

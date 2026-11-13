@@ -17,6 +17,7 @@ namespace ULMS.Web.Services
             _db = db;
         }
 
+        // ISSUE BOOK
         public BorrowingResult IssueBook(
             int studentId,
             int copyId,
@@ -26,7 +27,7 @@ namespace ULMS.Web.Services
                 _db.Database.BeginTransaction(
                     IsolationLevel.ReadCommitted))
             {
-                // Lock student to serialize borrowing-limit checks.
+                // Lock student for borrowing-limit protection.
                 var lockedStudentId = _db.Database
                     .SqlQuery<int>(
                         "SELECT StudentId FROM StudentProfiles " +
@@ -38,7 +39,7 @@ namespace ULMS.Web.Services
                     return BorrowingResult.Fail(
                         "Student record not found.");
 
-                // Lock physical copy to prevent simultaneous issue.
+                // Lock physical copy.
                 var lockedCopyId = _db.Database
                     .SqlQuery<int>(
                         "SELECT CopyId FROM BookCopies " +
@@ -72,7 +73,6 @@ namespace ULMS.Web.Services
                     return BorrowingResult.Fail(
                         "Book copy is not available.");
 
-                // Verify that this copy has no active loan.
                 bool copyHasActiveLoan = _db.Loans.Any(x =>
                     x.CopyId == copyId &&
                     x.ReturnDate == null);
@@ -81,7 +81,7 @@ namespace ULMS.Web.Services
                     return BorrowingResult.Fail(
                         "This book copy already has an active loan.");
 
-                // Count active loans across all libraries.
+                // Maximum five active loans across all libraries.
                 var activeLoans = _db.Loans.Count(x =>
                     x.StudentId == studentId &&
                     x.ReturnDate == null);
@@ -90,7 +90,6 @@ namespace ULMS.Web.Services
                     return BorrowingResult.Fail(
                         "Student has reached the maximum limit of five active books.");
 
-                // Calculate Pakistan calendar date.
                 DateTime issueDate = DateTime.UtcNow;
                 DateTime pakistanDate = GetPakistanDate(issueDate);
 
@@ -114,9 +113,8 @@ namespace ULMS.Web.Services
                     ReturnedByStaffId = null
                 };
 
-                // Update loan and physical-copy status together.
-                copy.Status = "Issued";
-
+                // The database AFTER INSERT trigger changes
+                // the physical copy status to Issued.
                 _db.Loans.Add(loan);
 
                 _db.SaveChanges();
@@ -129,6 +127,7 @@ namespace ULMS.Web.Services
             }
         }
 
+        // RETURN BOOK
         public BorrowingResult ReturnBook(
             int loanId,
             int staffId)
@@ -137,7 +136,7 @@ namespace ULMS.Web.Services
                 _db.Database.BeginTransaction(
                     IsolationLevel.ReadCommitted))
             {
-                // Lock loan to prevent concurrent returns.
+                // Lock loan.
                 var lockedLoanId = _db.Database
                     .SqlQuery<int>(
                         "SELECT LoanId FROM Loans " +
@@ -169,7 +168,7 @@ namespace ULMS.Web.Services
                     return BorrowingResult.Fail(
                         "This book has already been returned.");
 
-                // Lock the physical copy before changing its status.
+                // Lock physical copy.
                 var lockedCopyId = _db.Database
                     .SqlQuery<int>(
                         "SELECT CopyId FROM BookCopies " +
@@ -185,7 +184,6 @@ namespace ULMS.Web.Services
                     return BorrowingResult.Fail(
                         "You can only return books to your assigned library.");
 
-                // Check for another active loan on this copy.
                 bool anotherActiveLoan = _db.Loans.Any(x =>
                     x.CopyId == loan.CopyId &&
                     x.LoanId != loanId &&
@@ -198,9 +196,8 @@ namespace ULMS.Web.Services
                 loan.ReturnDate = DateTime.UtcNow;
                 loan.ReturnedByStaffId = staffId;
 
-                // Make the physical copy available again.
-                loan.BookCopy.Status = "Available";
-
+                // The database AFTER UPDATE trigger changes
+                // the physical copy status to Available.
                 _db.SaveChanges();
 
                 transaction.Commit();
@@ -208,6 +205,89 @@ namespace ULMS.Web.Services
                 return BorrowingResult.Ok(
                     "Book returned successfully.",
                     loan.LoanId);
+            }
+        }
+
+        // CHANGE COPY STATUS
+        // Staff can only change Available <-> Maintenance.
+        public BorrowingResult ChangeCopyStatus(
+            int copyId,
+            int staffId,
+            string newStatus)
+        {
+            if (newStatus != "Available" &&
+                newStatus != "Maintenance")
+            {
+                return BorrowingResult.Fail(
+                    "Only Available and Maintenance statuses are allowed.");
+            }
+
+            using (var transaction =
+                _db.Database.BeginTransaction(
+                    IsolationLevel.ReadCommitted))
+            {
+                // Lock physical copy to prevent concurrent issue/status changes.
+                var lockedCopyId = _db.Database
+                    .SqlQuery<int>(
+                        "SELECT CopyId FROM BookCopies " +
+                        "WHERE CopyId = @p0 FOR UPDATE",
+                        copyId)
+                    .SingleOrDefault();
+
+                if (lockedCopyId == 0)
+                    return BorrowingResult.Fail(
+                        "Book copy not found.");
+
+                var staff = _db.StaffProfiles
+                    .SingleOrDefault(x => x.StaffId == staffId);
+
+                if (staff == null)
+                    return BorrowingResult.Fail(
+                        "Staff record not found.");
+
+                var copy = _db.BookCopies
+                    .SingleOrDefault(x => x.CopyId == copyId);
+
+                if (copy == null)
+                    return BorrowingResult.Fail(
+                        "Book copy not found.");
+
+                // Server-side assigned-library authorization.
+                if (copy.LibraryId != staff.LibraryId)
+                    return BorrowingResult.Fail(
+                        "You can only manage copies in your assigned library.");
+
+                if (copy.Status != "Available" &&
+                    copy.Status != "Maintenance")
+                {
+                    return BorrowingResult.Fail(
+                        "Issued copies cannot be changed manually.");
+                }
+
+                if (copy.Status == newStatus)
+                {
+                    transaction.Commit();
+
+                    return BorrowingResult.Ok(
+                        "Copy already has this status.");
+                }
+
+                bool hasActiveLoan = _db.Loans.Any(x =>
+                    x.CopyId == copyId &&
+                    x.ReturnDate == null);
+
+                if (hasActiveLoan)
+                    return BorrowingResult.Fail(
+                        "A copy with an active loan cannot be moved to Maintenance or changed manually.");
+
+                copy.Status = newStatus;
+
+                _db.SaveChanges();
+
+                transaction.Commit();
+
+                return BorrowingResult.Ok(
+                    "Copy status updated successfully.");
             }
         }
 
@@ -254,6 +334,17 @@ namespace ULMS.Web.Services
                 Success = true,
                 Message = message,
                 LoanId = loanId
+            };
+        }
+
+        public static BorrowingResult Ok(
+            string message)
+        {
+            return new BorrowingResult
+            {
+                Success = true,
+                Message = message,
+                LoanId = null
             };
         }
 

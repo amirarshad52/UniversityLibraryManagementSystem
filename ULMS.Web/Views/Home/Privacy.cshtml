@@ -1,6 +1,269 @@
+
 @{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<style>
+    .privacy-page {
+        padding: 45px 0 65px;
+        background: #f7faf8;
+        min-height: 75vh;
+    }
+
+    .privacy-header {
+        background: linear-gradient(135deg, #183d2b, #2d6547);
+        color: #fff;
+        padding: 48px 35px;
+        border-radius: 18px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 25px rgba(25, 60, 42, .12);
+    }
+
+    .privacy-header h1 {
+        font-size: 34px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .privacy-header p {
+        margin: 0;
+        color: #e1eee5;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .privacy-content {
+        background: #fff;
+        border: 1px solid #e5ece7;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 4px 18px rgba(25, 60, 42, .04);
+    }
+
+    .privacy-section {
+        padding: 22px 0;
+        border-bottom: 1px solid #edf1ee;
+    }
+
+    .privacy-section:first-child {
+        padding-top: 0;
+    }
+
+    .privacy-section:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .privacy-section h3 {
+        color: #23372b;
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .privacy-section p,
+    .privacy-section li {
+        color: #647168;
+        font-size: 14px;
+        line-height: 1.85;
+    }
+
+    .privacy-section ul {
+        padding-left: 22px;
+        margin-bottom: 0;
+    }
+
+    .privacy-note {
+        background: #f0f6f1;
+        border-left: 4px solid #34744d;
+        padding: 17px 20px;
+        border-radius: 8px;
+        margin-top: 25px;
+        color: #405849;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .privacy-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        background: #edf5ef;
+        color: #34744d;
+        border-radius: 10px;
+        margin-right: 10px;
+        font-size: 17px;
+    }
+
+    @@media (max-width: 768px) {
+        .privacy-page {
+            padding: 25px 0 40px;
+        }
+
+        .privacy-header {
+            padding: 32px 23px;
+        }
+
+        .privacy-header h1 {
+            font-size: 27px;
+        }
+
+        .privacy-content {
+            padding: 22px;
+        }
+    }
+</style>
+
+<div class="privacy-page">
+    <div class="container">
+
+        <div class="privacy-header">
+            <h1>Privacy Policy</h1>
+            <p>
+                Your privacy matters to us. This page explains how the
+                University Library Management System handles information
+                related to student accounts and library activities.
+            </p>
+        </div>
+
+        <div class="privacy-content">
+
+            <div class="privacy-section">
+                <h3>
+                    <span class="privacy-icon">01</span>
+                    Introduction
+                </h3>
+                <p>
+                    The University Library Management System (ULMS) is
+                    designed to support library services within the
+                    University of Lahore. This Privacy Policy explains
+                    what information is handled by the system and how
+                    it is used for library management purposes.
+                </p>
+            </div>
+
+            <div class="privacy-section">
+                <h3>
+                    <span class="privacy-icon">02</span>
+                    Information We Collect
+                </h3>
+                <p>
+                    To provide library services, ULMS may store and
+                    process the following information:
+                </p>
+                <ul>
+                    <li>Student name and university email address.</li>
+                    <li>Student account and profile information.</li>
+                    <li>Book borrowing and return records.</li>
+                    <li>Book issue dates, due dates and return dates.</li>
+                    <li>Account and access information required to operate the system.</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h3>
+                    <span class="privacy-icon">03</span>
+                    Google Authentication
+                </h3>
+                <p>
+                    Student access is intended for eligible University
+                    of Lahore accounts through Google authentication.
+                    The system uses the authenticated account information
+                    to identify the student and associate it with the
+                    relevant student profile.
+                </p>
+                <p>
+                    Students should use their eligible university email
+                    account when accessing the system.
+                </p>
+            </div>
+
+            <div class="privacy-section">
+                <h3>
+                    <span class="privacy-icon">04</span>
+                    Student Accounts and Profiles
+                </h3>
+                <p>
+                    Student profile information is used to identify
+                    students and provide access to their library
+                    services. Account information may be associated
+                    with borrowing records so that library activities
+                    can be managed accurately.
+                </p>
+            </div>
+
+            <div class="privacy-section">
+                <h3>
+                    <span class="privacy-icon">05</span>
+                    Library Borrowing Records
+                </h3>
+                <p>
+                    ULMS maintains records of books issued to students,
+                    including the relevant book copy, issue date,
+                    due date and return information.
+                </p>
+                <p>
+                    These records help authorized library staff manage
+                    book availability, monitor active loans and maintain
+                    borrowing history.
+                </p>
+            </div>
+
+            <div class="privacy-section">
+                <h3>
+                    <span class="privacy-icon">06</span>
+                    Information Access and Security
+                </h3>
+                <p>
+                    Access to library information is based on the
+                    permissions assigned to different system roles.
+                    Students, library staff and administrators have
+                    different levels of access according to their
+                    responsibilities.
+                </p>
+                <p>
+                    Users should keep their university accounts secure
+                    and should not share their login credentials with
+                    others.
+                </p>
+            </div>
+
+            <div class="privacy-section">
+                <h3>
+                    <span class="privacy-icon">07</span>
+                    Use of Information
+                </h3>
+                <p>
+                    Information handled by ULMS is intended to support
+                    university library operations, including student
+                    identification, book issuing, book returns,
+                    borrowing history and library administration.
+                </p>
+            </div>
+
+            <div class="privacy-section">
+                <h3>
+                    <span class="privacy-icon">08</span>
+                    Contact Information
+                </h3>
+                <p>
+                    If you have questions about this Privacy Policy or
+                    the handling of information within ULMS, please
+                    contact the relevant University Library
+                    Administration.
+                </p>
+            </div>
+
+            <div class="privacy-note">
+                <strong>Important:</strong>
+                This policy describes the intended use of information
+                within ULMS. It should be reviewed and approved by the
+                University Library Administration before the system
+                is published for official use.
+            </div>
+
+        </div>
+    </div>
+</div>

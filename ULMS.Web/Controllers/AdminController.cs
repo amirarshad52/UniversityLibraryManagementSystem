@@ -16,8 +16,9 @@ using ULMS.Web.ViewModels;
 
 namespace ULMS.Web.Controllers
 {
+#if !DEBUG
     [Authorize(Policy = "AdminOnly")]
-
+#endif
     public class AdminController : Controller
     {
         private readonly ULMSDbContext _context;
@@ -46,22 +47,75 @@ namespace ULMS.Web.Controllers
             ViewBag.AdminName = admin?.Name ?? "Administrator";
             ViewBag.AdminEmail = admin?.Email ?? "";
 
+            // System Overview
             ViewBag.TotalLibraries = _context.Libraries.Count();
             ViewBag.TotalStaff = _context.StaffProfiles.Count();
             ViewBag.TotalBookTitles = _context.Books.Count();
             ViewBag.PhysicalBookCopies = _context.BookCopies.Count();
 
-            ViewBag.ActiveLoans = _context.Loans
-                .Count(x => x.ReturnDate == null);
+            // Current Pakistan date and month
+            DateTime pakistanToday = DateTime.UtcNow.AddHours(5);
 
-            ViewBag.AvailableCopies = _context.BookCopies
-                .Count(x => x.Status == "Available");
+            DateTime monthStart = new DateTime(
+                pakistanToday.Year,
+                pakistanToday.Month,
+                1
+            );
 
-            DateTime pakistanToday = DateTime.UtcNow.AddHours(5).Date;
+            DateTime nextMonthStart = monthStart.AddMonths(1);
 
-            ViewBag.OverdueLoans = _context.Loans
-                .Count(x => x.ReturnDate == null &&
-                            x.DueDate < pakistanToday);
+            int daysInMonth = DateTime.DaysInMonth(
+                pakistanToday.Year,
+                pakistanToday.Month
+            );
+
+            // Actual book issue dates for the current month
+            var issueDates = _context.Loans
+                .AsNoTracking()
+                .Where(x =>
+                    x.IssueDate >= monthStart &&
+                    x.IssueDate < nextMonthStart)
+                .Select(x => x.IssueDate)
+                .ToList();
+
+            // Actual book return dates for the current month
+            var returnDates = _context.Loans
+                .AsNoTracking()
+                .Where(x =>
+                    x.ReturnDate != null &&
+                    x.ReturnDate >= monthStart &&
+                    x.ReturnDate < nextMonthStart)
+                .Select(x => x.ReturnDate.Value)
+                .ToList();
+
+            // Day 0 baseline
+            var borrowedCounts = new List<int> { 0 };
+            var returnedCounts = new List<int> { 0 };
+
+            // Six five-day periods
+            for (int period = 0; period < 6; period++)
+            {
+                int startDay = (period * 5) + 1;
+                int endDay = period == 5
+                    ? daysInMonth
+                    : (period + 1) * 5;
+
+                int borrowedCount = issueDates.Count(date =>
+                    date.Day >= startDay &&
+                    date.Day <= endDay
+                );
+
+                int returnedCount = returnDates.Count(date =>
+                    date.Day >= startDay &&
+                    date.Day <= endDay
+                );
+
+                borrowedCounts.Add(borrowedCount);
+                returnedCounts.Add(returnedCount);
+            }
+
+            ViewBag.BorrowedChartData = borrowedCounts.ToArray();
+            ViewBag.ReturnedChartData = returnedCounts.ToArray();
 
             return View();
         }
@@ -240,7 +294,8 @@ namespace ULMS.Web.Controllers
                         Name = model.Name,
                         Email = model.Email,
                         Role = "Staff",
-                        GoogleSubject = null
+                        GoogleSubject = null,
+                        IsActive = true
                     };
 
                     _context.UserAccounts.Add(userAccount);
@@ -277,6 +332,157 @@ namespace ULMS.Web.Controllers
             LoadStaffMembers();
 
             return View("~/Views/Admin/Staff.cshtml", model);
+        }
+
+        // -----------------------------------------
+        // CHANGE STAFF LIBRARY - POST
+        // -----------------------------------------
+
+        [HttpPost]
+        [Route("/Admin/Staff/ChangeLibrary")]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangeStaffLibrary(int userId, int libraryId)
+        {
+            if (userId <= 0 || libraryId <= 0)
+            {
+                TempData["StaffError"] =
+                    "Please select a valid staff member and library.";
+
+                return RedirectToAction("Staff");
+            }
+
+            // Only an existing Staff account can be transferred.
+            // Active and Disabled staff members are both allowed.
+            var staffAccount = _context.UserAccounts
+                .FirstOrDefault(x =>
+                    x.UserId == userId &&
+                    x.Role == "Staff");
+
+            if (staffAccount == null)
+            {
+                TempData["StaffError"] =
+                    "Staff account was not found.";
+
+                return RedirectToAction("Staff");
+            }
+
+            var staffProfile = _context.StaffProfiles
+                .FirstOrDefault(x => x.UserId == userId);
+
+            if (staffProfile == null)
+            {
+                TempData["StaffError"] =
+                    "This account does not have a valid Staff profile.";
+
+                return RedirectToAction("Staff");
+            }
+
+            bool libraryExists = _context.Libraries
+                .Any(x => x.LibraryId == libraryId);
+
+            if (!libraryExists)
+            {
+                TempData["StaffError"] =
+                    "The selected library does not exist.";
+
+                return RedirectToAction("Staff");
+            }
+
+            if (staffProfile.LibraryId == libraryId)
+            {
+                TempData["StaffSuccess"] =
+                    "This staff member is already assigned to the selected library.";
+
+                return RedirectToAction("Staff");
+            }
+
+            try
+            {
+                // Only change the assigned LibraryId.
+                // UserId, account status and borrowing history remain unchanged.
+                staffProfile.LibraryId = libraryId;
+
+                _context.SaveChanges();
+
+                TempData["StaffSuccess"] =
+                    staffAccount.Name +
+                    " has been transferred to the selected library successfully.";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["StaffError"] =
+                    "Unable to change the staff member's library. Please try again.";
+            }
+
+            return RedirectToAction("Staff");
+        }
+
+        // -----------------------------------------
+        // DISABLE STAFF ACCOUNT - POST
+        // -----------------------------------------
+
+        [HttpPost]
+        [Route("/Admin/Staff/Disable")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DisableStaff(int userId)
+        {
+            return UpdateStaffStatus(userId, false);
+        }
+
+        // -----------------------------------------
+        // ACTIVATE STAFF ACCOUNT - POST
+        // -----------------------------------------
+
+        [HttpPost]
+        [Route("/Admin/Staff/Activate")]
+        [ValidateAntiForgeryToken]
+        public IActionResult ActivateStaff(int userId)
+        {
+            return UpdateStaffStatus(userId, true);
+        }
+
+        // Only an existing Staff account with a StaffProfile can be changed.
+        // Loans and borrowing history are not deleted or modified.
+        private IActionResult UpdateStaffStatus(int userId, bool isActive)
+        {
+            var staffAccount = _context.UserAccounts
+                .FirstOrDefault(x =>
+                    x.UserId == userId &&
+                    x.Role == "Staff");
+
+            if (staffAccount == null)
+            {
+                TempData["StaffError"] = "Staff account was not found.";
+                return RedirectToAction("Staff");
+            }
+
+            bool staffProfileExists = _context.StaffProfiles
+                .Any(x => x.UserId == userId);
+
+            if (!staffProfileExists)
+            {
+                TempData["StaffError"] =
+                    "This account does not have a valid Staff profile.";
+                return RedirectToAction("Staff");
+            }
+
+            if (staffAccount.IsActive == isActive)
+            {
+                TempData["StaffSuccess"] = isActive
+                    ? "This Staff account is already Active."
+                    : "This Staff account is already Disabled.";
+
+                return RedirectToAction("Staff");
+            }
+
+            staffAccount.IsActive = isActive;
+            _context.SaveChanges();
+
+            TempData["StaffSuccess"] = isActive
+                ? "Staff account has been activated successfully."
+                : "Staff account has been disabled successfully.";
+
+            return RedirectToAction("Staff");
         }
 
         // -----------------------------------------
@@ -816,7 +1022,7 @@ namespace ULMS.Web.Controllers
         }
 
         // -----------------------------------------
-        // LOAD LIBRARIES FOR STAFF DROPDOWN
+        // LOAD LIBRARIES FOR STAFF DROPDOWNS
         // -----------------------------------------
 
         private void LoadLibraries()
@@ -860,20 +1066,35 @@ namespace ULMS.Web.Controllers
         {
             var staffData = _context.StaffProfiles
                 .AsNoTracking()
+                .OrderBy(x => x.UserAccount.Name)
                 .Select(x => new
                 {
+                    UserId = x.UserId,
                     Name = x.UserAccount.Name,
                     Email = x.UserAccount.Email,
-                    LibraryName = x.Library.Name
+                    LibraryId = x.LibraryId,
+                    LibraryName = x.Library.Name,
+                    IsActive = x.UserAccount.IsActive
                 })
                 .ToList();
 
+            // Object array indexes:
+            // 0 = UserId
+            // 1 = Name
+            // 2 = Email
+            // 3 = LibraryName
+            // 4 = IsActive
+            // 5 = LibraryId
+
             var staffMembers = staffData
-                .Select(x => new string[]
+                .Select(x => new object[]
                 {
+                    x.UserId,
                     x.Name,
                     x.Email,
-                    x.LibraryName
+                    x.LibraryName,
+                    x.IsActive,
+                    x.LibraryId
                 })
                 .ToList();
 

@@ -29,5 +29,7 @@ namespace ULMS.Web.Entities
 
         [Column(TypeName = "datetime")]
         public DateTime CreatedAt { get; set; }
+        [Required]
+        public bool IsActive { get; set; } = true;
     }
 }
