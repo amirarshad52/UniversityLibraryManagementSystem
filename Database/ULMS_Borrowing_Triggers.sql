@@ -1,20 +1,19 @@
-
 USE ULMS_DB;
 
+-- Remove existing triggers before recreating them
 DROP TRIGGER IF EXISTS TR_BookCopies_BeforeUpdate;
 DROP TRIGGER IF EXISTS TR_Loans_BeforeInsert;
 DROP TRIGGER IF EXISTS TR_Loans_AfterInsert;
 DROP TRIGGER IF EXISTS TR_Loans_BeforeUpdate;
 DROP TRIGGER IF EXISTS TR_Loans_AfterReturn;
 
+DROP TRIGGER IF EXISTS TR_UserAccounts_BeforeInsert;
+DROP TRIGGER IF EXISTS TR_UserAccounts_BeforeUpdate;
+DROP TRIGGER IF EXISTS TR_UserAccounts_BeforeDelete;
+
 DELIMITER $$
 
 -- 1. Protect BookCopies status
--- Internal loan operations can update status.
--- Staff manual changes are limited to:
--- Available <-> Maintenance.
--- Active-loan copies cannot be changed manually.
-
 CREATE TRIGGER TR_BookCopies_BeforeUpdate
 BEFORE UPDATE ON BookCopies
 FOR EACH ROW
@@ -164,6 +163,61 @@ BEGIN
         WHERE CopyId = OLD.CopyId;
 
         SET @ULMS_INTERNAL_COPY_STATUS = previous_flag;
+
+    END IF;
+END$$
+
+
+-- 6. Protect Admin email before inserting
+CREATE TRIGGER TR_UserAccounts_BeforeInsert
+BEFORE INSERT ON UserAccounts
+FOR EACH ROW
+BEGIN
+    IF NEW.Role = 'Admin'
+       AND BINARY NEW.Email <> BINARY 'amir522289@gmail.com' THEN
+
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Only the approved Admin email is allowed.';
+
+    END IF;
+END$$
+
+
+-- 7. Protect Admin account before updating
+CREATE TRIGGER TR_UserAccounts_BeforeUpdate
+BEFORE UPDATE ON UserAccounts
+FOR EACH ROW
+BEGIN
+    IF NEW.Role = 'Admin'
+       AND BINARY NEW.Email <> BINARY 'amir522289@gmail.com' THEN
+
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Only the approved Admin email is allowed.';
+    END IF;
+
+    IF OLD.Role = 'Admin'
+       AND (
+           NEW.Role <> 'Admin'
+           OR BINARY NEW.Email <> BINARY 'amir522289@gmail.com'
+       ) THEN
+
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT =
+            'The approved Admin account cannot be changed or demoted.';
+    END IF;
+END$$
+
+
+-- 8. Prevent deletion of approved Admin
+CREATE TRIGGER TR_UserAccounts_BeforeDelete
+BEFORE DELETE ON UserAccounts
+FOR EACH ROW
+BEGIN
+    IF OLD.Role = 'Admin' THEN
+
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT =
+            'The approved Admin account cannot be deleted.';
 
     END IF;
 END$$
