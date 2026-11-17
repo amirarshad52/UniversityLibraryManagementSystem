@@ -249,6 +249,19 @@ The authentication implementation uses:
 - Application cookie authentication.
 - Role-based authorization.
 
+### Student Self-Registration
+
+Eligible students can register themselves through Google Sign-In. Staff do not need to create a student profile before a student's first login.
+
+On the first successful sign-in with a verified UOL university Google email address:
+
+- If a matching provisional `StudentProfile` already exists, ULMS links that profile to the student's new application account.
+- If no matching `StudentProfile` exists, ULMS automatically creates a `UserAccount` with the `Student` role and a linked `StudentProfile`.
+- The Google account's verified email and Google subject are stored for the application account.
+- Existing student profiles are reused rather than creating duplicate profiles.
+
+Google email verification and the university email-domain rule are checked by the application on the server. Only eligible UOL university email addresses can use student self-registration. Non-UOL or unverified Google accounts are not allowed to register or sign in.
+
 ### University Email Validation
 
 Eligible university email addresses must satisfy the approved domain rule:
