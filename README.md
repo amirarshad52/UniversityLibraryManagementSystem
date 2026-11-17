@@ -1,148 +1,165 @@
+
 # University Library Management System (ULMS)
 
-A web-based University Library Management System built with ASP.NET Core
-MVC, Entity Framework 6, and MySQL. The application supports a shared
-university-wide book catalogue, multiple libraries, physical book-copy
-management, borrowing and returns, and role-oriented Admin, Staff, and
-Student areas.
+A web-based University Library Management System built with ASP.NET Core MVC, Entity Framework 6, and MySQL.
 
-> **Project status:** This repository contains a .NET 5 application.
-> Google Authentication is integrated conditionally in the application
-> configuration, but it will not be available until valid Google OAuth
-> credentials have been configured.
+ULMS provides a centralized university-wide book catalogue, multiple library management, physical book-copy tracking, borrowing and returns, and separate areas for Admin, Staff, and Students.
+
+## Live Website
+
+**Website:** https://ulms.online
+
+**GitHub Repository:** https://github.com/amirarshad52/UniversityLibraryManagementSystem
+
+## Project Overview
+
+The University Library Management System helps manage university library operations through a centralized web application.
+
+The system supports:
+
+- University-wide shared book catalogue.
+- Multiple libraries and physical book-copy management.
+- Google Sign-In for eligible university accounts.
+- Admin, Staff, and Student areas.
+- Book issuing and returning.
+- Borrowing history and reports.
+- Library-specific Staff operations.
+
+> **Project status:** ULMS is deployed on Azure and its live website is available at https://ulms.online. The project currently targets .NET 5 and uses Entity Framework 6 with MySQL.
 
 ## Contents
 
--   [Features](#features)
--   [Technology stack](#technology-stack)
--   [Application structure](#application-structure)
--   [Database design](#database-design)
--   [Requirements](#requirements)
--   [Getting started](#getting-started)
--   [Configuration](#configuration)
--   [Authentication and authorization
-    notes](#authentication-and-authorization-notes)
--   [Book cover uploads](#book-cover-uploads)
--   [Important business rules](#important-business-rules)
--   [Troubleshooting](#troubleshooting)
--   [Customization](#customization)
--   [License](#license)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Application Structure](#application-structure)
+- [Database Design](#database-design)
+- [Business Rules](#business-rules)
+- [Authentication and Authorization](#authentication-and-authorization)
+- [Requirements](#requirements)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Book Cover Uploads](#book-cover-uploads)
+- [Troubleshooting](#troubleshooting)
+- [Security Notes](#security-notes)
+- [License](#license)
 
 ## Features
 
-### Admin area
+### Admin Area
 
 The Admin area provides university-level administration, including:
 
--   Admin dashboard with overall library, staff, book-title, and
-    physical-copy statistics.
--   Monthly books-borrowed and books-returned analytics based on loan
-    records.
--   Library management.
--   Staff management and assignment of staff members to a library.
--   Shared book catalogue management, including book information and
-    cover images.
--   Borrowing/loan records management.
--   Reports and library-wise statistics.
--   Admin profile page.
+- Admin dashboard with overall library statistics.
+- Monthly books-borrowed and books-returned analytics.
+- Library management.
+- Staff management and library assignment.
+- Shared book catalogue management.
+- Book information and cover-image management.
+- Borrowing and loan-record management.
+- Reports and library-wise statistics.
+- Admin profile management.
 
-### Staff area
+### Staff Area
 
-Staff members are associated with an assigned library. The Staff area
-includes:
+Staff members are associated with an assigned library.
 
--   Staff dashboard and assigned-library statistics.
--   Issue Book.
--   Return Book.
--   Manage Copies, including adding physical copies and maintaining copy
-    status.
--   Borrowing History with search and status filtering.
--   Books Catalogue, which displays the shared university-wide catalogue
-    and availability information.
--   Add New Book to create a shared catalogue entry and initial physical
-    copies.
--   Staff profile.
+The Staff area includes:
 
-A staff member's copy-management, issuing, and return operations are
-restricted in the application to the staff member's assigned library.
-Staff can browse the shared catalogue, while physical copies belong to
-individual libraries.
+- Staff dashboard and assigned-library statistics.
+- Issue Book.
+- Return Book.
+- Manage physical book copies.
+- Add physical copies and maintain copy status.
+- Borrowing History with search and status filtering.
+- Shared university-wide Books Catalogue.
+- Add New Book and initial physical copies.
+- Staff profile management.
 
-### Student area
+Staff operations involving physical copies and loan transactions are restricted to the Staff member's assigned library.
+
+### Student Area
 
 The Student area includes:
 
--   Student dashboard with borrowing summaries and recent activity.
--   Shared Books Catalogue and book search.
--   Book details and availability information.
--   My Borrowed Books.
--   Borrowing History.
--   Student profile.
+- Student dashboard.
+- Shared Books Catalogue.
+- Book search and details.
+- Book availability information.
+- My Borrowed Books.
+- Borrowing History.
+- Student profile management.
 
-### Borrowing safeguards
+### Borrowing Management
 
-The application uses a borrowing service and MySQL triggers to help
-enforce borrowing and return rules. The database triggers check copy
-availability, update copy status when a loan is issued or returned, and
-protect key loan-history fields from modification.
+The application uses a borrowing service and MySQL database triggers to help enforce borrowing and return rules.
 
-## Technology stack
+The system manages:
 
-  -----------------------------------------------------------------------
-  Component                           Technology
-  ----------------------------------- -----------------------------------
-  Web framework                       ASP.NET Core MVC
+- Book-copy availability.
+- Book issuing and returning.
+- Physical-copy status updates.
+- Borrowing history.
+- Loan-record integrity.
 
-  Target framework                    .NET 5 (`net5.0`)
+## Technology Stack
 
-  ORM                                 Entity Framework 6.4.4
+| Component | Technology |
+|---|---|
+| Web Framework | ASP.NET Core MVC |
+| Target Framework | .NET 5 (`net5.0`) |
+| ORM | Entity Framework 6.4.4 |
+| Database | MySQL / MariaDB |
+| MySQL Provider | MySql.Data.EntityFramework 8.0.22 |
+| Authentication | ASP.NET Core Cookie Authentication |
+| Google Authentication | Microsoft.AspNetCore.Authentication.Google 5.0.17 |
+| Frontend | Razor Views, HTML, CSS, JavaScript |
+| UI Framework | Bootstrap |
+| JavaScript Library | jQuery |
+| Hosting | Microsoft Azure App Service |
+| Source Control | Git and GitHub |
 
-  Database                            MySQL 8.x
+**Important:** This project uses Entity Framework 6 (`EntityFramework`), not Entity Framework Core.
 
-  MySQL provider                      MySql.Data.EntityFramework 8.0.22
+## Application Structure
 
-  Authentication packages             ASP.NET Core Cookie Authentication
-                                      and Google Authentication 5.0.17
+The main project structure is organized as follows:
 
-  Frontend                            Razor Views, HTML, CSS, JavaScript,
-                                      Bootstrap, jQuery
-  -----------------------------------------------------------------------
-
-**Important:** This project uses **Entity Framework 6
-(`EntityFramework`)**, not Entity Framework Core.
-
-## Application structure
-
-The main solution layout is organized as follows:
-
-``` text
+```text
 UniversityLibraryManagementSystem/
+│
 ├── Database/
 │   ├── ULMS_Schema.sql
 │   └── ULMS_Borrowing_Triggers.sql
 │
 ├── ULMS.Web/
+│   │
 │   ├── Controllers/
 │   ├── Data/
-│   │   └── ULMSDbContext.cs
+│   │   ├── ULMSDbContext.cs
+│   │   └── ULMSMySqlEFConfiguration.cs
+│   │
 │   ├── Entities/
 │   ├── Services/
 │   │   └── BorrowingService.cs
+│   │
 │   ├── ViewModels/
+│   │
 │   ├── Views/
+│   │   ├── Account/
 │   │   ├── Admin/
 │   │   ├── Staff/
 │   │   ├── Students/
 │   │   ├── Books/
 │   │   ├── Home/
 │   │   └── Shared/
+│   │
 │   ├── wwwroot/
 │   │   ├── css/
 │   │   ├── image/
 │   │   ├── js/
 │   │   ├── lib/
 │   │   └── uploads/
-│   │       └── book-covers/
+│   │
 │   ├── appsettings.json
 │   ├── Startup.cs
 │   └── ULMS.Web.csproj
@@ -151,126 +168,162 @@ UniversityLibraryManagementSystem/
 └── LICENSE
 ```
 
-Some folders may contain additional files or may differ slightly as the
-project evolves.
+Some folders may contain additional files as the project evolves.
 
-## Database design
+## Database Design
 
-The supplied schema defines seven main tables:
+The database contains seven main tables:
 
-  -----------------------------------------------------------------------
-  Table                               Purpose
-  ----------------------------------- -----------------------------------
-  `UserAccounts`                      Application user identity, email,
-                                      role, and Google subject
+| Table | Purpose |
+|---|---|
+| `UserAccounts` | Application user identity, email, role, and Google subject |
+| `Libraries` | University library records |
+| `StudentProfiles` | Student information and account linking |
+| `StaffProfiles` | Staff information and assigned library |
+| `Books` | Shared book catalogue |
+| `BookCopies` | Physical book copies held by libraries |
+| `Loans` | Book issuing and returning transactions |
 
-  `Libraries`                         University library records
+### Database Relationships and Constraints
 
-  `StudentProfiles`                   Student records, including records
-                                      that may not yet be linked to an
-                                      application account
+- A Student profile may have an optional link to a User account.
+- Staff profiles are associated with a User account and an assigned Library.
+- Each physical BookCopy belongs to a Book and a Library.
+- Each Loan references a Student, a physical BookCopy, and the issuing Staff member.
+- Return information can remain NULL while a loan is active.
+- Foreign keys use `ON DELETE RESTRICT` and `ON UPDATE RESTRICT`.
+- ISBN is nullable and has a unique constraint.
+- Multiple books may have NULL ISBN values, but duplicate non-NULL ISBN values are prevented.
+- Book-copy statuses include `Available`, `Issued`, and `Maintenance`.
 
-  `StaffProfiles`                     Staff records and their assigned
-                                      library
+### Database Setup
 
-  `Books`                             Shared book catalogue metadata
+For a new local installation:
 
-  `BookCopies`                        Physical copies of catalogue books
-                                      held by libraries
+1. Create a MySQL database named `ULMS_DB`.
+2. Execute `Database/ULMS_Schema.sql`.
+3. Execute `Database/ULMS_Borrowing_Triggers.sql`.
+4. Confirm that the seven tables and required triggers have been created.
 
-  `Loans`                             Book issue and return transaction
-                                      history
-  -----------------------------------------------------------------------
+Example:
 
-### Database relationships and constraints
-
--   A student profile may have an optional link to a user account.
--   A staff profile is linked to a user account and an assigned library.
--   Each physical book copy belongs to a book and a library.
--   Each loan references a student, a physical book copy, and the staff
-    member who issued it.
--   A return may optionally reference the staff member who processed it;
-    the supplied schema requires return information to be consistent.
--   Foreign keys use `ON DELETE RESTRICT` and `ON UPDATE RESTRICT` to
-    protect related records and borrowing history.
--   ISBN is nullable and has a unique index, so a book can omit its ISBN
-    while duplicate non-NULL ISBN values are rejected.
--   Book-copy statuses in the supplied schema are `Available`, `Issued`,
-    and `Maintenance`.
-
-### Create the database
-
-1.  Start your MySQL server.
-2.  Create the database named `ULMS_DB` (the supplied SQL scripts select
-    this database using `USE ULMS_DB;`).
-3.  Open and execute `Database/ULMS_Schema.sql`.
-4.  After the seven tables have been created, execute
-    `Database/ULMS_Borrowing_Triggers.sql`.
-5.  Confirm that the seven tables and the triggers exist in `ULMS_DB`.
-
-For example, using a MySQL client:
-
-``` sql
+```sql
 CREATE DATABASE ULMS_DB
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 ```
 
-Then run the two SQL files in the order shown above. The trigger script
-drops and recreates its named triggers, so running it again replaces
-those triggers.
+Execute the schema before the trigger script.
 
-> The supplied schema creates the tables; it does not provide a
-> ready-made set of university users, libraries, staff, students, books,
-> or sample loans. Add the required initial records using your own setup
-> process.
+> The SQL scripts create the database structure and triggers. Initial university records and authorized user accounts must be configured separately.
+
+## Business Rules
+
+The application follows these main business rules:
+
+- A Student may have a maximum of **five active borrowed books** at a time.
+- The borrowing period is **14 calendar days**.
+- Book catalogue metadata is shared across university libraries.
+- Physical copies belong to individual libraries.
+- Staff can manage physical copies in their assigned library.
+- Only authorized Staff can issue and return books.
+- A physical copy must have `Available` status before it can be issued.
+- When a loan is issued, the physical copy becomes `Issued`.
+- When an active loan is returned, the physical copy becomes `Available`.
+- Staff copy-status changes are restricted by the database triggers.
+- Loan-history records are protected by database constraints and triggers.
+
+The SQL scripts and application code are the authoritative implementation for the deployed version.
+
+## Authentication and Authorization
+
+### Google Sign-In
+
+ULMS uses Google Authentication for application sign-in.
+
+The authentication implementation uses:
+
+- Google account authentication.
+- Verified Google email information.
+- Server-side university email-domain validation.
+- Application cookie authentication.
+- Role-based authorization.
+
+### University Email Validation
+
+Eligible university email addresses must satisfy the approved domain rule:
+
+- The domain is exactly `uol.edu.pk`, or
+- The domain ends with `.uol.edu.pk`.
+
+This supports university email addresses such as:
+
+```text
+student@uol.edu.pk
+name@student.uol.edu.pk
+name@department.uol.edu.pk
+```
+
+The backend validates the verified email address using a domain-boundary check.
+
+### Role-Based Access
+
+The application uses authorization policies for protected areas, including:
+
+- `AdminOnly`
+- `StaffOnly`
+
+Authorization is enforced by the application rather than relying only on hidden navigation links or buttons.
+
+Students, Staff, and Admin users are directed to the areas permitted by their authorized roles.
+
+### Google OAuth Configuration
+
+Google OAuth credentials are configured through secure application configuration.
+
+For deployment, the authorized redirect URI must match the deployed application's HTTPS host and callback path:
+
+```text
+https://ulms.online/signin-google
+```
+
+**Important:** Google Client IDs, Client Secrets, database passwords, and other credentials must never be published in this repository.
 
 ## Requirements
 
-Before running the application, install:
+For local development, the following are required:
 
--   Windows, macOS, or Linux development environment.
--   .NET 5 SDK compatible with this project's `net5.0` target.
--   MySQL Server 8.x.
--   A code editor or IDE such as Visual Studio or Visual Studio Code.
--   Git, if cloning the repository.
+- Windows, macOS, or Linux.
+- .NET 5 SDK compatible with `net5.0`.
+- MySQL Server 8.x or a compatible MariaDB environment.
+- Visual Studio or Visual Studio Code.
+- Git.
 
-.NET 5 is out of support. It is retained here because it is the target
-framework specified by this project's current `.csproj`. For a public or
-production deployment, plan and test a migration to a supported .NET
-release before exposing the application to users.
+> **Framework notice:** .NET 5 is out of support. It is retained because it is the current target framework of this project. Migration to a supported .NET release should be planned and tested separately.
 
-## Getting started
+## Getting Started
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
-``` bash
+```bash
 git clone https://github.com/amirarshad52/UniversityLibraryManagementSystem.git
 cd UniversityLibraryManagementSystem
 ```
 
-### 2. Prepare MySQL
+### 2. Prepare the Database
 
-Create `ULMS_DB`, then execute:
+Create the `ULMS_DB` database and execute the SQL scripts in this order:
 
-1.  `Database/ULMS_Schema.sql`
-2.  `Database/ULMS_Borrowing_Triggers.sql`
+1. `Database/ULMS_Schema.sql`
+2. `Database/ULMS_Borrowing_Triggers.sql`
 
-Use a MySQL account that has permission to create tables, foreign keys,
-indexes, and triggers.
+### 3. Configure the Database Connection
 
-### 3. Configure the connection string
+Configure the connection string named `ULMSConnection` using your local database settings.
 
-Open `ULMS.Web/appsettings.json` and configure the connection string
-named `ULMSConnection`. The application reads it through:
+Example configuration format:
 
-``` csharp
-Configuration.GetConnectionString("ULMSConnection")
-```
-
-A typical local development connection-string shape is:
-
-``` json
+```json
 {
   "ConnectionStrings": {
     "ULMSConnection": "server=localhost;port=3306;database=ULMS_DB;user=YOUR_MYSQL_USER;password=YOUR_MYSQL_PASSWORD;"
@@ -278,213 +331,128 @@ A typical local development connection-string shape is:
 }
 ```
 
-Replace the example username and password with your own local MySQL
-credentials. Preserve any other existing settings in your
-`appsettings.json`.
+Replace the example values with your own local database credentials.
 
-**Do not commit real database passwords, OAuth secrets, or other
-credentials to a public Git repository.** Use .NET User Secrets or
-environment variables for local secrets, and use your hosting provider's
-secret configuration for deployment.
+Do not commit actual passwords or connection strings containing credentials.
 
-### 4. Restore packages
+### 4. Restore Packages
 
-From the repository root:
+Run from the repository root:
 
-``` bash
+```bash
 dotnet restore ULMS.Web/ULMS.Web.csproj
 ```
 
-### 5. Run the application
+### 5. Run the Application
 
-``` bash
+```bash
 dotnet run --project ULMS.Web/ULMS.Web.csproj
 ```
 
-Use the local HTTP/HTTPS address printed by the .NET application in the
-terminal. If HTTPS development certificates are not configured on your
-computer, configure the local .NET development certificate before using
-the HTTPS endpoint.
+Open the local HTTP/HTTPS address displayed in the terminal.
 
 ## Configuration
 
-### Google Authentication
+### Database Configuration
 
-The project references `Microsoft.AspNetCore.Authentication.Google` and
-`Startup.cs` registers Google authentication only when both of these
-configuration values are non-empty:
+The application reads the database connection string using:
 
--   `Authentication:Google:ClientId`
--   `Authentication:Google:ClientSecret`
-
-The Google sign-in flow therefore requires a Google OAuth client to be
-created and configured. For deployment, configure the authorized
-redirect URI to match the application's deployed HTTPS host and callback
-path:
-
-``` text
-/signin-google
+```csharp
+Configuration.GetConnectionString("ULMSConnection")
 ```
 
-Do not publish the Client Secret. Configure OAuth branding, authorized
-domains, homepage/privacy-policy URLs, and redirect URIs according to
-Google's current requirements before enabling sign-in on a public
-deployment.
+Use secure configuration for local development and production hosting.
 
-### Initial application data
+### Google Authentication Configuration
 
-The database schema does not create a default Admin, Staff, or Student
-login. The application needs valid initial records and role assignments
-before role-specific areas can be used. Set up the initial administrator
-and related records using a controlled database initialization process
-appropriate to your environment. Do not expose an unprotected public
-registration or setup endpoint for creating administrator accounts.
+The application uses these configuration keys:
 
-## Authentication and authorization notes
-
-The application configures cookie authentication and role policies named
-`AdminOnly` and `StaffOnly`. The configured application cookie is
-HTTP-only, uses `SecurePolicy.Always`, and has an eight-hour expiry with
-sliding expiration.
-
-Some controllers in the supplied source wrap their authorization
-attributes in a conditional compilation block:
-
-``` csharp
-#if !DEBUG
-[Authorize(Policy = "AdminOnly")]
-#endif
+```text
+Authentication:Google:ClientId
+Authentication:Google:ClientSecret
 ```
 
-or:
+Actual credential values must be supplied through secure configuration and must not be committed to GitHub.
 
-``` csharp
-#if !DEBUG
-[Authorize(Policy = "StaffOnly")]
-#endif
-```
+For the deployed website, Google OAuth must use the correct HTTPS redirect URI.
 
-This means the attribute is excluded from `DEBUG` builds and included in
-non-DEBUG builds. A local Debug run may therefore behave differently
-from a Release deployment. Review the authorization configuration and
-all access-control checks before deploying or adapting this project. Do
-not rely on Debug-mode behavior as a production security configuration.
+## Book Cover Uploads
 
-The supplied startup code also checks whether a Staff account remains
-active when validating the application cookie. Review the full
-authentication and account-management implementation when changing
-roles, account activation, or sign-in behavior.
+Book cover files are stored under:
 
-## Book cover uploads
-
-Book cover files are stored under the web application's static content
-directory:
-
-``` text
+```text
 ULMS.Web/wwwroot/uploads/book-covers/
 ```
 
-The database stores the cover image path in `Books.CoverImagePath`; the
-SQL database backup does not contain the actual image file bytes.
+The database stores the relative image path in `Books.CoverImagePath`; it does not store the actual image bytes.
 
-The current repository's Git ignore status showed
-`ULMS.Web/wwwroot/uploads/` as ignored. This means uploaded cover files
-may not be included when someone clones the repository. If you need to
-move an existing installation, copy the `book-covers` directory
-separately and preserve the relative paths stored in the database.
+Uploaded files may not be included when someone clones the repository because the uploads directory is excluded by Git ignore rules.
 
-For a new installation, the application can create new cover uploads as
-users add books. If you decide to version-control sample cover images,
-review the ignore rules and only commit images you are permitted to
-distribute.
-
-## Important business rules
-
-The supplied schema, trigger definitions, and application design
-establish these key behaviors:
-
--   A student may have up to **five active borrowed books across all
-    university libraries** (as a project business rule; ensure the
-    application borrowing service enforces this limit).
--   Book catalogue metadata is shared across libraries; physical copies
-    are associated with individual libraries.
--   Staff operations for physical copies and loan transactions are
-    limited to the staff member's assigned library.
--   A physical copy must be `Available` before a new loan can be
-    inserted.
--   After a loan is created, its copy is marked `Issued`.
--   When an active loan is returned, its copy is marked `Available`.
--   Staff manual copy-status changes are limited by the trigger to
-    `Available` ↔ `Maintenance`; a copy with an active loan cannot be
-    manually changed.
--   Key loan-history fields (copy, student, issuing staff, issue date,
-    and due date) cannot be changed by the supplied loan-update trigger.
--   A returned loan cannot be reopened or have its return information
-    modified by the supplied trigger.
--   Referenced parent records cannot be deleted through the database's
-    restrictive foreign-key relationships.
-
-Always treat the SQL files and application code as the authoritative
-implementation for the version you are running. If you change a business
-rule, update and test both the application logic and relevant database
-constraints/triggers.
+When moving an existing installation, copy the required book-cover files separately and preserve their relative paths.
 
 ## Troubleshooting
 
-### The application cannot connect to MySQL
+### Application Cannot Connect to MySQL
 
--   Confirm that the MySQL server is running.
--   Confirm the database name is `ULMS_DB`.
--   Check the `ULMSConnection` connection string.
--   Confirm the MySQL username and password.
--   Confirm that the database user has the required permissions.
+- Confirm that the database server is running.
+- Confirm the database name.
+- Check the `ULMSConnection` configuration.
+- Verify database username and password.
+- Confirm that the database account has the required permissions.
 
-### A book cover is missing after cloning or moving the project
+### Google Sign-In Is Unavailable
 
-The database stores the image path, not the image itself. Copy the
-corresponding files into `wwwroot/uploads/book-covers/` and verify that
-the stored relative paths still match.
+- Confirm that the Google OAuth configuration is available to the application.
+- Verify the authorized redirect URI.
+- Confirm that the deployed HTTPS hostname matches the configured OAuth settings.
+- Check the application logs for authentication errors.
 
-### Google sign-in is unavailable
+### Book Cover Is Missing
 
-Check that both `Authentication:Google:ClientId` and
-`Authentication:Google:ClientSecret` are configured, and that the Google
-OAuth redirect URI matches the deployed callback path `/signin-google`.
+The database stores the image path, not the image itself.
 
-### A role-protected page behaves differently in Debug and Release
+Check that the corresponding image exists under:
 
-Review the `#if !DEBUG` authorization attributes described above. Build
-configuration affects whether those attributes are compiled into the
-application.
+```text
+wwwroot/uploads/book-covers/
+```
 
-### Database trigger errors occur
+### Database Trigger Errors
 
-Confirm that the schema was executed before the trigger script, that all
-seven tables exist, and that the MySQL account has trigger privileges.
-Review the exact trigger error message and the current copy/loan state
-before retrying an operation.
+- Confirm that the database schema was executed before the trigger script.
+- Confirm that all seven tables exist.
+- Check that the database account has the required trigger permissions.
+- Review the exact database error and the current loan/copy status before retrying an operation.
 
-## Customization
+## Security Notes
 
-This project can be adapted by another university. Typical areas to
-review include:
+Security-sensitive configuration must not be committed to this public repository.
 
--   University email-domain validation.
--   Library names, locations, and initial records.
--   Role and account-provisioning rules.
--   Borrowing limits and loan periods.
--   Branding, logo, colors, and page content.
--   Google OAuth settings and deployed callback URLs.
--   Database connection and hosting configuration.
+Never publish:
 
-The application is not a ready-made multi-tenant service: each
-university should clone the project, configure its own database and
-authentication, and make and test the changes required for its own
-policies.
+- Google OAuth Client Secrets.
+- Database passwords.
+- API keys.
+- Access tokens.
+- Private configuration files.
+- Hosting credentials.
+
+Use .NET User Secrets for local development and secure application settings or environment variables for deployment.
+
+Database operations should use Entity Framework LINQ or parameterized queries. Avoid building SQL statements by concatenating user input.
+
+## Deployment
+
+The application is hosted using Microsoft Azure App Service.
+
+Live website:
+
+**https://ulms.online**
+
+Deployment configuration, database connection settings, and Google OAuth credentials must be maintained securely in the hosting environment.
+
+Do not include production secrets in the source code or GitHub repository.
 
 ## License
 
-This repository includes an MIT License. See the [`LICENSE`](LICENSE)
-file for the full license text. Replace the copyright-holder placeholder
-in that file with the name of the copyright owner before publishing or
-redistributing the project.
+See the [`LICENSE`](LICENSE) file included in this repository for the applicable license terms.

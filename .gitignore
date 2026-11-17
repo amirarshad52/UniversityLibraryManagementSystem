@@ -438,3 +438,7 @@ ULMS.Web/wwwroot/uploads/
 
 # Local development configuration
 ULMS.Web/appsettings.Development.json
+
+# ULMS private backups and deployment packages
+Private-Backups/
+*.zip

@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -10,9 +11,7 @@ using ULMS.Web.Entities;
 
 namespace ULMS.Web.Controllers
 {
-#if !DEBUG
     [Authorize(Policy = "StudentOnly")]
-#endif
     public class StudentController : Controller
     {
         private readonly ULMSDbContext _context;
@@ -21,11 +20,6 @@ namespace ULMS.Web.Controllers
         {
             _context = context;
         }
-
-        // =====================================================
-        // STUDENT DASHBOARD
-        // URL: /Student/Index
-        // =====================================================
 
         [HttpGet]
         public ActionResult Index()
@@ -37,6 +31,7 @@ namespace ULMS.Web.Controllers
 
             DateTime today = GetPakistanDate();
             DateTime dueSoonEndDate = today.AddDays(3);
+
             var studentLoans = _context.Loans
                 .AsNoTracking()
                 .Where(x => x.StudentId == student.StudentId);
@@ -86,11 +81,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Students/Index.cshtml", model);
         }
 
-        // =====================================================
-        // BOOKS CATALOGUE
-        // URL: /Student/Books
-        // =====================================================
-
         [HttpGet]
         public ActionResult Books(string search)
         {
@@ -117,7 +107,7 @@ namespace ULMS.Web.Controllers
                 query = query.Where(x =>
                     x.Title.Contains(search) ||
                     x.Author.Contains(search) ||
-                    x.ISBN.Contains(search));
+                    (x.ISBN != null && x.ISBN.Contains(search)));
             }
 
             var books = query
@@ -177,11 +167,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Students/Books.cshtml", model);
         }
 
-        // =====================================================
-        // BOOK DETAILS
-        // URL: /Student/Details/{id}
-        // =====================================================
-
         [HttpGet]
         public ActionResult Details(int id)
         {
@@ -221,11 +206,6 @@ namespace ULMS.Web.Controllers
 
             return View("~/Views/Students/Details.cshtml", model);
         }
-
-        // =====================================================
-        // MY ACTIVE BORROWED BOOKS
-        // URL: /Student/MyBorrowedBooks
-        // =====================================================
 
         [HttpGet]
         public ActionResult MyBorrowedBooks()
@@ -268,11 +248,6 @@ namespace ULMS.Web.Controllers
                 model);
         }
 
-        // =====================================================
-        // BORROWING HISTORY
-        // URL: /Student/History
-        // =====================================================
-
         [HttpGet]
         public ActionResult History()
         {
@@ -309,11 +284,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Students/History.cshtml", model);
         }
 
-        // =====================================================
-        // STUDENT PROFILE
-        // URL: /Student/Profile
-        // =====================================================
-
         [HttpGet]
         public ActionResult Profile()
         {
@@ -347,17 +317,8 @@ namespace ULMS.Web.Controllers
 
         private StudentProfile GetCurrentStudentProfile()
         {
-#if DEBUG
-            // Temporary development-only student selection.
-            // The first StudentProfile is used for testing.
-
-            return _context.StudentProfiles
-                .Include(x => x.UserAccount)
-                .OrderBy(x => x.StudentId)
-                .FirstOrDefault();
-#else
-            // In production, resolve the student through
-            // the authenticated internal UserAccount ID.
+            // Always resolve the student through the authenticated
+            // application's internal UserId. No Debug-mode bypass.
 
             string userIdClaim = User.FindFirst(
                 ClaimTypes.NameIdentifier)?.Value;
@@ -369,8 +330,11 @@ namespace ULMS.Web.Controllers
 
             return _context.StudentProfiles
                 .Include(x => x.UserAccount)
-                .FirstOrDefault(x => x.UserId == userId);
-#endif
+                .FirstOrDefault(x =>
+                    x.UserId == userId &&
+                    x.UserAccount != null &&
+                    x.UserAccount.IsActive &&
+                    x.UserAccount.Role == "Student");
         }
 
         // =====================================================
@@ -397,10 +361,6 @@ namespace ULMS.Web.Controllers
                 timeZone).Date;
         }
     }
-
-    // =========================================================
-    // STUDENT DASHBOARD VIEW MODELS
-    // =========================================================
 
     public class StudentDashboardViewModel
     {
@@ -433,10 +393,6 @@ namespace ULMS.Web.Controllers
         public DateTime? ReturnDate { get; set; }
     }
 
-    // =========================================================
-    // BOOK CATALOGUE VIEW MODEL
-    // =========================================================
-
     public class StudentBookListItemViewModel
     {
         public int BookId { get; set; }
@@ -448,10 +404,6 @@ namespace ULMS.Web.Controllers
         public int TotalCopies { get; set; }
         public int AvailableCopies { get; set; }
     }
-
-    // =========================================================
-    // BOOK DETAILS VIEW MODELS
-    // =========================================================
 
     public class StudentBookDetailsViewModel
     {
@@ -470,10 +422,6 @@ namespace ULMS.Web.Controllers
         public string LibraryLocation { get; set; }
         public string Status { get; set; }
     }
-
-    // =========================================================
-    // STUDENT LOANS VIEW MODELS
-    // =========================================================
 
     public class StudentLoanListViewModel
     {
@@ -496,10 +444,6 @@ namespace ULMS.Web.Controllers
         public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
     }
-
-    // =========================================================
-    // STUDENT PROFILE VIEW MODEL
-    // =========================================================
 
     public class StudentProfileViewModel
     {

@@ -1,4 +1,3 @@
-
 using System;
 using System.IO;
 using System.Linq;
@@ -6,6 +5,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Dynamic;
 using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +16,7 @@ using ULMS.Web.ViewModels;
 
 namespace ULMS.Web.Controllers
 {
-#if !DEBUG
     [Authorize(Policy = "AdminOnly")]
-#endif
     public class AdminController : Controller
     {
         private readonly ULMSDbContext _context;
@@ -38,14 +36,38 @@ namespace ULMS.Web.Controllers
 
         public IActionResult Index()
         {
+            // Get the internal UserId from the authenticated application cookie.
+            string userIdClaim = User.FindFirst(
+                ClaimTypes.NameIdentifier
+            )?.Value;
+
+            if (!int.TryParse(userIdClaim, out int authenticatedUserId) ||
+                authenticatedUserId <= 0)
+            {
+                return Unauthorized();
+            }
+
+            // Only load the currently authenticated, active Admin account.
             var admin = _context.UserAccounts
                 .AsNoTracking()
-                .Where(x => x.Role == "Admin")
-                .Select(x => new { x.Name, x.Email })
+                .Where(x =>
+                    x.UserId == authenticatedUserId &&
+                    x.Role == "Admin" &&
+                    x.IsActive)
+                .Select(x => new
+                {
+                    x.Name,
+                    x.Email
+                })
                 .FirstOrDefault();
 
-            ViewBag.AdminName = admin?.Name ?? "Administrator";
-            ViewBag.AdminEmail = admin?.Email ?? "";
+            if (admin == null)
+            {
+                return Forbid();
+            }
+
+            ViewBag.AdminName = admin.Name;
+            ViewBag.AdminEmail = admin.Email;
 
             // System Overview
             ViewBag.TotalLibraries = _context.Libraries.Count();

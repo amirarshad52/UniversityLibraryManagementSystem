@@ -1,5 +1,5 @@
-
 using System.Linq;
+using System.Security.Claims;
 using System.Data.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +7,7 @@ using ULMS.Web.Data;
 
 namespace ULMS.Web.Controllers
 {
-#if !DEBUG
     [Authorize(Policy = "AdminOnly")]
-#endif
     public class AdminProfileController : Controller
     {
         private readonly ULMSDbContext _context;
@@ -24,13 +22,28 @@ namespace ULMS.Web.Controllers
         [Route("/Admin/Profile")]
         public IActionResult Profile()
         {
+            // Get the internal UserId from the authenticated application cookie.
+            string userIdClaim = User.FindFirst(
+                ClaimTypes.NameIdentifier
+            )?.Value;
+
+            if (!int.TryParse(userIdClaim, out int authenticatedUserId) ||
+                authenticatedUserId <= 0)
+            {
+                return Unauthorized();
+            }
+
+            // Load only the currently authenticated, active Admin.
             var admin = _context.UserAccounts
                 .AsNoTracking()
-                .FirstOrDefault(x => x.Role == "Admin");
+                .FirstOrDefault(x =>
+                    x.UserId == authenticatedUserId &&
+                    x.Role == "Admin" &&
+                    x.IsActive);
 
             if (admin == null)
             {
-                return NotFound("Administrator account was not found.");
+                return Forbid();
             }
 
             return View("~/Views/Admin/Profile.cshtml", admin);

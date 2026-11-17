@@ -8,30 +8,32 @@
 
     var layoutRole = ViewBag.LayoutRole as string ?? "";
 
-    // Read role from Privacy page route parameter
-    var privacyLayout =
-        Context.Request.Query["layout"].ToString();
-
-    if (currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
-        currentAction.Equals("Privacy", StringComparison.OrdinalIgnoreCase))
-    {
-        if (privacyLayout.Equals("Admin", StringComparison.OrdinalIgnoreCase))
-        {
-            layoutRole = "Admin";
-        }
-        else if (privacyLayout.Equals("Staff", StringComparison.OrdinalIgnoreCase))
-        {
-            layoutRole = "Staff";
-        }
-        else if (privacyLayout.Equals("Student", StringComparison.OrdinalIgnoreCase))
-        {
-            layoutRole = "Student";
-        }
-    }
-
     var isPrivacyPage =
         currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
         currentAction.Equals("Privacy", StringComparison.OrdinalIgnoreCase);
+
+    // Privacy page layout is determined by the authenticated user's actual role.
+    // URL query parameters cannot select another role's layout.
+    if (isPrivacyPage)
+    {
+        layoutRole = "";
+
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            if (User.IsInRole("Admin"))
+            {
+                layoutRole = "Admin";
+            }
+            else if (User.IsInRole("Staff"))
+            {
+                layoutRole = "Staff";
+            }
+            else if (User.IsInRole("Student"))
+            {
+                layoutRole = "Student";
+            }
+        }
+    }
 
     var isAdminDetailsPage =
         currentController.Equals("Books", StringComparison.OrdinalIgnoreCase) &&
@@ -834,8 +836,7 @@
                     <h5>Quick Links</h5>
 
                     <a asp-controller="Home"
-                       asp-action="Privacy"
-                       asp-route-layout="@(isAdminPage ? "Admin" : isStaffPage ? "Staff" : isStudentPage ? "Student" : null)">
+                       asp-action="Privacy">
                         Privacy Policy
                     </a>
 

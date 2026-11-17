@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,7 @@ using ULMS.Web.Services;
 
 namespace ULMS.Web.Controllers
 {
-#if !DEBUG
     [Authorize(Policy = "StaffOnly")]
-#endif
     public class StaffController : Controller
     {
         private readonly ULMSDbContext _context;
@@ -29,9 +28,6 @@ namespace ULMS.Web.Controllers
             _borrowingService = borrowingService;
         }
 
-        // =====================================================
-        // STAFF PROFILE - GET
-        // =====================================================
         [HttpGet]
         public ActionResult Profile()
         {
@@ -60,9 +56,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Staff/Profile.cshtml", model);
         }
 
-        // =====================================================
-        // STAFF DASHBOARD
-        // =====================================================
         public ActionResult Index()
         {
             StaffProfile staffProfile = GetCurrentStaffProfile();
@@ -79,10 +72,6 @@ namespace ULMS.Web.Controllers
             var libraryLoans = _context.Loans
                 .Where(x => x.BookCopy.LibraryId == libraryId);
 
-            // =====================================================
-            // MONTHLY CHART DATA - ASSIGNED LIBRARY ONLY
-            // =====================================================
-
             DateTime monthStart = new DateTime(
                 pakistanDate.Year,
                 pakistanDate.Month,
@@ -96,7 +85,6 @@ namespace ULMS.Web.Controllers
                 pakistanDate.Month
             );
 
-            // Actual issue dates from this staff member's library
             var issueDates = libraryLoans
                 .AsNoTracking()
                 .Where(x =>
@@ -105,7 +93,6 @@ namespace ULMS.Web.Controllers
                 .Select(x => x.IssueDate)
                 .ToList();
 
-            // Actual return dates from this staff member's library
             var returnDates = libraryLoans
                 .AsNoTracking()
                 .Where(x =>
@@ -115,11 +102,9 @@ namespace ULMS.Web.Controllers
                 .Select(x => x.ReturnDate.Value)
                 .ToList();
 
-            // Day 0 baseline
             var borrowedCounts = new List<int> { 0 };
             var returnedCounts = new List<int> { 0 };
 
-            // Six five-day periods
             for (int period = 0; period < 6; period++)
             {
                 int startDay = (period * 5) + 1;
@@ -144,10 +129,6 @@ namespace ULMS.Web.Controllers
 
             ViewBag.BorrowedChartData = borrowedCounts.ToArray();
             ViewBag.ReturnedChartData = returnedCounts.ToArray();
-
-            // =====================================================
-            // DASHBOARD VIEW MODEL
-            // =====================================================
 
             var model = new StaffDashboardViewModel
             {
@@ -192,9 +173,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Staff/Index.cshtml", model);
         }
 
-        // =====================================================
-        // ISSUE BOOK - GET
-        // =====================================================
         [HttpGet]
         public ActionResult IssueBook(string search, int? studentId)
         {
@@ -219,7 +197,6 @@ namespace ULMS.Web.Controllers
                     Convert.ToBoolean(TempData["IssueSuccess"])
             };
 
-            // SEARCH STUDENTS
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Trim();
@@ -264,7 +241,6 @@ namespace ULMS.Web.Controllers
                     .ToList();
             }
 
-            // LOAD SELECTED STUDENT
             if (studentId.HasValue)
             {
                 var student = _context.StudentProfiles
@@ -307,7 +283,6 @@ namespace ULMS.Web.Controllers
                 }
             }
 
-            // AVAILABLE COPIES FROM ASSIGNED LIBRARY ONLY
             model.AvailableCopies = _context.BookCopies
                 .Where(x =>
                     x.LibraryId == staffProfile.LibraryId &&
@@ -326,9 +301,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Staff/IssueBook.cshtml", model);
         }
 
-        // =====================================================
-        // CREATE PROVISIONAL STUDENT - POST
-        // =====================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateProvisionalStudent(
@@ -383,7 +355,6 @@ namespace ULMS.Web.Controllers
                     new { search = studentEmail });
             }
 
-            // VALIDATE EMAIL FORMAT
             MailAddress mailAddress;
 
             try
@@ -410,7 +381,6 @@ namespace ULMS.Web.Controllers
                     new { search = studentEmail });
             }
 
-            // VALIDATE UOL DOMAIN
             string emailDomain =
                 studentEmail.Substring(
                     studentEmail.LastIndexOf('@') + 1);
@@ -436,7 +406,6 @@ namespace ULMS.Web.Controllers
                     new { search = studentEmail });
             }
 
-            // CHECK EXISTING STUDENT
             bool studentExists = _context.StudentProfiles
                 .Any(x => x.Email == studentEmail);
 
@@ -495,9 +464,6 @@ namespace ULMS.Web.Controllers
             }
         }
 
-        // =====================================================
-        // ISSUE BOOK - POST
-        // =====================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult IssueBook(int studentId, int copyId)
@@ -520,9 +486,6 @@ namespace ULMS.Web.Controllers
                 new { studentId = studentId });
         }
 
-        // =====================================================
-        // RETURN BOOK - GET
-        // =====================================================
         [HttpGet]
         public ActionResult ReturnBook(string search, int? studentId)
         {
@@ -555,7 +518,6 @@ namespace ULMS.Web.Controllers
                     return View("~/Views/Staff/ReturnBook.cshtml", model);
                 }
 
-                // CHECK EXACT COPY CODE IN ASSIGNED LIBRARY
                 string copyCode = search.ToUpperInvariant();
 
                 var matchingActiveLoan = _context.Loans
@@ -627,7 +589,6 @@ namespace ULMS.Web.Controllers
                 }
             }
 
-            // LOAD SELECTED STUDENT AND ACTIVE LOANS
             if (studentId.HasValue)
             {
                 var student = _context.StudentProfiles
@@ -669,9 +630,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Staff/ReturnBook.cshtml", model);
         }
 
-        // =====================================================
-        // RETURN BOOK - POST
-        // =====================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ReturnBook(int loanId)
@@ -711,9 +669,6 @@ namespace ULMS.Web.Controllers
                 new { studentId = studentId });
         }
 
-        // =====================================================
-        // BORROWING HISTORY - GET
-        // =====================================================
         [HttpGet]
         public ActionResult History(string search, string status)
         {
@@ -818,9 +773,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Staff/History.cshtml", model);
         }
 
-        // =====================================================
-        // MANAGE COPIES - GET
-        // =====================================================
         [HttpGet]
         public ActionResult Copies(string search, string status)
         {
@@ -910,9 +862,6 @@ namespace ULMS.Web.Controllers
             return View("~/Views/Staff/Copies.cshtml", model);
         }
 
-        // =====================================================
-        // ADD NEW COPY - POST
-        // =====================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddCopy(int bookId)
@@ -980,9 +929,6 @@ namespace ULMS.Web.Controllers
             return RedirectToAction("Copies");
         }
 
-        // =====================================================
-        // CHANGE COPY STATUS - POST
-        // =====================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ChangeCopyStatus(
@@ -1017,28 +963,9 @@ namespace ULMS.Web.Controllers
         // =====================================================
         // CURRENT STAFF PROFILE
         // =====================================================
+
         private StaffProfile GetCurrentStaffProfile()
         {
-#if DEBUG
-            // Temporary development bypass.
-            // Disabled Staff cannot access Staff actions.
-
-            var staffProfile = _context.StaffProfiles
-                .Include(x => x.UserAccount)
-                .Include(x => x.Library)
-                .OrderBy(x => x.StaffId)
-                .FirstOrDefault();
-
-            if (staffProfile == null ||
-                staffProfile.UserAccount == null ||
-                !staffProfile.UserAccount.IsActive ||
-                staffProfile.UserAccount.Role != "Staff")
-            {
-                return null;
-            }
-
-            return staffProfile;
-#else
             string userIdClaim = User.FindFirst(
                 ClaimTypes.NameIdentifier)?.Value;
 
@@ -1052,14 +979,16 @@ namespace ULMS.Web.Controllers
                 .Include(x => x.Library)
                 .FirstOrDefault(x =>
                     x.UserId == userId &&
+                    x.UserAccount != null &&
                     x.UserAccount.IsActive &&
-                    x.UserAccount.Role == "Staff");
-#endif
+                    x.UserAccount.Role == "Staff" &&
+                    x.Library != null);
         }
 
         // =====================================================
         // PAKISTAN LOCAL DATE
         // =====================================================
+
         private DateTime GetPakistanDate()
         {
             try
@@ -1083,9 +1012,6 @@ namespace ULMS.Web.Controllers
         }
     }
 
-    // =====================================================
-    // STAFF PROFILE VIEW MODEL
-    // =====================================================
     public class StaffProfilePageViewModel
     {
         public int StaffId { get; set; }
@@ -1096,9 +1022,6 @@ namespace ULMS.Web.Controllers
         public DateTime CreatedAt { get; set; }
     }
 
-    // =====================================================
-    // STAFF DASHBOARD VIEW MODEL
-    // =====================================================
     public class StaffDashboardViewModel
     {
         public int StaffId { get; set; }
@@ -1128,9 +1051,6 @@ namespace ULMS.Web.Controllers
         public DateTime? ReturnDate { get; set; }
     }
 
-    // =====================================================
-    // ISSUE BOOK VIEW MODELS
-    // =====================================================
     public class StaffIssueBookViewModel
     {
         public string Search { get; set; }
@@ -1164,9 +1084,6 @@ namespace ULMS.Web.Controllers
         public bool IsSuccess { get; set; }
     }
 
-    // =====================================================
-    // RETURN BOOK VIEW MODEL
-    // =====================================================
     public class StaffReturnBookViewModel
     {
         public string Search { get; set; }
@@ -1215,9 +1132,6 @@ namespace ULMS.Web.Controllers
         public string CopyCode { get; set; }
     }
 
-    // =====================================================
-    // MANAGE COPIES VIEW MODELS
-    // =====================================================
     public class StaffCopiesViewModel
     {
         public string Search { get; set; }
@@ -1245,9 +1159,6 @@ namespace ULMS.Web.Controllers
         public string Status { get; set; }
     }
 
-    // =====================================================
-    // BORROWING HISTORY VIEW MODELS
-    // =====================================================
     public class StaffHistoryViewModel
     {
         public string Search { get; set; }

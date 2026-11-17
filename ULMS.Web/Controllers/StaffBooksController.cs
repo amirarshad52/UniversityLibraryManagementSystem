@@ -1,3 +1,4 @@
+
 using System;
 using System.IO;
 using System.Linq;
@@ -14,9 +15,7 @@ using ULMS.Web.ViewModels;
 
 namespace ULMS.Web.Controllers
 {
-#if !DEBUG
     [Authorize(Policy = "StaffOnly")]
-#endif
     public class StaffBooksController : Controller
     {
         private readonly ULMSDbContext _context;
@@ -396,45 +395,29 @@ namespace ULMS.Web.Controllers
         // CURRENT STAFF PROFILE
         // =========================================
 
-private StaffProfile GetCurrentStaffProfile()
-{
-#if DEBUG
-    var staffProfile = _context.StaffProfiles
-        .Include(x => x.UserAccount)
-        .Include(x => x.Library)
-        .OrderBy(x => x.StaffId)
-        .FirstOrDefault();
+        private StaffProfile GetCurrentStaffProfile()
+        {
+            // Always resolve the staff member from the authenticated
+            // application's internal UserId. No Debug-mode bypass.
 
-    if (staffProfile == null ||
-        staffProfile.UserAccount == null ||
-        !staffProfile.UserAccount.IsActive ||
-        staffProfile.UserAccount.Role != "Staff" ||
-        staffProfile.Library == null)
-    {
-        return null;
-    }
+            string userIdClaim = User.FindFirst(
+                ClaimTypes.NameIdentifier)?.Value;
 
-    return staffProfile;
-#else
-    string userIdClaim = User.FindFirst(
-        ClaimTypes.NameIdentifier)?.Value;
+            int userId;
 
-    int userId;
+            if (!int.TryParse(userIdClaim, out userId))
+                return null;
 
-    if (!int.TryParse(userIdClaim, out userId))
-        return null;
-
-    return _context.StaffProfiles
-        .Include(x => x.UserAccount)
-        .Include(x => x.Library)
-        .FirstOrDefault(x =>
-            x.UserId == userId &&
-            x.UserAccount != null &&
-            x.UserAccount.IsActive &&
-            x.UserAccount.Role == "Staff" &&
-            x.Library != null);
-#endif
-}
+            return _context.StaffProfiles
+                .Include(x => x.UserAccount)
+                .Include(x => x.Library)
+                .FirstOrDefault(x =>
+                    x.UserId == userId &&
+                    x.UserAccount != null &&
+                    x.UserAccount.IsActive &&
+                    x.UserAccount.Role == "Staff" &&
+                    x.Library != null);
+        }
 
         // =========================================
         // VALIDATE IMAGE SIGNATURE
