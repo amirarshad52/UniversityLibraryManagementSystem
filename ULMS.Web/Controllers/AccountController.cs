@@ -1,3 +1,4 @@
+
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -229,6 +230,9 @@ namespace ULMS.Web.Controllers
                             );
                         }
 
+                        // First-time student registration.
+                        // Reuse an existing provisional profile if available.
+                        // Otherwise create a new StudentProfile automatically.
                         if (account == null)
                         {
                             var studentProfiles = _context.StudentProfiles
@@ -236,39 +240,60 @@ namespace ULMS.Web.Controllers
                                     x.Email.ToLower() == normalizedEmail)
                                 .ToList();
 
-                            if (studentProfiles.Count != 1)
+                            if (studentProfiles.Count > 1)
                             {
                                 return await ExternalLoginError(
-                                    "A unique student registration was not found for this university email. Please contact library staff."
+                                    "Multiple student registrations were found for this email. Please contact library staff."
                                 );
                             }
 
-                            var studentProfile = studentProfiles[0];
+                            var studentProfile =
+                                studentProfiles.FirstOrDefault();
 
-                            if (studentProfile.UserId.HasValue)
+                            if (studentProfile != null &&
+                                studentProfile.UserId.HasValue)
                             {
                                 return await ExternalLoginError(
                                     "The student registration is already linked to an account. Please contact library staff."
                                 );
                             }
 
+                            string studentName = GetSafeName(
+                                googleName,
+                                studentProfile?.Name
+                            );
+
                             account = new UserAccount
                             {
-                                Name = GetSafeName(
-                                    googleName,
-                                    studentProfile.Name
-                                ),
+                                Name = studentName,
                                 Email = email,
                                 Role = "Student",
                                 IsActive = true,
-                                GoogleSubject = googleSubject
+                                GoogleSubject = googleSubject,
+                                CreatedAt = DateTime.UtcNow
                             };
 
                             _context.UserAccounts.Add(account);
                             _context.SaveChanges();
 
-                            studentProfile.UserId = account.UserId;
-                            studentProfile.Email = email;
+                            if (studentProfile == null)
+                            {
+                                studentProfile = new StudentProfile
+                                {
+                                    UserId = account.UserId,
+                                    Email = email,
+                                    Name = studentName
+                                };
+
+                                _context.StudentProfiles.Add(
+                                    studentProfile
+                                );
+                            }
+                            else
+                            {
+                                studentProfile.UserId = account.UserId;
+                                studentProfile.Email = email;
+                            }
 
                             _context.SaveChanges();
                         }
@@ -316,8 +341,8 @@ namespace ULMS.Web.Controllers
                             studentProfile.Email = email;
                         }
 
-                        // Email is updateable; Google Subject identifies
-                        // the returning Google account.
+                        // Update account information for returning users.
+                        // Google Subject identifies the linked Google account.
                         if (!string.Equals(
                             account.Email,
                             email,
